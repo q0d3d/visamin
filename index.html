@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phonetic Character Inserter</title>
+<style>
+    :root {
+        --font-stack: "Doulos SIL", "Times New Roman", serif;
+    }
+
+    body {
+        font-family: var(--font-stack);
+        background-color: #f7f9fa;
+        color: #333;
+        margin: 0;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-sizing: border-box;
+    }
+
+    textarea {
+        width: 100%;
+        height: 120px;
+        font-family: var(--font-stack);
+        font-size: 1.5rem;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        resize: vertical;
+        line-height: 1.4;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: #0066cc;
+    }
+
+    .section {
+        margin-bottom: 15px;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 4px;
+        font-family: sans-serif;
+    }
+
+    .button-group {
+        display: grid;
+        grid-template-columns: repeat(28, 1fr);
+        gap: 3px;
+        width: 100%;
+    }
+
+    .col {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    button {
+        font-family: var(--font-stack);
+        font-size: clamp(0.7rem, 1.4vw, 1.3rem);
+        padding: 4px 0;
+        width: 100%;
+        min-width: 0;
+        flex: 1 1 0;
+        min-height: 42px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        background: #fdfdfd;
+        border-radius: 4px;
+        text-align: center;
+        transition: background 0.1s, border-color 0.1s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        overflow: hidden;
+        line-height: 1.1;
+    }
+
+    button:hover {
+        background: #e6f0ff;
+        border-color: #b3d1ff;
+    }
+
+    button:active {
+        background: #cce0ff;
+    }
+
+    button.red-btn {
+        color: #d32f2f;
+        border-color: #ffcdd2;
+        background: #fff5f5;
+    }
+
+    button.red-btn:hover {
+        background: #ffebee;
+        border-color: #ef9a9a;
+    }
+
+    .label {
+        display: block;
+        font-size: clamp(0.45rem, 0.8vw, 0.7rem);
+        color: #666;
+        margin-top: 3px;
+        font-family: sans-serif;
+        white-space: nowrap;
+        letter-spacing: -0.05em;
+    }
+
+    button.red-btn .label {
+        color: #d32f2f;
+    }
+
+    .empty-slot {
+        width: 100%;
+        min-width: 0;
+        flex: 1 1 0;
+        min-height: 42px;
+        visibility: hidden;
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <textarea id="output" placeholder="Click buttons below to insert characters..."></textarea>
+    <div id="keyboard-container"></div>
+</div>
+
+<script>
+    const layout = [
+        {
+            title: "Onset",
+            cols: [
+                { t: ['b', 'b'] }, { t: ['k', 'c/k/q'] }, { t: ['c', 'ch'] },
+                { t: ['z', 'd'], b: ['ᵶ', ''] }, { t: ['d', 'đ'] }, 
+                { t: ['ɣ', 'g/gh'] }, { t: ['ʝ', 'g/gi'] }, { t: ['h', 'h'] }, 
+                { t: ['x', 'kh'] }, { t: ['l', 'l'] }, { t: ['m', 'm'] }, 
+                { t: ['n', 'n'] }, { t: ['ŋ', 'ng/ngh'] }, { t: ['ɲ', 'nh'] }, 
+                { t: ['f', 'ph'] }, { t: ['ɹ', 'r'], b: ['ꭨ', ''] }, 
+                { t: ['ʂ', 's'] }, { t: ['t', 't'] }, { t: ['tʰ', 'th'] }, 
+                { t: ['ʈ', 'tr'] }, { t: ['v', 'v'], b: ['ⱴ', ''] }, 
+                { t: ['s', 'x'] }, { t: ['w', 'o/u'] },
+                { b: ['d͡ʒ', ''] }, { b: ['j', ''] }, { b: ['p', ''] }, 
+                { b: ['ʃ', ''] }, { b: ['ʒ', ''] }
+            ]
+        },
+        {
+            title: "Nucleus",
+            cols: [
+                { t: ['a', 'a'] }, { t: ['ă', 'ă'] }, { t: ['ə̆', 'â'] },
+                { t: ['ɛ', 'e'] }, { t: ['e', 'ê'] },
+                { t: ['i', 'i/y'], b: ['ᵼ', ''] }, { t: ['iə', 'ia/iê'] },
+                { t: ['ɔ', 'o'], b: ['ꬿ', ''] }, { t: ['o', 'ô'] }, 
+                { t: ['ə', 'ơ'] }, { t: ['u', 'u'] }, { t: ['uə', 'ua/uô'] }, 
+                { t: ['ɨ', 'ư'] }, { t: ['ɨə', 'ưa/ươ'] }
+            ]
+        },
+        {
+            title: "Tone",
+            cols: [
+                { t: ['◌́', '', '\u0301'] },
+                { t: ['◌̀', '', '\u0300'] },
+                { t: ['◌̉', '', '\u0309'] },
+                { t: ['◌̃', '', '\u0303'] },
+                { t: ['◌̣', '', '\u0323'] }
+            ]
+        },
+        {
+            title: "Coda",
+            cols: [
+                { t: ['k', 'c'] }, { t: ['c', 'ch'] }, { t: ['m', 'm'] },
+                { t: ['n', 'n'], b: ['ᵰ', ''] }, { t: ['ŋ', 'ng'] }, 
+                { t: ['ɲ', 'nh'] }, { t: ['p', 'p'] }, 
+                { t: ['t', 't'], b: ['ᵵ', ''] }, 
+                { t: ['j', 'i/y'] }, { t: ['w', 'o/u'] },
+                { b: ['f', ''] }, { b: ['s', ''] }
+            ]
+        }
+    ];
+
+    function insertText(text) {
+        const ta = document.getElementById('output');
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        ta.value = ta.value.substring(0, start) + text + ta.value.substring(end);
+        ta.selectionStart = ta.selectionEnd = start + text.length;
+        ta.focus();
+    }
+
+    function createButton(data, isRed) {
+        if (!data) return '<div class="empty-slot"></div>';
+        
+        const displayChar = data[0];
+        const label = data[1];
+        const insertChar = data[2] !== undefined ? data[2] : displayChar;
+        
+        let labelHtml = label ? `<span class="label">⟨${label}⟩</span>` : '';
+        let classStr = isRed ? ' class="red-btn"' : '';
+        
+        return `<button type="button"${classStr} onclick="insertText('${insertChar}')">
+                    ${displayChar}${labelHtml}
+                </button>`;
+    }
+
+    function renderKeyboard() {
+        const container = document.getElementById('keyboard-container');
+        let html = '';
+
+        layout.forEach(section => {
+            html += `<div class="section">
+                        <div class="section-title">${section.title}</div>
+                        <div class="button-group">`;
+            
+            section.cols.forEach(col => {
+                html += `<div class="col">`;
+                html += createButton(col.t, false);
+                
+                if (col.b || section.cols.some(c => c.b)) {
+                    html += createButton(col.b, true);
+                }
+                html += `</div>`;
+            });
+            
+            html += `</div></div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    window.onload = () => {
+        renderKeyboard();
+        document.getElementById('output').focus();
+    };
+</script>
+
+</body>
+</html>
