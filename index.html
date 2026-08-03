@@ -220,6 +220,18 @@
         ta.focus();
     }
 
+    function wrapSlashes() {
+        const ta = document.getElementById('output');
+        ta.value = `/${ta.value}/`;
+        ta.focus();
+    }
+
+    function wrapBrackets() {
+        const ta = document.getElementById('output');
+        ta.value = `[${ta.value}]`;
+        ta.focus();
+    }
+
     function createButton(data, isRed) {
         if (!data) return '<div class="empty-slot"></div>';
         
