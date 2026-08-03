@@ -201,13 +201,13 @@
                 { b: ['f', ''] }, { b: ['s', ''] }
             ]
         },
-        /* --- NEW FEATURE SECTION ADDED BELOW --- */
         {
             title: "Punctuation & Framing",
             cols: [
                 { t: ['.', '', '.'] },
-                { t: ['/.../', ''], action: 'wrapSlashes' },
-                { t: ['[...]', ''], action: 'wrapBrackets' }
+                /* Move action inside array position index 3 */
+                { t: ['/.../', '', null, 'wrapSlashes'] },
+                { t: ['[...]', '', null, 'wrapBrackets'] }
             ]
         }
     ];
@@ -221,16 +221,31 @@
         ta.focus();
     }
 
-    /* --- WRAPPER FUNCTIONS FOR ENCLOSING TEXT --- */
+    /* ENCLOSING FUNCTIONS (Supports highlighted text or whole string) */
     function wrapSlashes() {
-        const ta = document.getElementById('output');
-        ta.value = `/${ta.value}/`;
-        ta.focus();
+        wrapEnclosure('/', '/');
     }
 
     function wrapBrackets() {
+        wrapEnclosure('[', ']');
+    }
+
+    function wrapEnclosure(leftChar, rightChar) {
         const ta = document.getElementById('output');
-        ta.value = `[${ta.value}]`;
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+
+        // If user highlighted text, enclose only the selection
+        if (start !== end) {
+            const selectedText = ta.value.substring(start, end);
+            ta.value = ta.value.substring(0, start) + leftChar + selectedText + rightChar + ta.value.substring(end);
+            ta.selectionStart = start + 1;
+            ta.selectionEnd = end + 1;
+        } else {
+            // Otherwise wrap the full content
+            ta.value = `${leftChar}${ta.value}${rightChar}`;
+            ta.selectionStart = ta.selectionEnd = ta.value.length;
+        }
         ta.focus();
     }
 
@@ -239,18 +254,18 @@
         
         const displayChar = data[0];
         const label = data[1];
+        const action = data[3]; // Check 4th array item for action string
         
-        // Handle explicit custom actions (like slashes or brackets)
-        if (data.action) {
-            let labelHtml = label ? `<span class="label">⟨${label}⟩</span>` : '';
-            return `<button type="button" onclick="${data.action}()">
+        let labelHtml = label ? `<span class="label">⟨${label}⟩</span>` : '';
+
+        // If an explicit action is defined
+        if (action) {
+            return `<button type="button" onclick="${action}()">
                         ${displayChar}${labelHtml}
                     </button>`;
         }
 
-        const insertChar = data[2] !== undefined ? data[2] : displayChar;
-        
-        let labelHtml = label ? `<span class="label">⟨${label}⟩</span>` : '';
+        const insertChar = data[2] !== null && data[2] !== undefined ? data[2] : displayChar;
         let classStr = isRed ? ' class="red-btn"' : '';
         
         return `<button type="button"${classStr} onclick="insertText('${insertChar}')">
