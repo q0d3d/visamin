@@ -37,7 +37,7 @@
         font-family: var(--font-stack);
         font-size: 1.5rem;
         padding: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 8px;
         border: 2px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
@@ -48,6 +48,25 @@
     textarea:focus {
         outline: none;
         border-color: #0066cc;
+    }
+
+    /* Action bar aligned to the right */
+    .action-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .action-bar button {
+        width: auto;
+        flex: 0 0 auto;
+        padding: 6px 14px;
+        font-family: sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        min-height: auto;
+        border-radius: 4px;
     }
 
     .section {
@@ -148,6 +167,13 @@
 
 <div class="container">
     <textarea id="output" placeholder="Click buttons below to insert characters..."></textarea>
+    
+    <div class="action-bar">
+        <button type="button" onclick="copyText()">Copy</button>
+        <button type="button" onclick="cutText()">Cut</button>
+        <button type="button" onclick="clearText()">Clear</button>
+    </div>
+
     <div id="keyboard-container"></div>
 </div>
 
@@ -207,7 +233,6 @@
             cols: [
                 { t: ['.', '', '.'] },
                 { t: ['~', '', ' ~ '] },
-                /* Move action inside array position index 3 */
                 { t: ['/.../', '', null, 'wrapSlashes'] },
                 { t: ['[...]', '', null, 'wrapBrackets'] }
             ]
@@ -223,7 +248,27 @@
         ta.focus();
     }
 
-    /* ENCLOSING FUNCTIONS (Supports highlighted text or whole string) */
+    /* ACTION BAR FUNCTIONS */
+    async function copyText() {
+        const ta = document.getElementById('output');
+        await navigator.clipboard.writeText(ta.value);
+        ta.focus();
+    }
+
+    async function cutText() {
+        const ta = document.getElementById('output');
+        await navigator.clipboard.writeText(ta.value);
+        ta.value = '';
+        ta.focus();
+    }
+
+    function clearText() {
+        const ta = document.getElementById('output');
+        ta.value = '';
+        ta.focus();
+    }
+
+    /* ENCLOSING FUNCTIONS */
     function wrapSlashes() {
         wrapEnclosure('/', '/');
     }
@@ -237,14 +282,12 @@
         const start = ta.selectionStart;
         const end = ta.selectionEnd;
 
-        // If user highlighted text, enclose only the selection
         if (start !== end) {
             const selectedText = ta.value.substring(start, end);
             ta.value = ta.value.substring(0, start) + leftChar + selectedText + rightChar + ta.value.substring(end);
             ta.selectionStart = start + 1;
             ta.selectionEnd = end + 1;
         } else {
-            // Otherwise wrap the full content
             ta.value = `${leftChar}${ta.value}${rightChar}`;
             ta.selectionStart = ta.selectionEnd = ta.value.length;
         }
@@ -256,11 +299,10 @@
         
         const displayChar = data[0];
         const label = data[1];
-        const action = data[3]; // Check 4th array item for action string
+        const action = data[3];
         
         let labelHtml = label ? `<span class="label">⟨${label}⟩</span>` : '';
 
-        // If an explicit action is defined
         if (action) {
             return `<button type="button" onclick="${action}()">
                         ${displayChar}${labelHtml}
