@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>English–Vietnamese Medical Dictionary Studio</title>
-  
-  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'&gt;&lt;defs&gt;&lt;linearGradient id='g' x1='0%' y1='100%' x2='100%' y2='0%'&gt;&lt;stop offset='0%' stop-color='%23f43f5e'/&gt;&lt;stop offset='100%' stop-color='%234f46e5'/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;rect width='24' height='24' rx='6' fill='url(%23g)'/&gt;&lt;path fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'/&gt;&lt;/svg&gt;">
+
+  <link rel="icon"
+    href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'&gt;&lt;defs&gt;&lt;linearGradient id='g' x1='0%' y1='100%' x2='100%' y2='0%'&gt;&lt;stop offset='0%' stop-color='%23f43f5e'/&gt;&lt;stop offset='100%' stop-color='%234f46e5'/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;rect width='24' height='24' rx='6' fill='url(%23g)'/&gt;&lt;path fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'/&gt;&lt;/svg&gt;">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Brygada+1918:ital,wght@0,400..700;1,400..700&amp;family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Brygada+1918:ital,wght@0,400..700;1,400..700&amp;family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -22,18 +26,34 @@
             publiiBody: ['"Brygada 1918"', 'serif'],
             publiiHeading: ['"Cormorant Garamond"', 'serif']
           },
-          colors: { publiiRed: '#d73a42', publiiBlue: '#425c97' }
+          colors: {publiiRed: '#d73a42', publiiBlue: '#425c97'}
         }
       }
     }
   </script>
 
   <style>
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
-    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 4px; }
-    .dark ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-    .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    .dark ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+    }
 
     .publii-render-frame {
       --body-font: "Brygada 1918", serif;
@@ -64,113 +84,353 @@
       color: #bfbfbf !important;
     }
 
-    .dark-theme-preview h1, .dark-theme-preview h2, .dark-theme-preview h3, .dark-theme-preview .preview-post-title { color: #eeeded !important; }
-    .publii-render-frame p { margin-top: 0.75rem; margin-bottom: 0.75rem; }
-    .publii-render-frame .medical-terms { display: block; margin-top: 1rem; margin-bottom: 1rem; }
+    .dark-theme-preview h1,
+    .dark-theme-preview h2,
+    .dark-theme-preview h3,
+    .dark-theme-preview .preview-post-title {
+      color: #eeeded !important;
+    }
+
+    .publii-render-frame p {
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .publii-render-frame .medical-terms {
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+
     .publii-render-frame .medical-term {
-      border: 1px solid #dedede; border-radius: 12px; flex-wrap: wrap; align-items: center;
-      gap: 0.75rem; margin-top: 1rem; margin-bottom: 1rem; padding: 1.25rem; display: flex;
+      border: 1px solid #dedede;
+      border-radius: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      padding: 1.25rem;
+      display: flex;
     }
-    .dark-theme-preview .medical-term { border-color: #373737 !important; }
+
+    .dark-theme-preview .medical-term {
+      border-color: #373737 !important;
+    }
+
     .publii-render-frame .medical-term h3 {
-      margin: 0; line-height: 1.2 !important; font-family: var(--heading-font);
-      font-size: clamp(1.25rem, 1.5vw + 1rem, 1.75rem); font-weight: 700; color: var(--headings-color);
+      margin: 0;
+      line-height: 1.2 !important;
+      font-family: var(--heading-font);
+      font-size: clamp(1.25rem, 1.5vw + 1rem, 1.75rem);
+      font-weight: 700;
+      color: var(--headings-color);
     }
-    .publii-render-frame .medical-term > p { margin: 0; }
-    .publii-render-frame .medical-term > p:has(.term-label) { flex-wrap: wrap; align-items: center; gap: 0.5rem; line-height: 1; display: flex; }
-    .publii-render-frame .medical-term > p:not(:has(.term-label)) { flex-basis: 100%; }
+
+    .publii-render-frame .medical-term>p {
+      margin: 0;
+    }
+
+    .publii-render-frame .medical-term>p:has(.term-label) {
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1;
+      display: flex;
+    }
+
+    .publii-render-frame .medical-term>p:not(:has(.term-label)) {
+      flex-basis: 100%;
+    }
+
     .publii-render-frame .term-label {
-      color: #f3f3f3; background: #425c97; border-radius: 999px; margin: 0;
-      padding: 0.35rem 0.65rem; font-size: 0.85rem; line-height: 1.4; display: inline-block;
+      color: #f3f3f3;
+      background: #425c97;
+      border-radius: 999px;
+      margin: 0;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: inline-block;
     }
 
-    .headword-editor .lexical-variant, .publii-render-frame .lexical-variant,
-    .headword-editor .pronunciation, .publii-render-frame .pronunciation {
-      -webkit-text-decoration-skip-ink: auto; text-decoration-skip-ink: auto; position: relative; cursor: pointer;
-    }
-    .headword-editor .lexical-variant, .publii-render-frame .lexical-variant { text-decoration: underline dotted #858585; }
-    .headword-editor .pronunciation, .publii-render-frame .pronunciation { text-decoration: underline dotted #a5c2e5; }
-
-    .headword-editor .lexical-variant:after, .publii-render-frame .lexical-variant:after,
-    .headword-editor .pronunciation:after, .publii-render-frame .pronunciation:after {
-      color: #fff; white-space: nowrap; opacity: 0; visibility: hidden; z-index: 1000;
-      pointer-events: none; background: #333; border-radius: 6px; padding: 4px 10px; font-size: 14px;
-      font-weight: 400; font-family: var(--body-font), sans-serif; transition: opacity 0.2s, visibility 0.2s;
-      position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translate(-50%); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    .headword-editor .lexical-variant:after, .publii-render-frame .lexical-variant:after { content: attr(data-variant); }
-    .headword-editor .pronunciation:after, .publii-render-frame .pronunciation:after { content: attr(data-pronunciation); font-style: italic; }
-
-    .headword-editor .lexical-variant:before, .publii-render-frame .lexical-variant:before,
-    .headword-editor .pronunciation:before, .publii-render-frame .pronunciation:before {
-      content: ""; opacity: 0; visibility: hidden; z-index: 1001; border: 6px solid transparent;
-      border-top-color: #333; border-bottom-width: 0; position: absolute; bottom: calc(100% + 2px);
-      left: 50%; transform: translate(-50%); transition: opacity 0.2s, visibility 0.2s;
+    .headword-editor .lexical-variant,
+    .publii-render-frame .lexical-variant,
+    .headword-editor .pronunciation,
+    .publii-render-frame .pronunciation {
+      -webkit-text-decoration-skip-ink: auto;
+      text-decoration-skip-ink: auto;
+      position: relative;
+      cursor: pointer;
     }
 
-    .headword-editor .lexical-variant:hover:after, .headword-editor .lexical-variant:hover:before,
-    .publii-render-frame .lexical-variant:hover:after, .publii-render-frame .lexical-variant:hover:before,
-    .headword-editor .pronunciation:hover:after, .headword-editor .pronunciation:hover:before,
-    .publii-render-frame .pronunciation:hover:after, .publii-render-frame .pronunciation:hover:before { opacity: 1; visibility: visible; }
+    .headword-editor .lexical-variant,
+    .publii-render-frame .lexical-variant {
+      text-decoration: underline dotted #858585;
+    }
 
-    .publii-render-frame details { margin-top: 1.5rem; border: 1px solid var(--light); border-radius: 8px; padding: 0.75rem 1rem; background-color: var(--lighter); max-width: 100%; overflow-x: auto; }
-    .dark-theme-preview details { border-color: #373737 !important; background-color: #1e1e1e !important; }
-    .publii-render-frame details summary { cursor: pointer; font-weight: 700; color: var(--headings-color); font-size: 0.95rem !important; user-select: none; }
-    .publii-render-frame details p { font-size: 0.85rem !important; margin-top: 0.5rem; margin-bottom: 0.5rem; }
-    .publii-render-frame blockquote { border-left: 3px solid var(--dark); border-top: none; border-bottom: none; margin: 0.75rem 0; padding: 0.25rem 0 0.25rem 1rem; background: transparent; max-width: 100%; overflow-x: auto; }
+    .headword-editor .pronunciation,
+    .publii-render-frame .pronunciation {
+      text-decoration: underline dotted #a5c2e5;
+    }
 
-    .publii-render-frame table { border: 1px solid var(--light); border-collapse: collapse; width: 100%; max-width: 100%; margin-top: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem !important; empty-cells: show; word-break: break-word; overflow-wrap: anywhere; }
-    .publii-render-frame table th { font-weight: 700; padding: 0.5rem 0.75rem; border: 1px solid var(--light); background: var(--lighter); text-align: left; min-height: 2.2rem; word-break: break-word; overflow-wrap: anywhere; }
-    .publii-render-frame table td { border: 1px solid var(--light); padding: 0.5rem 0.75rem; min-height: 2.2rem; word-break: break-word; overflow-wrap: anywhere; }
+    .headword-editor .lexical-variant:after,
+    .publii-render-frame .lexical-variant:after,
+    .headword-editor .pronunciation:after,
+    .publii-render-frame .pronunciation:after {
+      color: #fff;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1000;
+      pointer-events: none;
+      background: #333;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 14px;
+      font-weight: 400;
+      font-family: var(--body-font), sans-serif;
+      transition: opacity 0.2s, visibility 0.2s;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translate(-50%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-    .quote-editor table { border-collapse: collapse; width: 100%; max-width: 100%; margin-top: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; border: 1px solid #475569; empty-cells: show; word-break: break-word; overflow-wrap: anywhere; }
-    .quote-editor table th, .quote-editor table td { border: 1px solid #475569; padding: 6px 10px; min-width: 36px; height: 2.2rem; min-height: 2.2rem; vertical-align: top; box-sizing: border-box; }
-    .quote-editor table th { background-color: #334155; color: #f8fafc; font-weight: 700; text-align: left; }
-    .quote-editor table td { background-color: rgba(15, 23, 42, 0.4); color: #cbd5e1; }
+    .headword-editor .lexical-variant:after,
+    .publii-render-frame .lexical-variant:after {
+      content: attr(data-variant);
+    }
 
-    .headword-editor { min-height: 44px; outline: none; white-space: pre-wrap; word-break: break-word; }
-    .comment-editor, .quote-editor { min-height: 48px; outline: none; }
-    .quote-editor, .quote-editor * { font-size: 0.75rem !important; line-height: 1.5 !important; }
-    .publii-render-frame blockquote, .publii-render-frame blockquote p, .quote-editor, .quote-editor p { font-family: inherit !important; color: inherit !important; background-color: transparent !important; }
+    .headword-editor .pronunciation:after,
+    .publii-render-frame .pronunciation:after {
+      content: attr(data-pronunciation);
+      font-style: italic;
+    }
 
-    .term-card.dragging { opacity: 0.4; border-style: dashed; border-color: #6366f1; }
+    .headword-editor .lexical-variant:before,
+    .publii-render-frame .lexical-variant:before,
+    .headword-editor .pronunciation:before,
+    .publii-render-frame .pronunciation:before {
+      content: "";
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1001;
+      border: 6px solid transparent;
+      border-top-color: #333;
+      border-bottom-width: 0;
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translate(-50%);
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .headword-editor .lexical-variant:hover:after,
+    .headword-editor .lexical-variant:hover:before,
+    .publii-render-frame .lexical-variant:hover:after,
+    .publii-render-frame .lexical-variant:hover:before,
+    .headword-editor .pronunciation:hover:after,
+    .headword-editor .pronunciation:hover:before,
+    .publii-render-frame .pronunciation:hover:after,
+    .publii-render-frame .pronunciation:hover:before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .publii-render-frame details {
+      margin-top: 1.5rem;
+      border: 1px solid var(--light);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      background-color: var(--lighter);
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .dark-theme-preview details {
+      border-color: #373737 !important;
+      background-color: #1e1e1e !important;
+    }
+
+    .publii-render-frame details summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--headings-color);
+      font-size: 0.95rem !important;
+      user-select: none;
+    }
+
+    .publii-render-frame details p {
+      font-size: 0.85rem !important;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .publii-render-frame blockquote {
+      border-left: 3px solid var(--dark);
+      border-top: none;
+      border-bottom: none;
+      margin: 0.75rem 0;
+      padding: 0.25rem 0 0.25rem 1rem;
+      background: transparent;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .publii-render-frame table {
+      border: 1px solid var(--light);
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem !important;
+      empty-cells: show;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .publii-render-frame table th {
+      font-weight: 700;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--light);
+      background: var(--lighter);
+      text-align: left;
+      min-height: 2.2rem;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .publii-render-frame table td {
+      border: 1px solid var(--light);
+      padding: 0.5rem 0.75rem;
+      min-height: 2.2rem;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .quote-editor table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      border: 1px solid #475569;
+      empty-cells: show;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .quote-editor table th,
+    .quote-editor table td {
+      border: 1px solid #475569;
+      padding: 6px 10px;
+      min-width: 36px;
+      height: 2.2rem;
+      min-height: 2.2rem;
+      vertical-align: top;
+      box-sizing: border-box;
+    }
+
+    .quote-editor table th {
+      background-color: #334155;
+      color: #f8fafc;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .quote-editor table td {
+      background-color: rgba(15, 23, 42, 0.4);
+      color: #cbd5e1;
+    }
+
+    .headword-editor {
+      min-height: 44px;
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .comment-editor,
+    .quote-editor {
+      min-height: 48px;
+      outline: none;
+    }
+
+    .quote-editor,
+    .quote-editor * {
+      font-size: 0.75rem !important;
+      line-height: 1.5 !important;
+    }
+
+    .publii-render-frame blockquote,
+    .publii-render-frame blockquote p,
+    .quote-editor,
+    .quote-editor p {
+      font-family: inherit !important;
+      color: inherit !important;
+      background-color: transparent !important;
+    }
+
+    .term-card.dragging {
+      opacity: 0.4;
+      border-style: dashed;
+      border-color: #6366f1;
+    }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white">
+
+<body
+  class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white">
 
   <!-- Initial Login Overlay -->
-  <div id="initial-login-overlay" class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+  <div id="initial-login-overlay"
+    class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-8 text-center shadow-2xl space-y-6">
-      <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+      <div
+        class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+          </path>
+        </svg>
       </div>
       <div>
         <h2 class="text-xl font-bold text-white mb-2">Welcome to Dictionary Studio</h2>
         <p class="text-sm text-slate-400">Please connect your Google Drive to load and save your dictionary entries.</p>
       </div>
-      <button type="button" id="initial-drive-auth-btn" onclick="handleDriveAuthClick(event)" class="w-full bg-slate-100 hover:bg-white text-slate-800 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg border border-slate-300 font-bold text-sm">
+      <button type="button" id="initial-drive-auth-btn" onclick="handleDriveAuthClick(event)"
+        class="w-full bg-slate-100 hover:bg-white text-slate-800 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg border border-slate-300 font-bold text-sm">
         <svg class="w-5 h-5 shrink-0" viewBox="0 0 800 741.37" fill="none">
           <mask id="drive-logo-mask-init" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
-            <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+            <path fill="#fff"
+              d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z" />
           </mask>
           <g mask="url(#drive-logo-mask-init)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
-            <path fill="url(#drive-logo-b-init)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
-            <path fill="url(#drive-logo-c-init)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
-            <path fill="url(#drive-logo-d-init)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+            <path fill="url(#drive-logo-b-init)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z" />
+            <path fill="url(#drive-logo-c-init)"
+              d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z" />
+            <path fill="url(#drive-logo-d-init)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z" />
           </g>
           <defs>
-            <linearGradient id="drive-logo-b-init" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
-              <stop offset=".09" stop-color="#ffe921"/>
-              <stop offset="1" stop-color="#fec700"/>
+            <linearGradient id="drive-logo-b-init" x1="193.6" x2="103.09" y1="165.6" y2="111.21"
+              gradientUnits="userSpaceOnUse">
+              <stop offset=".09" stop-color="#ffe921" />
+              <stop offset="1" stop-color="#fec700" />
             </linearGradient>
-            <linearGradient id="drive-logo-c-init" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
-              <stop offset=".15" stop-color="#a9a8ff"/>
-              <stop offset=".33" stop-color="#6d97ff"/>
-              <stop offset=".48" stop-color="#3186ff"/>
+            <linearGradient id="drive-logo-c-init" x1="114.4" x2="15.53" y1="181.61" y2="121.8"
+              gradientUnits="userSpaceOnUse">
+              <stop offset=".15" stop-color="#a9a8ff" />
+              <stop offset=".33" stop-color="#6d97ff" />
+              <stop offset=".48" stop-color="#3186ff" />
             </linearGradient>
-            <linearGradient id="drive-logo-d-init" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
-              <stop offset=".55" stop-color="#0ebc5f"/>
-              <stop offset=".85" stop-color="#78c9ff"/>
+            <linearGradient id="drive-logo-d-init" x1="128.88" x2="28.7" y1="37.88" y2="84.64"
+              gradientUnits="userSpaceOnUse">
+              <stop offset=".55" stop-color="#0ebc5f" />
+              <stop offset=".85" stop-color="#78c9ff" />
             </linearGradient>
           </defs>
         </svg>
@@ -180,12 +440,19 @@
   </div>
 
   <!-- Floating Toolbars -->
-  <div id="selection-toolbar" class="fixed z-50 bg-slate-800 border border-slate-700 shadow-2xl rounded-xl p-1.5 flex items-center gap-1.5 backdrop-blur-md hidden">
-    <button onmousedown="event.preventDefault(); openAddPronModal();" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow">+ Pronunciation</button>
-    <button onmousedown="event.preventDefault(); openAddVarModal();" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow">+ Lexical Variant</button>
+  <div id="selection-toolbar"
+    class="fixed z-50 bg-slate-800 border border-slate-700 shadow-2xl rounded-xl p-1.5 flex items-center gap-1.5 backdrop-blur-md hidden">
+    <button onmousedown="event.preventDefault(); openAddPronModal();"
+      class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow">+
+      Pronunciation</button>
+    <button onmousedown="event.preventDefault(); openAddVarModal();"
+      class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow">+
+      Lexical Variant</button>
   </div>
-  <div id="ipa-toolbar" class="fixed z-50 bg-slate-800/95 border border-indigo-500/40 shadow-2xl rounded-xl p-2 flex flex-wrap items-center gap-1 backdrop-blur-md hidden max-w-sm sm:max-w-md">
-    <div class="w-full text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1 flex items-center justify-between border-b border-slate-700/60 pb-1">
+  <div id="ipa-toolbar"
+    class="fixed z-50 bg-slate-800/95 border border-indigo-500/40 shadow-2xl rounded-xl p-2 flex flex-wrap items-center gap-1 backdrop-blur-md hidden max-w-sm sm:max-w-md">
+    <div
+      class="w-full text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1 flex items-center justify-between border-b border-slate-700/60 pb-1">
       <span>Quasi-IPA Symbols &amp; Diacritics</span><span class="text-slate-500 font-normal">Click to insert</span>
     </div>
     <div id="ipa-buttons-container" class="flex flex-wrap gap-1"></div>
@@ -193,84 +460,139 @@
 
   <!-- Modals -->
   <!-- 1: Add Pronunciation -->
-  <div id="add-pron-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="add-pron-modal"
+    class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-2 border-b border-slate-700">
         <h3 class="text-sm font-bold text-white">Add Pronunciation</h3>
         <button onclick="closeAddPronModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
       </div>
       <div class="space-y-3 text-xs">
-        <div><label class="block text-slate-400 mb-1">Selected Text</label><input type="text" id="add-pron-target" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 cursor-not-allowed"></div>
+        <div><label class="block text-slate-400 mb-1">Selected Text</label><input type="text" id="add-pron-target"
+            readonly
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 cursor-not-allowed">
+        </div>
         <div>
           <div class="flex items-center justify-between mb-1">
             <label class="block text-slate-300 font-semibold">Quasi-IPA</label>
             <div class="flex gap-1">
-              <button onclick="openRuleSuggest('pron', document.getElementById('add-pron-target').value)" class="text-[10px] bg-indigo-600/30 text-indigo-300 px-2 rounded hover:bg-indigo-600/50">Suggest</button>
-              <button onclick="openRuleBrowse('pron')" class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse DB</button>
+              <button onclick="openRuleSuggest('pron', document.getElementById('add-pron-target').value)"
+                class="text-[10px] bg-indigo-600/30 text-indigo-300 px-2 rounded hover:bg-indigo-600/50">Suggest</button>
+              <button onclick="openRuleBrowse('pron')"
+                class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse DB</button>
             </div>
           </div>
-          <input type="text" id="add-pron-input" data-ipa-input="true" oninput="updateAddPronPreview()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-indigo-500">
+          <input type="text" id="add-pron-input" data-ipa-input="true" oninput="updateAddPronPreview()"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-indigo-500">
         </div>
-        <div><label class="block text-slate-400 mb-1">Converts to Quấc ngữ:</label><div id="add-pron-preview" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-indigo-300 font-mono italic min-h-[34px] flex items-center"></div></div>
+        <div><label class="block text-slate-400 mb-1">Converts to Quấc ngữ:</label>
+          <div id="add-pron-preview"
+            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-indigo-300 font-mono italic min-h-[34px] flex items-center">
+          </div>
+        </div>
       </div>
-      <div class="flex justify-end gap-2 pt-2"><button onclick="closeAddPronModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs">Cancel</button><button onclick="confirmAddPronunciation()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold">Apply</button></div>
+      <div class="flex justify-end gap-2 pt-2"><button onclick="closeAddPronModal()"
+          class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs">Cancel</button><button
+          onclick="confirmAddPronunciation()"
+          class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold">Apply</button>
+      </div>
     </div>
   </div>
 
   <!-- 2: Add Variant -->
-  <div id="add-var-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="add-var-modal"
+    class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-2 border-b border-slate-700">
         <h3 class="text-sm font-bold text-white">Add Lexical Variant</h3>
         <button onclick="closeAddVarModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
       </div>
       <div class="space-y-3 text-xs">
-        <div><label class="block text-slate-400 mb-1">Selected Text</label><input type="text" id="add-var-target" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 cursor-not-allowed"></div>
+        <div><label class="block text-slate-400 mb-1">Selected Text</label><input type="text" id="add-var-target"
+            readonly
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 cursor-not-allowed">
+        </div>
         <div>
           <div class="flex items-center justify-between mb-1">
             <label class="block text-slate-300 font-semibold">Variant(s)</label>
             <div class="flex gap-1">
-              <button onclick="openRuleSuggest('var', document.getElementById('add-var-target').value)" class="text-[10px] bg-amber-600/30 text-amber-300 px-2 rounded hover:bg-amber-600/50">Suggest</button>
-              <button onclick="openRuleBrowse('var')" class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse DB</button>
+              <button onclick="openRuleSuggest('var', document.getElementById('add-var-target').value)"
+                class="text-[10px] bg-amber-600/30 text-amber-300 px-2 rounded hover:bg-amber-600/50">Suggest</button>
+              <button onclick="openRuleBrowse('var')"
+                class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse DB</button>
             </div>
           </div>
-          <textarea id="add-var-input" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
+          <textarea id="add-var-input" rows="2"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
         </div>
       </div>
-      <div class="flex justify-end gap-2 pt-2"><button onclick="closeAddVarModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs">Cancel</button><button onclick="confirmAddVariant()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold">Apply</button></div>
+      <div class="flex justify-end gap-2 pt-2"><button onclick="closeAddVarModal()"
+          class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs">Cancel</button><button
+          onclick="confirmAddVariant()"
+          class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold">Apply</button>
+      </div>
     </div>
   </div>
 
   <!-- 3: Edit Annotation -->
-  <div id="annotation-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="annotation-modal"
+    class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-700"><h3 id="annotation-modal-title" class="text-sm font-bold text-white">Edit Annotation</h3><button onclick="closeAnnotationModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button></div>
+      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+        <h3 id="annotation-modal-title" class="text-sm font-bold text-white">Edit Annotation</h3><button
+          onclick="closeAnnotationModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+      </div>
       <div class="space-y-3 text-xs">
-        <div><label class="block text-slate-400 mb-1">Annotated Phrase</label><input type="text" id="annotation-target-text" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 cursor-not-allowed"></div>
-        <div><label id="annotation-value-label" class="block text-slate-300 font-semibold mb-1">Value</label><input type="text" id="annotation-value-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-rose-500"></div>
+        <div><label class="block text-slate-400 mb-1">Annotated Phrase</label><input type="text"
+            id="annotation-target-text" readonly
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 cursor-not-allowed">
+        </div>
+        <div><label id="annotation-value-label" class="block text-slate-300 font-semibold mb-1">Value</label><input
+            type="text" id="annotation-value-input"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-rose-500">
+        </div>
       </div>
       <div class="flex items-center justify-between pt-2">
-        <button onclick="removeAnnotationFromModal()" class="px-3 py-1.5 bg-rose-600/20 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-semibold">Remove Annotation</button>
-        <div class="flex gap-2"><button onclick="closeAnnotationModal()" class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button onclick="saveAnnotationFromModal()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold">Save</button></div>
+        <button onclick="removeAnnotationFromModal()"
+          class="px-3 py-1.5 bg-rose-600/20 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-semibold">Remove
+          Annotation</button>
+        <div class="flex gap-2"><button onclick="closeAnnotationModal()"
+            class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button
+            onclick="saveAnnotationFromModal()"
+            class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold">Save</button></div>
       </div>
     </div>
   </div>
 
   <!-- 4: Table Modal -->
-  <div id="table-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="table-modal"
+    class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-700"><h3 class="text-sm font-bold text-white">Insert Table</h3><button onclick="closeTableModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button></div>
-      <div class="space-y-3 text-xs">
-        <div><label class="block text-slate-300 font-semibold mb-1">Rows</label><input type="number" id="table-rows-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></div>
-        <div><label class="block text-slate-300 font-semibold mb-1">Columns</label><input type="number" id="table-cols-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></div>
-        <div class="flex items-center gap-2 pt-1"><input type="checkbox" id="table-header-check" checked class="w-4 h-4 bg-slate-900 border-slate-700"><label for="table-header-check" class="text-slate-300">Include Header Row</label></div>
+      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+        <h3 class="text-sm font-bold text-white">Insert Table</h3><button onclick="closeTableModal()"
+          class="text-slate-400 hover:text-white text-lg font-bold">×</button>
       </div>
-      <div class="flex justify-end gap-2 pt-2"><button onclick="closeTableModal()" class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button onclick="confirmInsertTable()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold">Insert</button></div>
+      <div class="space-y-3 text-xs">
+        <div><label class="block text-slate-300 font-semibold mb-1">Rows</label><input type="number"
+            id="table-rows-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+        </div>
+        <div><label class="block text-slate-300 font-semibold mb-1">Columns</label><input type="number"
+            id="table-cols-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+        </div>
+        <div class="flex items-center gap-2 pt-1"><input type="checkbox" id="table-header-check" checked
+            class="w-4 h-4 bg-slate-900 border-slate-700"><label for="table-header-check" class="text-slate-300">Include
+            Header Row</label></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2"><button onclick="closeTableModal()"
+          class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button
+          onclick="confirmInsertTable()"
+          class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold">Insert</button></div>
     </div>
   </div>
 
   <!-- 5: Entries Library (Google Drive Sync) -->
-  <div id="entries-library-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="entries-library-modal"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-3xl w-full h-[80vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <div>
@@ -280,7 +602,8 @@
         <button onclick="closeEntriesLibrary()" class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
       </div>
       <div class="p-4 border-b border-slate-700 bg-slate-900/50">
-        <input type="text" id="library-search" oninput="filterLibraryEntries()" placeholder="Search entries..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:border-indigo-500 outline-none">
+        <input type="text" id="library-search" oninput="filterLibraryEntries()" placeholder="Search entries..."
+          class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:border-indigo-500 outline-none">
       </div>
       <div class="flex-1 overflow-y-auto p-4 space-y-2" id="library-entries-list">
         <div class="text-center py-10 text-slate-500 text-sm">Please connect Google Drive to view entries.</div>
@@ -289,15 +612,20 @@
   </div>
 
   <!-- 6: Master Rules Manager -->
-  <div id="rules-manager-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="rules-manager-modal"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <h3 class="text-base font-bold text-white">Master Rules Database</h3>
-        <button onclick="closeRulesManager()" class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
+        <button onclick="closeRulesManager()"
+          class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
       </div>
       <div class="flex border-b border-slate-700 bg-slate-900/50">
-        <button id="tab-rule-pron" onclick="switchRulesTab('pron')" class="flex-1 py-3 text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 bg-slate-800/50 transition">Pronunciation</button>
-        <button id="tab-rule-var" onclick="switchRulesTab('var')" class="flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent transition">Lexical Variant</button>
+        <button id="tab-rule-pron" onclick="switchRulesTab('pron')"
+          class="flex-1 py-3 text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 bg-slate-800/50 transition">Pronunciation</button>
+        <button id="tab-rule-var" onclick="switchRulesTab('var')"
+          class="flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent transition">Lexical
+          Variant</button>
       </div>
 
       <!-- Add New Rule Section -->
@@ -305,63 +633,89 @@
         <div id="add-rule-form-pron" class="space-y-2">
           <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Add New Pronunciation Rule</div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input type="text" id="mgr-new-pron-target" placeholder="Target Word (e.g. mình)" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-indigo-500">
-            <input type="text" id="mgr-new-pron-ipa" data-ipa-input="true" placeholder="Quasi-IPA (e.g. ᵶɪŋ)" oninput="updateMgrPronPreview()" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-indigo-300 font-mono outline-none focus:border-indigo-500">
-            <div id="mgr-pron-preview" class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-indigo-300 font-mono italic flex items-center">Preview: —</div>
+            <input type="text" id="mgr-new-pron-target" placeholder="Target Word (e.g. mình)"
+              class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-indigo-500">
+            <input type="text" id="mgr-new-pron-ipa" data-ipa-input="true" placeholder="Quasi-IPA (e.g. ᵶɪŋ)"
+              oninput="updateMgrPronPreview()"
+              class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-indigo-300 font-mono outline-none focus:border-indigo-500">
+            <div id="mgr-pron-preview"
+              class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-indigo-300 font-mono italic flex items-center">
+              Preview: —</div>
           </div>
           <div class="flex justify-end">
-            <button onclick="addMgrPronRule()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow">+ Add Pronunciation Rule</button>
+            <button onclick="addMgrPronRule()"
+              class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow">+
+              Add Pronunciation Rule</button>
           </div>
         </div>
 
         <div id="add-rule-form-var" class="space-y-2 hidden">
           <div class="text-xs font-bold text-amber-400 uppercase tracking-wider">Add New Lexical Variant Rule</div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <input type="text" id="mgr-new-var-find" placeholder="Main Word (e.g. bào)" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-amber-500">
-            <input type="text" id="mgr-new-var-variants" placeholder="Variants (e.g. bào, vỏ)" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-amber-300 font-mono outline-none focus:border-amber-500">
+            <input type="text" id="mgr-new-var-find" placeholder="Main Word (e.g. bào)"
+              class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-amber-500">
+            <input type="text" id="mgr-new-var-variants" placeholder="Variants (e.g. bào, vỏ)"
+              class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-amber-300 font-mono outline-none focus:border-amber-500">
           </div>
           <div class="flex justify-end">
-            <button onclick="addMgrVarRule()" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow">+ Add Variant Rule</button>
+            <button onclick="addMgrVarRule()"
+              class="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow">+
+              Add Variant Rule</button>
           </div>
         </div>
       </div>
 
-      <div class="p-4 border-b border-slate-700"><input type="text" id="rules-search" oninput="filterRulesManager()" placeholder="Search existing rules..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white outline-none focus:border-indigo-500"></div>
+      <div class="p-4 border-b border-slate-700"><input type="text" id="rules-search" oninput="filterRulesManager()"
+          placeholder="Search existing rules..."
+          class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white outline-none focus:border-indigo-500">
+      </div>
       <div class="flex-1 overflow-y-auto p-4" id="rules-manager-list"></div>
     </div>
   </div>
 
   <!-- 7: Rule Suggestion/Browse -->
-  <div id="rule-selector-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl">
+  <div id="rule-selector-modal"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div
+      class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <h3 id="rule-selector-title" class="text-base font-bold text-white">Suggested Rules</h3>
         <button onclick="closeRuleSelector()" class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
       </div>
       <div class="p-4 border-b border-slate-700 bg-slate-900/50 hidden" id="rule-selector-search-container">
-        <input type="text" id="rule-selector-search" oninput="filterRuleSelector()" placeholder="Search rules..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white outline-none">
+        <input type="text" id="rule-selector-search" oninput="filterRuleSelector()" placeholder="Search rules..."
+          class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white outline-none">
       </div>
       <div class="flex-1 overflow-y-auto p-4 space-y-2" id="rule-selector-list"></div>
     </div>
   </div>
 
   <!-- 8: Confirm Delete Rule -->
-  <div id="confirm-delete-rule-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="confirm-delete-rule-modal"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between pb-2 border-b border-slate-700"><h3 class="text-sm font-bold text-white">Delete Rule</h3><button onclick="closeConfirmDeleteRuleModal()" class="text-slate-400">×</button></div>
+      <div class="flex justify-between pb-2 border-b border-slate-700">
+        <h3 class="text-sm font-bold text-white">Delete Rule</h3><button onclick="closeConfirmDeleteRuleModal()"
+          class="text-slate-400">×</button>
+      </div>
       <p id="confirm-delete-rule-text" class="text-xs text-slate-300"></p>
-      <div class="flex justify-end gap-2 pt-2"><button onclick="closeConfirmDeleteRuleModal()" class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button id="confirm-delete-rule-btn" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs">Delete</button></div>
+      <div class="flex justify-end gap-2 pt-2"><button onclick="closeConfirmDeleteRuleModal()"
+          class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button
+          id="confirm-delete-rule-btn" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs">Delete</button>
+      </div>
     </div>
   </div>
 
   <!-- 9: Google Drive Auth Error / Troubleshooting Modal -->
-  <div id="drive-auth-error-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="drive-auth-error-modal"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-700">
         <h3 class="text-base font-bold text-rose-400 flex items-center gap-2">
           <span>⚠️</span> Drive Connection Troubleshooting
         </h3>
-        <button onclick="closeDriveAuthErrorModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+        <button onclick="closeDriveAuthErrorModal()"
+          class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
       </div>
 
       <div class="space-y-3 text-xs text-slate-300">
@@ -373,72 +727,99 @@
         <div class="space-y-2">
           <p class="font-semibold text-white">To fix this in your Google Cloud Console:</p>
           <ol class="list-decimal list-inside space-y-1.5 text-slate-300 leading-relaxed pl-1">
-            <li>Open <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="text-indigo-400 underline font-semibold">Google Cloud Console Credentials</a>.</li>
+            <li>Open <a href="https://console.cloud.google.com/apis/credentials" target="_blank"
+                class="text-indigo-400 underline font-semibold">Google Cloud Console Credentials</a>.</li>
             <li>Click your Web Application Client ID.</li>
             <li>Under <strong>Authorized JavaScript origins</strong>, ensure this exact URL is added:
               <div class="mt-1 flex items-center gap-1.5">
-                <input type="text" id="drive-current-origin" readonly class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-indigo-300 font-mono text-[11px]">
-                <button onclick="copyCurrentOrigin()" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded font-medium shrink-0">Copy</button>
+                <input type="text" id="drive-current-origin" readonly
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-indigo-300 font-mono text-[11px]">
+                <button onclick="copyCurrentOrigin()"
+                  class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded font-medium shrink-0">Copy</button>
               </div>
             </li>
-            <li>Under <strong>OAuth consent screen</strong> &rarr; <strong>Test users</strong>, make sure your Google email address is added.</li>
+            <li>Under <strong>OAuth consent screen</strong> &rarr; <strong>Test users</strong>, make sure your Google
+              email address is added.</li>
           </ol>
         </div>
 
         <div class="border-t border-slate-700/80 pt-3 space-y-2">
           <p class="font-semibold text-slate-200">Option 2: Paste Access Token Manually</p>
-          <p class="text-slate-400 text-[11px]">If pop-up authorization is blocked by browser restrictions, paste a valid Access Token here:</p>
+          <p class="text-slate-400 text-[11px]">If pop-up authorization is blocked by browser restrictions, paste a
+            valid Access Token here:</p>
           <div class="flex gap-2">
-            <input type="text" id="manual-access-token-input" placeholder="ya29.a0A..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono outline-none focus:border-indigo-500">
-            <button onclick="applyManualAccessToken()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-semibold text-xs shrink-0">Use Token</button>
+            <input type="text" id="manual-access-token-input" placeholder="ya29.a0A..."
+              class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono outline-none focus:border-indigo-500">
+            <button onclick="applyManualAccessToken()"
+              class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-semibold text-xs shrink-0">Use
+              Token</button>
           </div>
         </div>
       </div>
 
       <div class="flex justify-end pt-2">
-        <button onclick="closeDriveAuthErrorModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold">Close</button>
+        <button onclick="closeDriveAuthErrorModal()"
+          class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold">Close</button>
       </div>
     </div>
   </div>
 
   <!-- Header Navigation -->
-  <header class="bg-slate-800/90 border-b border-slate-700/80 sticky top-0 z-40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 backdrop-blur shadow-md">
+  <header
+    class="bg-slate-800/90 border-b border-slate-700/80 sticky top-0 z-40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 backdrop-blur shadow-md">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+      <div
+        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+          </path>
+        </svg>
       </div>
-      <div><h1 class="text-base font-bold tracking-tight text-white">English–Vietnamese Medical Dictionary</h1></div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-white">English–Vietnamese Medical Dictionary</h1>
+      </div>
     </div>
 
     <!-- Right Controls -->
     <div class="flex items-center gap-2 flex-wrap">
-      <button onclick="openEntriesLibrary()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-indigo-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-indigo-500/30">Entries Library</button>
-      <button onclick="openRulesManager()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">Manage Rules DB</button>
-      
+      <button onclick="openEntriesLibrary()"
+        class="text-xs bg-slate-700/60 hover:bg-slate-700 text-indigo-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-indigo-500/30">Entries
+        Library</button>
+      <button onclick="openRulesManager()"
+        class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">Manage
+        Rules DB</button>
+
       <!-- Google Drive Auth Button -->
-      <button type="button" id="drive-auth-btn" onclick="handleDriveAuthClick(event)" class="text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium">
+      <button type="button" id="drive-auth-btn" onclick="handleDriveAuthClick(event)"
+        class="text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium">
         <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
           <mask id="drive-logo-mask" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
-            <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+            <path fill="#fff"
+              d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z" />
           </mask>
           <g mask="url(#drive-logo-mask)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
-            <path fill="url(#drive-logo-b)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
-            <path fill="url(#drive-logo-c)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
-            <path fill="url(#drive-logo-d)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+            <path fill="url(#drive-logo-b)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z" />
+            <path fill="url(#drive-logo-c)"
+              d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z" />
+            <path fill="url(#drive-logo-d)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z" />
           </g>
           <defs>
-            <linearGradient id="drive-logo-b" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
-              <stop offset=".09" stop-color="#ffe921"/>
-              <stop offset="1" stop-color="#fec700"/>
+            <linearGradient id="drive-logo-b" x1="193.6" x2="103.09" y1="165.6" y2="111.21"
+              gradientUnits="userSpaceOnUse">
+              <stop offset=".09" stop-color="#ffe921" />
+              <stop offset="1" stop-color="#fec700" />
             </linearGradient>
-            <linearGradient id="drive-logo-c" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
-              <stop offset=".15" stop-color="#a9a8ff"/>
-              <stop offset=".33" stop-color="#6d97ff"/>
-              <stop offset=".48" stop-color="#3186ff"/>
+            <linearGradient id="drive-logo-c" x1="114.4" x2="15.53" y1="181.61" y2="121.8"
+              gradientUnits="userSpaceOnUse">
+              <stop offset=".15" stop-color="#a9a8ff" />
+              <stop offset=".33" stop-color="#6d97ff" />
+              <stop offset=".48" stop-color="#3186ff" />
             </linearGradient>
-            <linearGradient id="drive-logo-d" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
-              <stop offset=".55" stop-color="#0ebc5f"/>
-              <stop offset=".85" stop-color="#78c9ff"/>
+            <linearGradient id="drive-logo-d" x1="128.88" x2="28.7" y1="37.88" y2="84.64"
+              gradientUnits="userSpaceOnUse">
+              <stop offset=".55" stop-color="#0ebc5f" />
+              <stop offset=".85" stop-color="#78c9ff" />
             </linearGradient>
           </defs>
         </svg>
@@ -447,34 +828,48 @@
 
       <div class="w-px h-6 bg-slate-700 mx-1"></div>
 
-      <button onclick="saveEntryToDrive()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">Save JSON</button>
-      <button onclick="attemptResetToBlankState()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5">Clear</button>
-      <button onclick="copyHTMLForPublii()" class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg active:scale-95">Copy HTML</button>
+      <button onclick="saveEntryToDrive()"
+        class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">Save
+        JSON</button>
+      <button onclick="attemptResetToBlankState()"
+        class="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5">Clear</button>
+      <button onclick="copyHTMLForPublii()"
+        class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg active:scale-95">Copy
+        HTML</button>
     </div>
   </header>
 
   <!-- Toast -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 bg-emerald-600 text-white font-medium text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 pointer-events-none translate-y-20 opacity-0">
+  <div id="toast"
+    class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 bg-emerald-600 text-white font-medium text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 pointer-events-none translate-y-20 opacity-0">
     <span id="toast-msg">Action Completed</span>
   </div>
 
   <!-- Main Layout -->
   <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
-    
+
     <!-- LEFT PANEL -->
-    <div class="lg:col-span-6 bg-slate-900 border-r border-slate-800 flex flex-col h-[calc(100vh-61px)] overflow-hidden">
+    <div
+      class="lg:col-span-6 bg-slate-900 border-r border-slate-800 flex flex-col h-[calc(100vh-61px)] overflow-hidden">
       <!-- Tabs Header -->
-      <div class="bg-slate-800/80 border-b border-slate-700/80 px-4 h-12 flex items-center justify-between gap-2 overflow-x-auto">
+      <div
+        class="bg-slate-800/80 border-b border-slate-700/80 px-4 h-12 flex items-center justify-between gap-2 overflow-x-auto">
         <div class="flex items-center gap-1">
-          <button id="tab-btn-form" onclick="switchTab('form')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm">Form Editor</button>
-          <button id="tab-btn-code" onclick="switchTab('code')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200">Raw HTML</button>
-          <button id="tab-btn-import" onclick="switchTab('import')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200">HTML Import</button>
+          <button id="tab-btn-form" onclick="switchTab('form')"
+            class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm">Form
+            Editor</button>
+          <button id="tab-btn-code" onclick="switchTab('code')"
+            class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200">Raw
+            HTML</button>
+          <button id="tab-btn-import" onclick="switchTab('import')"
+            class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200">HTML
+            Import</button>
         </div>
       </div>
 
       <!-- Tab Contents -->
       <div class="flex-1 overflow-y-auto p-4 space-y-6">
-        
+
         <!-- Form Builder -->
         <div id="tab-content-form" class="space-y-6">
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
@@ -483,71 +878,106 @@
               <div>
                 <div class="flex items-center justify-between mb-1">
                   <label class="block text-xs font-semibold text-slate-300">English Headword</label>
-                  <button onclick="searchUMLS()" class="text-[10px] bg-sky-600/20 text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded hover:bg-sky-600/40 transition">Search UMLS</button>
+                  <button onclick="searchUMLS()"
+                    class="text-[10px] bg-sky-600/20 text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded hover:bg-sky-600/40 transition">Search
+                    UMLS</button>
                 </div>
-                <input type="text" id="post-title" oninput="updateStateFromForm()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500 font-medium">
+                <input type="text" id="post-title" oninput="updateStateFromForm()"
+                  class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500 font-medium">
               </div>
               <div>
                 <div class="flex items-center justify-between mb-1">
                   <label class="block text-xs font-semibold text-slate-300">Alternative English Terms</label>
                   <div class="flex gap-1 text-[11px]">
-                    <button onclick="formatAltEnglishText('bold')" class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-bold text-slate-300">B</button>
-                    <button onclick="formatAltEnglishText('italic')" class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded italic text-slate-300">I</button>
-                    <button onclick="formatAltEnglishText('underline')" class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded underline text-slate-300">U</button>
-                    <button onclick="formatAltEnglishText('superscript')" class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">x²</button>
-                    <button onclick="formatAltEnglishText('subscript')" class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">x₂</button>
+                    <button onclick="formatAltEnglishText('bold')"
+                      class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-bold text-slate-300">B</button>
+                    <button onclick="formatAltEnglishText('italic')"
+                      class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded italic text-slate-300">I</button>
+                    <button onclick="formatAltEnglishText('underline')"
+                      class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded underline text-slate-300">U</button>
+                    <button onclick="formatAltEnglishText('superscript')"
+                      class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">x²</button>
+                    <button onclick="formatAltEnglishText('subscript')"
+                      class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">x₂</button>
                   </div>
                 </div>
-                <div id="alt-english-terms" contenteditable="true" oninput="onAltEnglishTermsInput()" class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 min-h-[44px] text-xs text-slate-200 outline-none focus:border-rose-500 whitespace-pre-wrap"></div>
+                <div id="alt-english-terms" contenteditable="true" oninput="onAltEnglishTermsInput()"
+                  class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 min-h-[44px] text-xs text-slate-200 outline-none focus:border-rose-500 whitespace-pre-wrap">
+                </div>
               </div>
             </div>
           </div>
 
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
-            <div class="flex justify-between"><h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Global Pronunciation</h3>
+            <div class="flex justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Global Pronunciation</h3>
               <div class="flex gap-2">
-                <button onclick="openRuleSuggest('pron')" class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">Suggest</button>
-                <button onclick="openRuleBrowse('pron')" class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">Browse</button>
-                <button onclick="addGlobalPronunciationRule()" class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-lg">+ Add Rule</button>
+                <button onclick="openRuleSuggest('pron')"
+                  class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">Suggest</button>
+                <button onclick="openRuleBrowse('pron')"
+                  class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">Browse</button>
+                <button onclick="addGlobalPronunciationRule()"
+                  class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-lg">+ Add Rule</button>
               </div>
             </div>
             <div id="global-pron-rules-container" class="space-y-2"></div>
           </div>
 
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
-            <div class="flex justify-between"><h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Global Lexical Variant</h3>
+            <div class="flex justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Global Lexical Variant</h3>
               <div class="flex gap-2">
-                <button onclick="openRuleSuggest('var')" class="text-xs bg-amber-600/20 text-amber-300 border border-amber-500/30 px-2 py-1 rounded-lg">Suggest</button>
-                <button onclick="openRuleBrowse('var')" class="text-xs bg-amber-600/20 text-amber-300 border border-amber-500/30 px-2 py-1 rounded-lg">Browse</button>
-                <button onclick="addGlobalVariantRule()" class="text-xs bg-amber-600 text-white px-2.5 py-1 rounded-lg">+ Add Rule</button>
+                <button onclick="openRuleSuggest('var')"
+                  class="text-xs bg-amber-600/20 text-amber-300 border border-amber-500/30 px-2 py-1 rounded-lg">Suggest</button>
+                <button onclick="openRuleBrowse('var')"
+                  class="text-xs bg-amber-600/20 text-amber-300 border border-amber-500/30 px-2 py-1 rounded-lg">Browse</button>
+                <button onclick="addGlobalVariantRule()"
+                  class="text-xs bg-amber-600 text-white px-2.5 py-1 rounded-lg">+ Add Rule</button>
               </div>
             </div>
             <div id="global-rules-container" class="space-y-2"></div>
           </div>
 
           <div class="space-y-3">
-            <div class="flex justify-between"><h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Terms & Headwords</h3><button onclick="addNewTerm()" class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg">+ Add Term</button></div>
+            <div class="flex justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Terms & Headwords</h3><button
+                onclick="addNewTerm()"
+                class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg">+
+                Add Term</button>
+            </div>
             <div id="terms-container" class="space-y-4"></div>
           </div>
 
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-4">
-            <div class="flex justify-between"><h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">References</h3><button onclick="addReferenceItem()" class="text-xs bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg">+ Add Reference</button></div>
+            <div class="flex justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">References</h3><button
+                onclick="addReferenceItem()"
+                class="text-xs bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg">+
+                Add Reference</button>
+            </div>
             <div id="references-list" class="space-y-4"></div>
           </div>
         </div>
 
         <!-- Raw HTML -->
         <div id="tab-content-code" class="space-y-3 h-full flex flex-col hidden">
-          <div class="flex justify-between text-xs text-slate-400"><span>Direct Entry HTML</span><button onclick="parseCodeBackToForm()" class="text-rose-400 font-medium">Parse Code To Form</button></div>
-          <textarea id="raw-html-editor" oninput="handleManualCodeEdit()" class="w-full flex-1 bg-slate-950 text-rose-300 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:outline-none focus:border-rose-500/80 resize-none shadow-inner" spellcheck="false"></textarea>
+          <div class="flex justify-between text-xs text-slate-400"><span>Direct Entry HTML</span><button
+              onclick="parseCodeBackToForm()" class="text-rose-400 font-medium">Parse Code To Form</button></div>
+          <textarea id="raw-html-editor" oninput="handleManualCodeEdit()"
+            class="w-full flex-1 bg-slate-950 text-rose-300 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:outline-none focus:border-rose-500/80 resize-none shadow-inner"
+            spellcheck="false"></textarea>
         </div>
 
         <!-- Import -->
         <div id="tab-content-import" class="space-y-4 hidden">
           <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 space-y-3">
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Paste HTML</h3>
-            <textarea id="import-html-input" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none" placeholder="Paste entry HTML here..."></textarea>
-            <button onclick="runImportHTML()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse &amp; Populate Form</button>
+            <textarea id="import-html-input" rows="12"
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none"
+              placeholder="Paste entry HTML here..."></textarea>
+            <button onclick="runImportHTML()"
+              class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse
+              &amp; Populate Form</button>
           </div>
         </div>
       </div>
@@ -556,12 +986,18 @@
     <!-- RIGHT PANEL -->
     <div class="lg:col-span-6 bg-slate-950 flex flex-col h-[calc(100vh-61px)] overflow-hidden">
       <div class="bg-slate-800/80 border-b border-slate-700/80 px-4 h-12 flex items-center justify-end">
-        <button onclick="togglePreviewTheme()" class="bg-slate-900 border border-slate-700 text-xs px-2.5 py-1 rounded-lg text-slate-300 hover:text-white flex items-center gap-1.5"><span id="theme-btn-text">Light Theme</span></button>
+        <button onclick="togglePreviewTheme()"
+          class="bg-slate-900 border border-slate-700 text-xs px-2.5 py-1 rounded-lg text-slate-300 hover:text-white flex items-center gap-1.5"><span
+            id="theme-btn-text">Light Theme</span></button>
       </div>
       <div class="flex-1 bg-slate-900/50 p-4 sm:p-6 overflow-y-auto flex justify-center items-start">
-        <div id="preview-viewport-container" class="w-full max-w-2xl rounded-xl shadow-2xl border border-slate-200/20 overflow-hidden bg-white">
+        <div id="preview-viewport-container"
+          class="w-full max-w-2xl rounded-xl shadow-2xl border border-slate-200/20 overflow-hidden bg-white">
           <div class="p-6 sm:p-8">
-            <div class="border-b border-slate-200/80 pb-3 mb-4"><h1 id="preview-post-title" class="preview-post-title text-3xl font-bold font-publiiHeading text-slate-900">Entry Title</h1></div>
+            <div class="border-b border-slate-200/80 pb-3 mb-4">
+              <h1 id="preview-post-title"
+                class="preview-post-title text-3xl font-bold font-publiiHeading text-slate-900">Entry Title</h1>
+            </div>
             <div id="publii-live-output" class="publii-render-frame"></div>
           </div>
         </div>
@@ -585,58 +1021,58 @@
     let hasUnsavedChanges = false;
     let draggedTermIndex = null;
 
-    function markDirty() { hasUnsavedChanges = true; }
-    function markClean() { hasUnsavedChanges = false; }
-    
+    function markDirty() {hasUnsavedChanges = true;}
+    function markClean() {hasUnsavedChanges = false;}
 
 
-// Helper to check if entry has any content
-function isEntryEmpty(data = entryData) {
-  if (!data) return true;
 
-  // Helper to extract clean plain text from HTML strings
-  const getText = (html) => {
-    if (!html) return '';
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
-    return (temp.textContent || temp.innerText || '').trim();
-  };
+    // Helper to check if entry has any content
+    function isEntryEmpty(data = entryData) {
+      if (!data) return true;
 
-  const hasTitle = Boolean(data.postTitle && data.postTitle.trim());
-  const hasAlt = Boolean(getText(data.altEnglishTerms));
-  const hasGlobalPron = Boolean(data.globalPronunciationRules && data.globalPronunciationRules.length > 0);
-  const hasGlobalVar = Boolean(data.globalVariantRules && data.globalVariantRules.length > 0);
+      // Helper to extract clean plain text from HTML strings
+      const getText = (html) => {
+        if (!html) return '';
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        return (temp.textContent || temp.innerText || '').trim();
+      };
 
-  const hasTerms = (data.terms || []).some(t => {
-    const hwText = getText(t.headwordHTML);
-    const commText = getText(t.commentsHTML);
-    const hasLabels = (t.labels && t.labels.length > 0) || (t.customLabels && t.customLabels.length > 0);
-    return hwText || commText || hasLabels;
-  });
+      const hasTitle = Boolean(data.postTitle && data.postTitle.trim());
+      const hasAlt = Boolean(getText(data.altEnglishTerms));
+      const hasGlobalPron = Boolean(data.globalPronunciationRules && data.globalPronunciationRules.length > 0);
+      const hasGlobalVar = Boolean(data.globalVariantRules && data.globalVariantRules.length > 0);
 
-  const hasRefs = (data.references || []).some(r => {
-    return (r.authors && r.authors.trim()) || 
-           (r.title && r.title.trim()) || 
-           (r.pages && r.pages.trim()) || 
-           getText(r.quoteHTML);
-  });
+      const hasTerms = (data.terms || []).some(t => {
+        const hwText = getText(t.headwordHTML);
+        const commText = getText(t.commentsHTML);
+        const hasLabels = (t.labels && t.labels.length > 0) || (t.customLabels && t.customLabels.length > 0);
+        return hwText || commText || hasLabels;
+      });
 
-  return !(hasTitle || hasAlt || hasGlobalPron || hasGlobalVar || hasTerms || hasRefs);
-}
+      const hasRefs = (data.references || []).some(r => {
+        return (r.authors && r.authors.trim()) ||
+          (r.title && r.title.trim()) ||
+          (r.pages && r.pages.trim()) ||
+          getText(r.quoteHTML);
+      });
+
+      return !(hasTitle || hasAlt || hasGlobalPron || hasGlobalVar || hasTerms || hasRefs);
+    }
 
     // Guard against closing tab when unsaved (only if entry has actual content)
-window.addEventListener('beforeunload', (e) => {
-  if (hasUnsavedChanges && !isEntryEmpty()) { 
-    e.preventDefault(); 
-    e.returnValue = ''; 
-  }
-});
-    
-    function hideInitialOverlay() { const el = document.getElementById('initial-login-overlay'); if (el) el.classList.add('hidden'); }
-    function showInitialOverlay() { const el = document.getElementById('initial-login-overlay'); if (el) el.classList.remove('hidden'); }
+    window.addEventListener('beforeunload', (e) => {
+      if (hasUnsavedChanges && !isEntryEmpty()) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    function hideInitialOverlay() {const el = document.getElementById('initial-login-overlay'); if (el) el.classList.add('hidden');}
+    function showInitialOverlay() {const el = document.getElementById('initial-login-overlay'); if (el) el.classList.remove('hidden');}
 
     // Bind initialization hooks to window
-    window.onload = async function() {
+    window.onload = async function () {
       initIPAPalette();
       await initDB();
       await loadDraft();
@@ -650,10 +1086,10 @@ window.addEventListener('beforeunload', (e) => {
       const urlError = params.get('error');
 
       if (urlError) {
-          showDriveAuthErrorModal("redirect_error", "Google returned an error: " + urlError);
-          window.history.replaceState(null, null, window.location.pathname);
-          showInitialOverlay();
-          return;
+        showDriveAuthErrorModal("redirect_error", "Google returned an error: " + urlError);
+        window.history.replaceState(null, null, window.location.pathname);
+        showInitialOverlay();
+        return;
       }
 
       if (urlAccessToken) {
@@ -661,13 +1097,13 @@ window.addEventListener('beforeunload', (e) => {
         accessToken = urlAccessToken;
         const expiresIn = (parseInt(urlExpiresIn, 10) || 3600) * 1000;
         tokenExpiry = Date.now() + expiresIn - 60000;
-        
+
         localStorage.setItem('gdrive_access_token', accessToken);
         localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
-        
+
         // Clean up the URL so the access token is hidden
         window.history.replaceState(null, null, window.location.pathname);
-        
+
         showToast("Google Drive Connected!");
         await verifyAndInitDrive();
       } else {
@@ -679,7 +1115,7 @@ window.addEventListener('beforeunload', (e) => {
     async function verifyAndInitDrive() {
       try {
         const res = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
-          headers: { 'Authorization': `Bearer ${accessToken}` }
+          headers: {'Authorization': `Bearer ${accessToken}`}
         });
         if (res.ok) {
           setDriveConnectedUI(true);
@@ -690,8 +1126,8 @@ window.addEventListener('beforeunload', (e) => {
           }
           return true;
         }
-      } catch(e) { console.warn("Drive token validation failed:", e); }
-      
+      } catch (e) {console.warn("Drive token validation failed:", e);}
+
       clearSavedDriveToken();
       return false;
     }
@@ -788,7 +1224,7 @@ window.addEventListener('beforeunload', (e) => {
         <span>Connect Drive</span>
       `;
       btn.className = 'text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium';
-      
+
       const initBtn = document.getElementById('initial-drive-auth-btn');
       if (initBtn) {
         initBtn.disabled = false;
@@ -830,7 +1266,7 @@ window.addEventListener('beforeunload', (e) => {
 
     function handleDriveAuthClick(e) {
       if (e) e.preventDefault();
-      
+
       if (isDriveConnected) {
         if (confirm("Google Drive is currently connected. Click OK to re-authorize or switch account, or Cancel to keep existing connection.")) {
           clearSavedDriveToken();
@@ -857,7 +1293,7 @@ window.addEventListener('beforeunload', (e) => {
       const modal = document.getElementById('drive-auth-error-modal');
       const msgEl = document.getElementById('drive-error-msg');
       const originEl = document.getElementById('drive-current-origin');
-      
+
       if (msgEl) msgEl.textContent = `[${errCode}] ${errDetail || ''}`;
       if (originEl) originEl.value = window.location.origin;
       if (modal) modal.classList.remove('hidden');
@@ -880,7 +1316,7 @@ window.addEventListener('beforeunload', (e) => {
     async function applyManualAccessToken() {
       const tokenInp = document.getElementById('manual-access-token-input');
       const token = tokenInp ? tokenInp.value.trim() : '';
-      if (!token) { showToast("Please paste an access token."); return; }
+      if (!token) {showToast("Please paste an access token."); return;}
 
       accessToken = token;
       tokenExpiry = Date.now() + 3600 * 1000;
@@ -924,15 +1360,15 @@ window.addEventListener('beforeunload', (e) => {
         } else {
           const createRes = await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name: FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder'})
           });
           const createData = await createRes.json();
           driveFolderId = createData.id;
         }
         const statusEl = document.getElementById('library-folder-status');
         if (statusEl) statusEl.textContent = `Connected: ${FOLDER_NAME}`;
-      } catch (e) { console.error("Error creating/finding folder", e); }
+      } catch (e) {console.error("Error creating/finding folder", e);}
     }
 
     async function uploadJsonToDrive(fileName, content) {
@@ -942,8 +1378,8 @@ window.addEventListener('beforeunload', (e) => {
         const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`);
         const searchData = await searchRes.json();
         const existingFileId = searchData.files && searchData.files.length > 0 ? searchData.files[0].id : null;
-        
-        const fileMetadata = { name: fileName, parents: existingFileId ? [] : [driveFolderId] };
+
+        const fileMetadata = {name: fileName, parents: existingFileId ? [] : [driveFolderId]};
         const boundary = '-------314159265358979323846';
         const delimiter = "\r\n--" + boundary + "\r\n";
         const close_delim = "\r\n--" + boundary + "--";
@@ -957,10 +1393,10 @@ window.addEventListener('beforeunload', (e) => {
 
         await driveFetch(url, {
           method: existingFileId ? 'PATCH' : 'POST',
-          headers: { 'Content-Type': `multipart/related; boundary="${boundary}"` },
+          headers: {'Content-Type': `multipart/related; boundary="${boundary}"`},
           body: multipartRequestBody
         });
-      } catch (e) { console.error("Upload failed", e); }
+      } catch (e) {console.error("Upload failed", e);}
     }
 
     async function readJsonFromDrive(fileName) {
@@ -974,7 +1410,7 @@ window.addEventListener('beforeunload', (e) => {
           const getRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
           return await getRes.json();
         }
-      } catch (e) { console.error("Read failed", e); }
+      } catch (e) {console.error("Read failed", e);}
       return null;
     }
 
@@ -1003,7 +1439,7 @@ window.addEventListener('beforeunload', (e) => {
           const tx = db.transaction('variant_rules', 'readwrite');
           vRules.forEach(r => tx.objectStore('variant_rules').put(r));
         }
-        
+
         await syncRulesToDrive();
       } catch (e) {
         console.error("Failed to sync rules from drive", e);
@@ -1011,7 +1447,7 @@ window.addEventListener('beforeunload', (e) => {
     }
 
     async function saveEntryToDrive() {
-      if (!isDriveConnected) { showToast("Please 'Connect Drive' first!"); return; }
+      if (!isDriveConnected) {showToast("Please 'Connect Drive' first!"); return;}
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
       const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
       showToast("Saving to Drive...");
@@ -1031,7 +1467,7 @@ window.addEventListener('beforeunload', (e) => {
         const q = encodeURIComponent(`'${driveFolderId}' in parents and mimeType='application/json' and trashed=false`);
         const listRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
         const data = await listRes.json();
-        
+
         if (!data.files || data.files.length === 0) {
           list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Drive folder yet.</p>`;
           return;
@@ -1046,13 +1482,13 @@ window.addEventListener('beforeunload', (e) => {
             const vnTerms = (content.terms || []).map(t => {
               const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
             }).join(' ');
-            libraryEntriesCache.push({ name: file.name, fileId: file.id, data: content, searchStr: `${enTitle} ${altEn} ${vnTerms}`.toLowerCase() });
+            libraryEntriesCache.push({name: file.name, fileId: file.id, data: content, searchStr: `${enTitle} ${altEn} ${vnTerms}`.toLowerCase()});
           }
         }
         filterLibraryEntries();
-      } catch (e) { 
+      } catch (e) {
         console.error(e);
-        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Drive folder: ${e.message}</p>`; 
+        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Drive folder: ${e.message}</p>`;
       }
     }
 
@@ -1082,7 +1518,7 @@ window.addEventListener('beforeunload', (e) => {
     function getBlankEntry() {
       return {
         postTitle: "", altEnglishTerms: "", globalVariantRules: [], globalPronunciationRules: [],
-        terms: [{ id: "term-" + Date.now(), headwordHTML: "", labels: [], customLabels: [], commentsHTML: "" }],
+        terms: [{id: "term-" + Date.now(), headwordHTML: "", labels: [], customLabels: [], commentsHTML: ""}],
         references: []
       };
     }
@@ -1100,12 +1536,12 @@ window.addEventListener('beforeunload', (e) => {
         const req = indexedDB.open('DictStudioDB', 1);
         req.onupgradeneeded = (e) => {
           const database = e.target.result;
-          if (!database.objectStoreNames.contains('active_draft')) database.createObjectStore('active_draft', { keyPath: 'id' });
-          if (!database.objectStoreNames.contains('pronunciation_rules')) database.createObjectStore('pronunciation_rules', { keyPath: 'id' }).createIndex('target', 'target', { unique: false });
-          if (!database.objectStoreNames.contains('variant_rules')) database.createObjectStore('variant_rules', { keyPath: 'id' }).createIndex('find', 'find', { unique: false });
-          if (!database.objectStoreNames.contains('config')) database.createObjectStore('config', { keyPath: 'id' });
+          if (!database.objectStoreNames.contains('active_draft')) database.createObjectStore('active_draft', {keyPath: 'id'});
+          if (!database.objectStoreNames.contains('pronunciation_rules')) database.createObjectStore('pronunciation_rules', {keyPath: 'id'}).createIndex('target', 'target', {unique: false});
+          if (!database.objectStoreNames.contains('variant_rules')) database.createObjectStore('variant_rules', {keyPath: 'id'}).createIndex('find', 'find', {unique: false});
+          if (!database.objectStoreNames.contains('config')) database.createObjectStore('config', {keyPath: 'id'});
         };
-        req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+        req.onsuccess = (e) => {db = e.target.result; resolve(db);};
         req.onerror = (e) => reject(e);
       });
     }
@@ -1116,9 +1552,9 @@ window.addEventListener('beforeunload', (e) => {
       autoSaveTimeout = setTimeout(() => {
         try {
           const tx = db.transaction('active_draft', 'readwrite');
-          tx.objectStore('active_draft').put({ id: 'current_draft', data: entryData, updatedAt: Date.now() });
+          tx.objectStore('active_draft').put({id: 'current_draft', data: entryData, updatedAt: Date.now()});
           markDirty();
-        } catch (e) { console.error("Auto-save error:", e); }
+        } catch (e) {console.error("Auto-save error:", e);}
       }, 300);
     }
 
@@ -1127,28 +1563,28 @@ window.addEventListener('beforeunload', (e) => {
       return new Promise((resolve) => {
         const tx = db.transaction('active_draft', 'readonly');
         const req = tx.objectStore('active_draft').get('current_draft');
-        req.onsuccess = () => { if (req.result && req.result.data) entryData = req.result.data; resolve(); };
+        req.onsuccess = () => {if (req.result && req.result.data) entryData = req.result.data; resolve();};
         req.onerror = () => resolve();
       });
     }
 
     function savePronRuleToDB(target, ipa) {
-      if(!db || !target.trim() || !ipa.trim()) return;
+      if (!db || !target.trim() || !ipa.trim()) return;
       const t = target.trim();
       const tx = db.transaction('pronunciation_rules', 'readwrite');
       const store = tx.objectStore('pronunciation_rules');
       const id = 'pron_' + t.toLowerCase();
-      store.put({ id, target: t, ipa: ipa.trim(), quốcNgữ: convertQuasiIPA(ipa.trim()), createdAt: Date.now() });
+      store.put({id, target: t, ipa: ipa.trim(), quốcNgữ: convertQuasiIPA(ipa.trim()), createdAt: Date.now()});
       tx.oncomplete = () => syncRulesToDrive();
     }
 
     function saveVarRuleToDB(find, variantsStr) {
-      if(!db || !find.trim() || !variantsStr.trim()) return;
+      if (!db || !find.trim() || !variantsStr.trim()) return;
       const f = find.trim();
       const tx = db.transaction('variant_rules', 'readwrite');
       const store = tx.objectStore('variant_rules');
       const id = 'var_' + f.toLowerCase();
-      store.put({ id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now() });
+      store.put({id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now()});
       tx.oncomplete = () => syncRulesToDrive();
     }
 
@@ -1169,14 +1605,14 @@ window.addEventListener('beforeunload', (e) => {
     function convertIPASyllable(syl) {
       if (!syl) return "";
       let res = syl.replace(/d͡ʒ/g, 'ᴊ').replace(/ꭨ/g, 'ʀ').replace(/ᵰ/g, 'ɴ').replace(/ᵵ/g, 'ᴛ').replace(/ꬿ/g, 'oo')
-                   .replace(/ʒ/g, 'j').replace(/ʝ/g, 'gi').replace(/ᵶ/g, 'z').replace(/ⱴ/g, 'ⱴ').replace(/ᵼ/g, 'ɪ').replace(/j/g, 'ʏ')
-                   .replace(/^tʰ/, 'th').replace(/^ʈ/, 'tr').replace(/^ngh(?=[i|e|ê|y|ɪ])/g, 'ngh').replace(/^ŋ(?=[i|e|ê|y|ɪ])/g, 'ngh')
-                   .replace(/^ŋ/g, 'ng').replace(/^ɣ(?=[i|e|ê|y|ɪ])/g, 'gh').replace(/^ɣ/g, 'g').replace(/^k(?=[i|e|ê|y|ɪ])/g, 'k')
-                   .replace(/^k(?=u)/g, 'q').replace(/^k/g, 'c').replace(/^c/g, 'ch').replace(/^z/g, 'd').replace(/^d/g, 'đ')
-                   .replace(/^x/g, 'kh').replace(/^ɲ/g, 'nh').replace(/^f/g, 'ph').replace(/^ɹ/g, 'r').replace(/^ʂ/g, 's').replace(/^s/g, 'x')
-                   .replace(/ɨə/g, 'ươ').replace(/ɨ/g, 'ư').replace(/ə̆/g, 'â').replace(/ə/g, 'ơ').replace(/ɛ/g, 'e')
-                   .replace(/e/g, 'ê').replace(/ɔ/g, 'o').replace(/o/g, 'ô').replace(/uə/g, 'uô').replace(/iə/g, 'iê')
-                   .replace(/(?<=[a-zA-Zàáảãạăằắẳẵặâầấẩẫậeèéẻẽẹêềếểễệiìíỉĩịoòóỏõọôồốổỗộơờớởỡợuùúủũụưừứửữựyỳýỷỹỵɪoo])k([\u0300-\u036f]*)$/gi, 'c$1');
+        .replace(/ʒ/g, 'j').replace(/ʝ/g, 'gi').replace(/ᵶ/g, 'z').replace(/ⱴ/g, 'ⱴ').replace(/ᵼ/g, 'ɪ').replace(/j/g, 'ʏ')
+        .replace(/^tʰ/, 'th').replace(/^ʈ/, 'tr').replace(/^ngh(?=[i|e|ê|y|ɪ])/g, 'ngh').replace(/^ŋ(?=[i|e|ê|y|ɪ])/g, 'ngh')
+        .replace(/^ŋ/g, 'ng').replace(/^ɣ(?=[i|e|ê|y|ɪ])/g, 'gh').replace(/^ɣ/g, 'g').replace(/^k(?=[i|e|ê|y|ɪ])/g, 'k')
+        .replace(/^k(?=u)/g, 'q').replace(/^k/g, 'c').replace(/^c/g, 'ch').replace(/^z/g, 'd').replace(/^d/g, 'đ')
+        .replace(/^x/g, 'kh').replace(/^ɲ/g, 'nh').replace(/^f/g, 'ph').replace(/^ɹ/g, 'r').replace(/^ʂ/g, 's').replace(/^s/g, 'x')
+        .replace(/ɨə/g, 'ươ').replace(/ɨ/g, 'ư').replace(/ə̆/g, 'â').replace(/ə/g, 'ơ').replace(/ɛ/g, 'e')
+        .replace(/e/g, 'ê').replace(/ɔ/g, 'o').replace(/o/g, 'ô').replace(/uə/g, 'uô').replace(/iə/g, 'iê')
+        .replace(/(?<=[a-zA-Zàáảãạăằắẳẵặâầấẩẫậeèéẻẽẹêềếểễệiìíỉĩịoòóỏõọôồốổỗộơờớởỡợuùúủũụưừứửữựyỳýỷỹỵɪoo])k([\u0300-\u036f]*)$/gi, 'c$1');
       if (res.endsWith('k') && !res.endsWith('hk')) res = res.slice(0, -1) + 'c';
       else if (res.endsWith('c') && !res.endsWith('ch')) res = res.slice(0, -1) + 'ch';
       else if (res.endsWith('ŋ')) res = res.slice(0, -1) + 'ng';
@@ -1187,8 +1623,8 @@ window.addEventListener('beforeunload', (e) => {
     /* ==========================================================================
        3. SANITIZER & PARSERS
        ========================================================================== */
-    function escapeRegExp(string) { return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-    function createWholeWordRegex(term) { return new RegExp(`(?<=^|[^\\p{L}\\p{M}\\p{N}_])${escapeRegExp(term.trim())}(?=[^\\p{L}\\p{M}\\p{N}_]|$)`, 'gui'); }
+    function escapeRegExp(string) {return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');}
+    function createWholeWordRegex(term) {return new RegExp(`(?<=^|[^\\p{L}\\p{M}\\p{N}_])${escapeRegExp(term.trim())}(?=[^\\p{L}\\p{M}\\p{N}_]|$)`, 'gui');}
 
     function processHeadwordWithGlobalRules(rawHTML, targetData = entryData) {
       if (!rawHTML) return rawHTML;
@@ -1209,7 +1645,7 @@ window.addEventListener('beforeunload', (e) => {
             if (regex.test(n.nodeValue)) {
               regex.lastIndex = 0;
               const wrapper = document.createElement('span');
-              wrapper.innerHTML = n.nodeValue.replace(regex, `<span class="${isPron?'pronunciation':'lexical-variant'}" data-${isPron?'pronunciation':'variant'}="${escapeAttr(val)}">$&</span>`);
+              wrapper.innerHTML = n.nodeValue.replace(regex, `<span class="${isPron ? 'pronunciation' : 'lexical-variant'}" data-${isPron ? 'pronunciation' : 'variant'}="${escapeAttr(val)}">$&</span>`);
               n.replaceWith(...wrapper.childNodes);
             }
           });
@@ -1220,7 +1656,7 @@ window.addEventListener('beforeunload', (e) => {
       return tempDiv.innerHTML;
     }
 
-    function parseVariantsString(str) { return (str||"").split(/[\n,]+/).map(v => v.trim()).filter(Boolean); }
+    function parseVariantsString(str) {return (str || "").split(/[\n,]+/).map(v => v.trim()).filter(Boolean);}
 
     /* Requirement 7: Headword Sanitization: Only line breaks (<br>) and italics (<i>/<em>) allowed */
     function sanitizeHeadwordHTML(rawHTML) {
@@ -1296,12 +1732,12 @@ window.addEventListener('beforeunload', (e) => {
           if (temp.querySelectorAll('.lexical-variant').length === 0) return;
           let combos = [""];
           Array.from(temp.childNodes).forEach(child => {
-            const opts = (child.nodeType === Node.ELEMENT_NODE && child.classList.contains('lexical-variant')) ? [child.textContent, ...parseVariantsString(child.getAttribute('data-variant')||"")] : [child.textContent];
+            const opts = (child.nodeType === Node.ELEMENT_NODE && child.classList.contains('lexical-variant')) ? [child.textContent, ...parseVariantsString(child.getAttribute('data-variant') || "")] : [child.textContent];
             const next = [];
             combos.forEach(pfx => opts.forEach(o => next.push(pfx + o)));
             combos = next;
           });
-          combos.forEach(c => { if(c.trim() && c.trim() !== temp.textContent.trim()) altSpellingsSet.add(c.trim()); });
+          combos.forEach(c => {if (c.trim() && c.trim() !== temp.textContent.trim()) altSpellingsSet.add(c.trim());});
         });
       });
       return Array.from(altSpellingsSet).join(', ');
@@ -1311,26 +1747,26 @@ window.addEventListener('beforeunload', (e) => {
       if (!rawHtml) return '';
       const doc = new DOMParser().parseFromString(`<div>${rawHtml}</div>`, 'text/html');
       const root = doc.body.firstElementChild;
-      root.querySelectorAll('*').forEach(el => ['style','class','width','height','id','dir','align','valign','cellspacing','cellpadding','border','color','face','size'].forEach(a => el.removeAttribute(a)));
-      root.querySelectorAll('span').forEach(s => { if(s.attributes.length===0) s.replaceWith(doc.createTextNode(s.innerHTML)); });
-      root.querySelectorAll('div').forEach(d => { if(d.querySelector('table, p, blockquote')){ while(d.firstChild) d.parentNode.insertBefore(d.firstChild, d); d.remove(); } else { const p = doc.createElement('p'); p.innerHTML = d.innerHTML; d.parentNode.replaceChild(p, d); }});
-      
+      root.querySelectorAll('*').forEach(el => ['style', 'class', 'width', 'height', 'id', 'dir', 'align', 'valign', 'cellspacing', 'cellpadding', 'border', 'color', 'face', 'size'].forEach(a => el.removeAttribute(a)));
+      root.querySelectorAll('span').forEach(s => {if (s.attributes.length === 0) s.replaceWith(doc.createTextNode(s.innerHTML));});
+      root.querySelectorAll('div').forEach(d => {if (d.querySelector('table, p, blockquote')) {while (d.firstChild) d.parentNode.insertBefore(d.firstChild, d); d.remove();} else {const p = doc.createElement('p'); p.innerHTML = d.innerHTML; d.parentNode.replaceChild(p, d);} });
+
       const childNodes = Array.from(root.childNodes);
       let curP = null;
       childNodes.forEach(n => {
-        const isInline = n.nodeType===3 || (n.nodeType===1 && ['sub','sup','b','i','u','strong','em','span','a','code','small','strike','br'].includes(n.tagName.toLowerCase()));
+        const isInline = n.nodeType === 3 || (n.nodeType === 1 && ['sub', 'sup', 'b', 'i', 'u', 'strong', 'em', 'span', 'a', 'code', 'small', 'strike', 'br'].includes(n.tagName.toLowerCase()));
         if (isInline) {
-          if(n.nodeType===3 && !n.nodeValue.trim() && !curP) { n.remove(); return; }
-          if(!curP) { curP = doc.createElement('p'); root.insertBefore(curP, n); }
+          if (n.nodeType === 3 && !n.nodeValue.trim() && !curP) {n.remove(); return;}
+          if (!curP) {curP = doc.createElement('p'); root.insertBefore(curP, n);}
           curP.appendChild(n);
-        } else if (n.nodeType===1) {
+        } else if (n.nodeType === 1) {
           const t = n.tagName.toLowerCase();
-          if(t==='p') curP = n;
-          else if(t==='table'||t==='blockquote') curP = null;
-          else { const p = doc.createElement('p'); p.innerHTML = n.innerHTML; n.replaceWith(p); curP = p; }
+          if (t === 'p') curP = n;
+          else if (t === 'table' || t === 'blockquote') curP = null;
+          else {const p = doc.createElement('p'); p.innerHTML = n.innerHTML; n.replaceWith(p); curP = p;}
         }
       });
-      root.querySelectorAll('p').forEach(p => { if(!p.textContent.trim() && !p.querySelector('table, img, br, sub, sup')) p.remove(); });
+      root.querySelectorAll('p').forEach(p => {if (!p.textContent.trim() && !p.querySelector('table, img, br, sub, sup')) p.remove();});
       return root.innerHTML.trim();
     }
 
@@ -1341,7 +1777,7 @@ window.addEventListener('beforeunload', (e) => {
       let html = '';
       const formattedAltEnglish = formatAltEnglishOutput(entryData.altEnglishTerms);
       if (formattedAltEnglish) html += `<p><em>${formattedAltEnglish}</em></p>\n`;
-      
+
       html += '<div class="medical-terms">\n';
       entryData.terms.forEach(term => {
         html += '  <section class="medical-term">\n';
@@ -1356,26 +1792,26 @@ window.addEventListener('beforeunload', (e) => {
       const autoSp = computeAutomaticAltSpellings();
       if (autoSp) html += `<p><em>Alternative spellings: ${autoSp}</em></p>\n`;
 
-      const validRefs = (entryData.references||[]).filter(r => r.authors?.trim() || r.title?.trim() || r.pages?.trim() || r.quoteHTML?.trim());
+      const validRefs = (entryData.references || []).filter(r => r.authors?.trim() || r.title?.trim() || r.pages?.trim() || r.quoteHTML?.trim());
       if (validRefs.length > 0) {
         html += '<details>\n  <summary>References</summary>\n';
         validRefs.sort((a, b) => {
-          if ((a.authors||"").toLowerCase() !== (b.authors||"").toLowerCase()) return (a.authors||"").localeCompare(b.authors||"");
-          if ((a.title||"").toLowerCase() !== (b.title||"").toLowerCase()) return (a.title||"").localeCompare(b.title||"");
+          if ((a.authors || "").toLowerCase() !== (b.authors || "").toLowerCase()) return (a.authors || "").localeCompare(b.authors || "");
+          if ((a.title || "").toLowerCase() !== (b.title || "").toLowerCase()) return (a.title || "").localeCompare(b.title || "");
           const parseP = p => p?.match(/\d+/) ? parseInt(p.match(/\d+/)[0], 10) : 0;
           return parseP(a.pages) - parseP(b.pages);
         });
         let prevA = null, prevT = null;
         validRefs.forEach(r => {
-          const a = r.authors?.trim()||"", t = r.title?.trim()||"", p = r.pages?.trim()||"", q = sanitizeHTMLBlock(r.quoteHTML?.trim()||"");
-          const fp = p ? ( /^\d+$/.test(p) ? `p ${p}` : `pp ${p.replace(/(\d+)\s*-\s*(\d+)/g, '$1–$2')}` ) : "";
+          const a = r.authors?.trim() || "", t = r.title?.trim() || "", p = r.pages?.trim() || "", q = sanitizeHTMLBlock(r.quoteHTML?.trim() || "");
+          const fp = p ? (/^\d+$/.test(p) ? `p ${p}` : `pp ${p.replace(/(\d+)\s*-\s*(\d+)/g, '$1–$2')}`) : "";
           let cp = "";
           if (prevA && a.toLowerCase() === prevA.toLowerCase()) {
             if (prevT && t.toLowerCase() === prevT.toLowerCase()) cp = fp ? `<p>ibid., ${fp}.</p>` : `<p>ibid.</p>`;
-            else cp = `<p>${["id.", r.titleFormat==='quotes'?`‘${t}’`:`<em>${t}</em>`, fp].filter(Boolean).join(', ')}.</p>`;
+            else cp = `<p>${["id.", r.titleFormat === 'quotes' ? `‘${t}’` : `<em>${t}</em>`, fp].filter(Boolean).join(', ')}.</p>`;
           } else {
-            let pts = [a, t ? (r.titleFormat==='quotes'?`‘${t}’`:`<em>${t}</em>`) : "", fp].filter(Boolean);
-            cp = `<p>${pts.join(', ')}${pts.join(', ').endsWith('.')?'':'.'}</p>`;
+            let pts = [a, t ? (r.titleFormat === 'quotes' ? `‘${t}’` : `<em>${t}</em>`) : "", fp].filter(Boolean);
+            cp = `<p>${pts.join(', ')}${pts.join(', ').endsWith('.') ? '' : '.'}</p>`;
           }
           if (cp) html += `  ${cp}\n`;
           if (q) html += `  <blockquote>\n    ${q}\n  </blockquote>\n`;
@@ -1391,7 +1827,7 @@ window.addEventListener('beforeunload', (e) => {
       const codeEditor = document.getElementById('raw-html-editor');
       if (document.activeElement !== codeEditor) codeEditor.value = gHTML;
       document.getElementById('preview-post-title').textContent = entryData.postTitle || 'Entry Title';
-      
+
       const out = document.getElementById('publii-live-output');
       const wasOpen = out.querySelector('details')?.open ?? true;
       out.innerHTML = gHTML;
@@ -1411,12 +1847,12 @@ window.addEventListener('beforeunload', (e) => {
       renderLivePreview();
     }
 
-    function onAltEnglishTermsInput() { const e = document.getElementById('alt-english-terms'); if(e){ entryData.altEnglishTerms = e.innerHTML; renderLivePreview(); } }
-    function formatAltEnglishText(cmd) { const e = document.getElementById('alt-english-terms'); if(e){ e.focus(); document.execCommand(cmd, false, null); onAltEnglishTermsInput(); } }
+    function onAltEnglishTermsInput() {const e = document.getElementById('alt-english-terms'); if (e) {entryData.altEnglishTerms = e.innerHTML; renderLivePreview();} }
+    function formatAltEnglishText(cmd) {const e = document.getElementById('alt-english-terms'); if (e) {e.focus(); document.execCommand(cmd, false, null); onAltEnglishTermsInput();} }
 
     function renderGlobalPronunciationRulesUI() {
       const c = document.getElementById('global-pron-rules-container'); if (!c) return; c.innerHTML = '';
-      if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) { c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global rules.</p>`; return; }
+      if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global rules.</p>`; return;}
       entryData.globalPronunciationRules.forEach((r, idx) => {
         const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
         div.innerHTML = `
@@ -1428,13 +1864,13 @@ window.addEventListener('beforeunload', (e) => {
         c.appendChild(div);
       });
     }
-    function addGlobalPronunciationRule() { if(!entryData.globalPronunciationRules) entryData.globalPronunciationRules=[]; entryData.globalPronunciationRules.push({target:"",ipa:""}); renderGlobalPronunciationRulesUI(); renderLivePreview(); }
-    function updateGlobalPronRule(idx, field, val) { entryData.globalPronunciationRules[idx][field] = val; savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa); renderGlobalPronunciationRulesUI(); renderLivePreview(); }
-    function removeGlobalPronRule(idx) { entryData.globalPronunciationRules.splice(idx,1); renderGlobalPronunciationRulesUI(); renderLivePreview(); }
+    function addGlobalPronunciationRule() {if (!entryData.globalPronunciationRules) entryData.globalPronunciationRules = []; entryData.globalPronunciationRules.push({target: "", ipa: ""}); renderGlobalPronunciationRulesUI(); renderLivePreview();}
+    function updateGlobalPronRule(idx, field, val) {entryData.globalPronunciationRules[idx][field] = val; savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa); renderGlobalPronunciationRulesUI(); renderLivePreview();}
+    function removeGlobalPronRule(idx) {entryData.globalPronunciationRules.splice(idx, 1); renderGlobalPronunciationRulesUI(); renderLivePreview();}
 
     function renderGlobalRulesUI() {
       const c = document.getElementById('global-rules-container'); c.innerHTML = '';
-      if (!entryData.globalVariantRules || entryData.globalVariantRules.length === 0) { c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global variants.</p>`; return; }
+      if (!entryData.globalVariantRules || entryData.globalVariantRules.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global variants.</p>`; return;}
       entryData.globalVariantRules.forEach((r, idx) => {
         const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
         div.innerHTML = `
@@ -1445,9 +1881,9 @@ window.addEventListener('beforeunload', (e) => {
         c.appendChild(div);
       });
     }
-    function addGlobalVariantRule() { if(!entryData.globalVariantRules) entryData.globalVariantRules=[]; entryData.globalVariantRules.push({find:"",variantsStr:""}); renderGlobalRulesUI(); renderLivePreview(); }
-    function updateGlobalRule(idx, field, val) { entryData.globalVariantRules[idx][field] = val; saveVarRuleToDB(entryData.globalVariantRules[idx].find, entryData.globalVariantRules[idx].variantsStr); renderLivePreview(); }
-    function removeGlobalRule(idx) { entryData.globalVariantRules.splice(idx,1); renderGlobalRulesUI(); renderLivePreview(); }
+    function addGlobalVariantRule() {if (!entryData.globalVariantRules) entryData.globalVariantRules = []; entryData.globalVariantRules.push({find: "", variantsStr: ""}); renderGlobalRulesUI(); renderLivePreview();}
+    function updateGlobalRule(idx, field, val) {entryData.globalVariantRules[idx][field] = val; saveVarRuleToDB(entryData.globalVariantRules[idx].find, entryData.globalVariantRules[idx].variantsStr); renderLivePreview();}
+    function removeGlobalRule(idx) {entryData.globalVariantRules.splice(idx, 1); renderGlobalRulesUI(); renderLivePreview();}
 
     /* Requirement 1: Drag/Reorder Terms & Requirement 5: Custom Labels */
     function renderTermsUI() {
@@ -1467,7 +1903,7 @@ window.addEventListener('beforeunload', (e) => {
           <div class="flex justify-between items-center pb-2 border-b border-slate-700/60">
             <div class="flex items-center gap-2 cursor-grab active:cursor-grabbing text-xs font-bold text-slate-300 select-none">
               <span class="text-slate-500 font-normal">⋮⋮</span>
-              <span>Term #${i+1}</span>
+              <span>Term #${i + 1}</span>
             </div>
             ${entryData.terms.length > 1 ? `<button onclick="removeTerm('${t.id}')" class="text-xs text-rose-400 hover:text-rose-300">Remove</button>` : ''}
           </div>
@@ -1478,7 +1914,7 @@ window.addEventListener('beforeunload', (e) => {
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Labels</label>
             <div class="flex flex-wrap items-center gap-1.5">
-              ${PRESET_LABELS.map(l => `<button onclick="togglePresetLabel('${t.id}','${l}')" class="text-xs px-2.5 py-1 rounded-full border transition ${(t.labels||[]).includes(l)?'bg-indigo-600 text-white border-indigo-500':'bg-slate-900 text-slate-400 border-slate-700'}">${l}</button>`).join('')}
+              ${PRESET_LABELS.map(l => `<button onclick="togglePresetLabel('${t.id}','${l}')" class="text-xs px-2.5 py-1 rounded-full border transition ${(t.labels || []).includes(l) ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-900 text-slate-400 border-slate-700'}">${l}</button>`).join('')}
               ${(t.customLabels || []).map((cl, cIdx) => `
                 <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-indigo-900/60 text-indigo-200 border border-indigo-500/60">
                   <span>${escapeAttr(cl)}</span>
@@ -1530,7 +1966,7 @@ window.addEventListener('beforeunload', (e) => {
       e.stopPropagation();
       const card = e.currentTarget;
       card.classList.remove('border-indigo-400', 'bg-indigo-950/20');
-      
+
       if (draggedTermIndex !== null && draggedTermIndex !== idx) {
         const movedItem = entryData.terms.splice(draggedTermIndex, 1)[0];
         entryData.terms.splice(idx, 0, movedItem);
@@ -1604,102 +2040,102 @@ window.addEventListener('beforeunload', (e) => {
       onHeadwordInput(id);
     }
 
-    function onHeadwordInput(id) { 
-      const t = entryData.terms.find(x => x.id === id); 
-      const el = document.getElementById(`hw-editor-${id}`); 
-      if(t && el){ 
-        t.headwordHTML = sanitizeHeadwordHTML(el.innerHTML); 
-        renderLivePreview(); 
-      } 
+    function onHeadwordInput(id) {
+      const t = entryData.terms.find(x => x.id === id);
+      const el = document.getElementById(`hw-editor-${id}`);
+      if (t && el) {
+        t.headwordHTML = sanitizeHeadwordHTML(el.innerHTML);
+        renderLivePreview();
+      }
     }
-    
-    function onCommentInput(id) { const t = entryData.terms.find(x => x.id === id); const el = document.getElementById(`comment-editor-${id}`); if(t && el){ t.commentsHTML = el.innerHTML; renderLivePreview(); } }
-    function formatCommentText(id, cmd) { const el = document.getElementById(`comment-editor-${id}`); if(el){ el.focus(); document.execCommand(cmd, false, null); onCommentInput(id); } }
-    function togglePresetLabel(id, lbl) { const t = entryData.terms.find(x => x.id === id); if(t){ t.labels = t.labels || []; if(t.labels.includes(lbl)) t.labels = t.labels.filter(x => x!==lbl); else t.labels.push(lbl); renderFormUI(); } }
-    function addNewTerm() { entryData.terms.push({id: "term-"+Date.now(), headwordHTML:"", labels:[], customLabels:[], commentsHTML:""}); renderFormUI(); }
-    function removeTerm(id) { if(entryData.terms.length>1){ entryData.terms = entryData.terms.filter(x => x.id!==id); renderFormUI(); } }
+
+    function onCommentInput(id) {const t = entryData.terms.find(x => x.id === id); const el = document.getElementById(`comment-editor-${id}`); if (t && el) {t.commentsHTML = el.innerHTML; renderLivePreview();} }
+    function formatCommentText(id, cmd) {const el = document.getElementById(`comment-editor-${id}`); if (el) {el.focus(); document.execCommand(cmd, false, null); onCommentInput(id);} }
+    function togglePresetLabel(id, lbl) {const t = entryData.terms.find(x => x.id === id); if (t) {t.labels = t.labels || []; if (t.labels.includes(lbl)) t.labels = t.labels.filter(x => x !== lbl); else t.labels.push(lbl); renderFormUI();} }
+    function addNewTerm() {entryData.terms.push({id: "term-" + Date.now(), headwordHTML: "", labels: [], customLabels: [], commentsHTML: ""}); renderFormUI();}
+    function removeTerm(id) {if (entryData.terms.length > 1) {entryData.terms = entryData.terms.filter(x => x.id !== id); renderFormUI();} }
 
     /* Highlights & Modals */
     function handleTextSelection() {
       const sel = window.getSelection(); const tb = document.getElementById('selection-toolbar');
-      if (!sel || sel.isCollapsed || !sel.toString().trim() || !sel.anchorNode) { tb.classList.add('hidden'); return; }
-      const ed = sel.anchorNode.nodeType===3 ? sel.anchorNode.parentElement.closest('.headword-editor') : sel.anchorNode.closest('.headword-editor');
-      if (!ed) { tb.classList.add('hidden'); return; }
-      activeHeadwordEditorId = ed.id.replace('hw-editor-',''); savedRange = sel.getRangeAt(0).cloneRange();
+      if (!sel || sel.isCollapsed || !sel.toString().trim() || !sel.anchorNode) {tb.classList.add('hidden'); return;}
+      const ed = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement.closest('.headword-editor') : sel.anchorNode.closest('.headword-editor');
+      if (!ed) {tb.classList.add('hidden'); return;}
+      activeHeadwordEditorId = ed.id.replace('hw-editor-', ''); savedRange = sel.getRangeAt(0).cloneRange();
       const rect = savedRange.getBoundingClientRect();
-      tb.style.top = `${rect.top > 60 ? rect.top - 50 : rect.bottom + 10}px`; tb.style.left = `${Math.max(10, rect.left + rect.width/2 - 130)}px`;
+      tb.style.top = `${rect.top > 60 ? rect.top - 50 : rect.bottom + 10}px`; tb.style.left = `${Math.max(10, rect.left + rect.width / 2 - 130)}px`;
       tb.classList.remove('hidden');
     }
     document.addEventListener('selectionchange', handleTextSelection);
 
     function openAddPronModal() {
-      if(!savedRange) return;
+      if (!savedRange) return;
       document.getElementById('add-pron-target').value = savedRange.toString().trim();
       document.getElementById('add-pron-input').value = ""; document.getElementById('add-pron-preview').textContent = "";
       document.getElementById('add-pron-modal').classList.remove('hidden'); document.getElementById('add-pron-input').focus();
       document.getElementById('selection-toolbar').classList.add('hidden');
     }
-    function closeAddPronModal() { document.getElementById('add-pron-modal').classList.add('hidden'); }
-    function updateAddPronPreview() { document.getElementById('add-pron-preview').textContent = convertQuasiIPA(document.getElementById('add-pron-input').value); }
+    function closeAddPronModal() {document.getElementById('add-pron-modal').classList.add('hidden');}
+    function updateAddPronPreview() {document.getElementById('add-pron-preview').textContent = convertQuasiIPA(document.getElementById('add-pron-input').value);}
     function confirmAddPronunciation() {
       const ipa = document.getElementById('add-pron-input').value.trim();
-      if(!savedRange || !ipa) return closeAddPronModal();
+      if (!savedRange || !ipa) return closeAddPronModal();
       savePronRuleToDB(savedRange.toString(), ipa);
       const span = document.createElement('span'); span.className = 'pronunciation'; span.setAttribute('data-pronunciation', convertQuasiIPA(ipa)); span.textContent = savedRange.toString().trim();
       savedRange.deleteContents(); savedRange.insertNode(span);
-      onHeadwordInput(activeHeadwordEditorId); closeAddPronModal(); savedRange=null; showToast("Added Pronunciation!");
+      onHeadwordInput(activeHeadwordEditorId); closeAddPronModal(); savedRange = null; showToast("Added Pronunciation!");
     }
 
     function openAddVarModal() {
-      if(!savedRange) return;
+      if (!savedRange) return;
       document.getElementById('add-var-target').value = savedRange.toString().trim();
       document.getElementById('add-var-input').value = "";
       document.getElementById('add-var-modal').classList.remove('hidden'); document.getElementById('add-var-input').focus();
       document.getElementById('selection-toolbar').classList.add('hidden');
     }
-    function closeAddVarModal() { document.getElementById('add-var-modal').classList.add('hidden'); }
+    function closeAddVarModal() {document.getElementById('add-var-modal').classList.add('hidden');}
     function confirmAddVariant() {
       const v = document.getElementById('add-var-input').value.trim();
-      if(!savedRange || !v) return closeAddVarModal();
+      if (!savedRange || !v) return closeAddVarModal();
       saveVarRuleToDB(savedRange.toString(), v);
       const span = document.createElement('span'); span.className = 'lexical-variant'; span.setAttribute('data-variant', parseVariantsString(v).join(', ')); span.textContent = savedRange.toString().trim();
       savedRange.deleteContents(); savedRange.insertNode(span);
-      onHeadwordInput(activeHeadwordEditorId); closeAddVarModal(); savedRange=null; showToast("Added Variant!");
+      onHeadwordInput(activeHeadwordEditorId); closeAddVarModal(); savedRange = null; showToast("Added Variant!");
     }
 
     function handleHeadwordSpanClick(e, tId) {
-      const span = e.target.closest('.pronunciation, .lexical-variant'); if(!span) return;
+      const span = e.target.closest('.pronunciation, .lexical-variant'); if (!span) return;
       activeAnnotationSpan = span; activeAnnotationTermId = tId; const isP = span.classList.contains('pronunciation');
       document.getElementById('annotation-modal-title').textContent = isP ? "Edit Pronunciation" : "Edit Variant";
       document.getElementById('annotation-target-text').value = span.textContent;
       document.getElementById('annotation-value-label').textContent = isP ? "Quấc ngữ" : "Variant(s)";
       const inp = document.getElementById('annotation-value-input');
       inp.value = span.getAttribute(isP ? 'data-pronunciation' : 'data-variant') || "";
-      if(isP) inp.setAttribute('data-ipa-input', 'true'); else inp.removeAttribute('data-ipa-input');
+      if (isP) inp.setAttribute('data-ipa-input', 'true'); else inp.removeAttribute('data-ipa-input');
       document.getElementById('annotation-modal').classList.remove('hidden');
     }
-    function closeAnnotationModal() { document.getElementById('annotation-modal').classList.add('hidden'); }
+    function closeAnnotationModal() {document.getElementById('annotation-modal').classList.add('hidden');}
     function saveAnnotationFromModal() {
-      if(!activeAnnotationSpan) return; const val = document.getElementById('annotation-value-input').value.trim();
-      if(activeAnnotationSpan.classList.contains('pronunciation')) activeAnnotationSpan.setAttribute('data-pronunciation', convertQuasiIPA(val));
+      if (!activeAnnotationSpan) return; const val = document.getElementById('annotation-value-input').value.trim();
+      if (activeAnnotationSpan.classList.contains('pronunciation')) activeAnnotationSpan.setAttribute('data-pronunciation', convertQuasiIPA(val));
       else activeAnnotationSpan.setAttribute('data-variant', parseVariantsString(val).join(', '));
       onHeadwordInput(activeAnnotationTermId); closeAnnotationModal(); showToast("Updated!");
     }
     function removeAnnotationFromModal() {
-      if(!activeAnnotationSpan) return;
+      if (!activeAnnotationSpan) return;
       activeAnnotationSpan.replaceWith(document.createTextNode(activeAnnotationSpan.textContent));
       onHeadwordInput(activeAnnotationTermId); closeAnnotationModal(); showToast("Removed!");
     }
 
     function renderReferencesListUI() {
       const c = document.getElementById('references-list'); c.innerHTML = '';
-      if (!entryData.references || entryData.references.length === 0) { c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No references.</p>`; return; }
+      if (!entryData.references || entryData.references.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No references.</p>`; return;}
       entryData.references.forEach((r, idx) => {
         const div = document.createElement('div'); div.className = "bg-slate-900/90 border border-slate-700/80 rounded-xl p-3.5 space-y-3";
         div.innerHTML = `
-          <div class="flex justify-between pb-2 border-b border-slate-700/60"><span class="text-xs font-semibold text-emerald-400">Ref #${idx+1}</span><button onclick="removeReferenceItem(${idx})" class="text-xs text-rose-400">Remove</button></div>
+          <div class="flex justify-between pb-2 border-b border-slate-700/60"><span class="text-xs font-semibold text-emerald-400">Ref #${idx + 1}</span><button onclick="removeReferenceItem(${idx})" class="text-xs text-rose-400">Remove</button></div>
           <div><label class="block text-slate-400 text-xs mb-1">Author</label><input value="${escapeAttr(r.authors)}" oninput="updateReferenceField(${idx},'authors',this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></div>
-          <div><div class="flex justify-between mb-1"><label class="text-xs text-slate-400">Title</label><div class="flex gap-3 text-[11px] text-slate-300"><label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tFmt-${idx}" ${r.titleFormat!=='quotes'?'checked':''} onchange="updateReferenceField(${idx},'titleFormat','italics')" class="text-rose-600"><span>Italics</span></label><label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tFmt-${idx}" ${r.titleFormat==='quotes'?'checked':''} onchange="updateReferenceField(${idx},'titleFormat','quotes')" class="text-rose-600"><span>Quotes</span></label></div></div><input value="${escapeAttr(r.title)}" oninput="updateReferenceField(${idx},'title',this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></div>
+          <div><div class="flex justify-between mb-1"><label class="text-xs text-slate-400">Title</label><div class="flex gap-3 text-[11px] text-slate-300"><label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tFmt-${idx}" ${r.titleFormat !== 'quotes' ? 'checked' : ''} onchange="updateReferenceField(${idx},'titleFormat','italics')" class="text-rose-600"><span>Italics</span></label><label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tFmt-${idx}" ${r.titleFormat === 'quotes' ? 'checked' : ''} onchange="updateReferenceField(${idx},'titleFormat','quotes')" class="text-rose-600"><span>Quotes</span></label></div></div><input value="${escapeAttr(r.title)}" oninput="updateReferenceField(${idx},'title',this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></div>
           <div><label class="block text-slate-400 text-xs mb-1">Pages</label><input value="${escapeAttr(r.pages)}" oninput="updateReferenceField(${idx},'pages',this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></div>
           <div>
             <div class="flex justify-between mb-1"><label class="text-xs text-slate-400">Quote Material</label><div class="flex gap-1 text-[11px]"><button onclick="formatQuoteText(${idx},'bold')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300 font-bold">B</button><button onclick="formatQuoteText(${idx},'italic')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300 italic">I</button><button onclick="formatQuoteText(${idx},'underline')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300 underline">U</button><button onclick="formatQuoteText(${idx},'superscript')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300">x²</button><button onclick="formatQuoteText(${idx},'subscript')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300">x₂</button><button onclick="openTableModal(${idx})" class="px-2 ml-2 bg-indigo-600/30 text-indigo-300 rounded">+ Table</button></div></div>
@@ -1708,46 +2144,46 @@ window.addEventListener('beforeunload', (e) => {
         `;
         c.appendChild(div);
         const qE = document.getElementById(`quote-editor-${idx}`);
-        if(qE){ qE.innerHTML = r.quoteHTML||""; qE.addEventListener('keyup', ()=>saveQuoteCursorLocation(idx)); qE.addEventListener('mouseup', ()=>saveQuoteCursorLocation(idx)); }
+        if (qE) {qE.innerHTML = r.quoteHTML || ""; qE.addEventListener('keyup', () => saveQuoteCursorLocation(idx)); qE.addEventListener('mouseup', () => saveQuoteCursorLocation(idx));}
       });
     }
-    function addReferenceItem() { if(!entryData.references) entryData.references=[]; entryData.references.push({id:"ref-"+Date.now(),authors:"",title:"",titleFormat:"italics",pages:"",quoteHTML:""}); renderReferencesListUI(); renderLivePreview(); }
-    function removeReferenceItem(idx) { entryData.references.splice(idx,1); renderReferencesListUI(); renderLivePreview(); }
-    function updateReferenceField(idx, field, val) { entryData.references[idx][field] = val; renderLivePreview(); }
-    function onQuoteInput(idx) { const el = document.getElementById(`quote-editor-${idx}`); if(el){ entryData.references[idx].quoteHTML = el.innerHTML; renderLivePreview(); } }
-    function formatQuoteText(idx, cmd) { const el = document.getElementById(`quote-editor-${idx}`); if(el){ el.focus(); document.execCommand(cmd, false, null); onQuoteInput(idx); } }
+    function addReferenceItem() {if (!entryData.references) entryData.references = []; entryData.references.push({id: "ref-" + Date.now(), authors: "", title: "", titleFormat: "italics", pages: "", quoteHTML: ""}); renderReferencesListUI(); renderLivePreview();}
+    function removeReferenceItem(idx) {entryData.references.splice(idx, 1); renderReferencesListUI(); renderLivePreview();}
+    function updateReferenceField(idx, field, val) {entryData.references[idx][field] = val; renderLivePreview();}
+    function onQuoteInput(idx) {const el = document.getElementById(`quote-editor-${idx}`); if (el) {entryData.references[idx].quoteHTML = el.innerHTML; renderLivePreview();} }
+    function formatQuoteText(idx, cmd) {const el = document.getElementById(`quote-editor-${idx}`); if (el) {el.focus(); document.execCommand(cmd, false, null); onQuoteInput(idx);} }
 
-    function saveQuoteCursorLocation(idx) { const sel = window.getSelection(); if(sel && sel.rangeCount>0) { savedQuoteRange=sel.getRangeAt(0).cloneRange(); savedQuoteEditorIdx=idx; } }
-    function openTableModal(refIdx) { activeQuoteRefIdx=refIdx; saveQuoteCursorLocation(refIdx); document.getElementById('table-rows-input').value=""; document.getElementById('table-cols-input').value=""; document.getElementById('table-modal').classList.remove('hidden'); }
-    function closeTableModal() { document.getElementById('table-modal').classList.add('hidden'); }
+    function saveQuoteCursorLocation(idx) {const sel = window.getSelection(); if (sel && sel.rangeCount > 0) {savedQuoteRange = sel.getRangeAt(0).cloneRange(); savedQuoteEditorIdx = idx;} }
+    function openTableModal(refIdx) {activeQuoteRefIdx = refIdx; saveQuoteCursorLocation(refIdx); document.getElementById('table-rows-input').value = ""; document.getElementById('table-cols-input').value = ""; document.getElementById('table-modal').classList.remove('hidden');}
+    function closeTableModal() {document.getElementById('table-modal').classList.add('hidden');}
     function confirmInsertTable() {
-      const r = parseInt(document.getElementById('table-rows-input').value)||2, c = parseInt(document.getElementById('table-cols-input').value)||3, h = document.getElementById('table-header-check').checked;
-      let ht = '<table>'; if(h){ ht+='<thead><tr>'; for(let i=0;i<c;i++) ht+='<th></th>'; ht+='</tr></thead>'; }
-      ht+='<tbody>'; for(let i=0;i<(h?Math.max(1,r-1):r);i++){ ht+='<tr>'; for(let j=0;j<c;j++) ht+='<td></td>'; ht+='</tr>'; } ht+='</tbody></table>';
+      const r = parseInt(document.getElementById('table-rows-input').value) || 2, c = parseInt(document.getElementById('table-cols-input').value) || 3, h = document.getElementById('table-header-check').checked;
+      let ht = '<table>'; if (h) {ht += '<thead><tr>'; for (let i = 0; i < c; i++) ht += '<th></th>'; ht += '</tr></thead>';}
+      ht += '<tbody>'; for (let i = 0; i < (h ? Math.max(1, r - 1) : r); i++) {ht += '<tr>'; for (let j = 0; j < c; j++) ht += '<td></td>'; ht += '</tr>';} ht += '</tbody></table>';
       const el = document.getElementById(`quote-editor-${activeQuoteRefIdx}`);
-      if(el){ el.focus(); if(savedQuoteRange) { const s=window.getSelection(); s.removeAllRanges(); s.addRange(savedQuoteRange); } document.execCommand('insertHTML', false, ht); onQuoteInput(activeQuoteRefIdx); }
+      if (el) {el.focus(); if (savedQuoteRange) {const s = window.getSelection(); s.removeAllRanges(); s.addRange(savedQuoteRange);} document.execCommand('insertHTML', false, ht); onQuoteInput(activeQuoteRefIdx);}
       closeTableModal(); showToast("Table Inserted");
     }
 
     /* Modals & Handlers */
     function initIPAPalette() {
-      const c = document.getElementById('ipa-buttons-container'); c.innerHTML='';
+      const c = document.getElementById('ipa-buttons-container'); c.innerHTML = '';
       IPA_SYMBOLS.forEach(sym => {
         const b = document.createElement('button'); b.className = "px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm"; b.textContent = sym;
-        b.onmousedown = (e) => { e.preventDefault(); if(!activeIPAInput) return; const start = activeIPAInput.selectionStart||0, val = activeIPAInput.value; activeIPAInput.value = val.substring(0,start)+sym+val.substring(activeIPAInput.selectionEnd||0); activeIPAInput.selectionStart = activeIPAInput.selectionEnd = start+sym.length; activeIPAInput.dispatchEvent(new Event('input',{bubbles:true})); activeIPAInput.focus(); };
+        b.onmousedown = (e) => {e.preventDefault(); if (!activeIPAInput) return; const start = activeIPAInput.selectionStart || 0, val = activeIPAInput.value; activeIPAInput.value = val.substring(0, start) + sym + val.substring(activeIPAInput.selectionEnd || 0); activeIPAInput.selectionStart = activeIPAInput.selectionEnd = start + sym.length; activeIPAInput.dispatchEvent(new Event('input', {bubbles: true})); activeIPAInput.focus();};
         c.appendChild(b);
       });
     }
-    document.addEventListener('focusin', e => { if(e.target?.getAttribute('data-ipa-input')==='true') { activeIPAInput=e.target; const rect=e.target.getBoundingClientRect(); const tb = document.getElementById('ipa-toolbar'); tb.style.top=`${rect.bottom+6 > window.innerHeight-120 ? rect.top-116 : rect.bottom+6}px`; tb.style.left=`${Math.max(10, rect.left)}px`; tb.classList.remove('hidden'); } });
-    document.addEventListener('focusout', () => { setTimeout(() => { if(!document.getElementById('ipa-toolbar').contains(document.activeElement)) document.getElementById('ipa-toolbar').classList.add('hidden'); }, 150); });
+    document.addEventListener('focusin', e => {if (e.target?.getAttribute('data-ipa-input') === 'true') {activeIPAInput = e.target; const rect = e.target.getBoundingClientRect(); const tb = document.getElementById('ipa-toolbar'); tb.style.top = `${rect.bottom + 6 > window.innerHeight - 120 ? rect.top - 116 : rect.bottom + 6}px`; tb.style.left = `${Math.max(10, rect.left)}px`; tb.classList.remove('hidden');} });
+    document.addEventListener('focusout', () => {setTimeout(() => {if (!document.getElementById('ipa-toolbar').contains(document.activeElement)) document.getElementById('ipa-toolbar').classList.add('hidden');}, 150);});
 
-    function updateStateFromForm() { entryData.postTitle = document.getElementById('post-title').value; renderLivePreview(); }
-    function handleManualCodeEdit() { document.getElementById('publii-live-output').innerHTML = document.getElementById('raw-html-editor').value; markDirty(); }
-    function switchTab(t) { currentTab=t; ['form','code','import'].forEach(x => { document.getElementById(`tab-btn-${x}`).className = x===t ? "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm" : "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200"; const c = document.getElementById(`tab-content-${x}`); if(x===t) c.classList.remove('hidden'); else c.classList.add('hidden'); }); }
-    function togglePreviewTheme() { isDarkPreview = !isDarkPreview; const f=document.getElementById('publii-live-output'), c=document.getElementById('preview-viewport-container'), b=document.getElementById('theme-btn-text'); if(isDarkPreview){f.classList.add('dark-theme-preview');c.classList.add('dark-theme-preview');b.textContent="Dark Theme";}else{f.classList.remove('dark-theme-preview');c.classList.remove('dark-theme-preview');b.textContent="Light Theme";} }
-    function showToast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').textContent=msg; t.classList.remove('translate-y-20','opacity-0'); t.classList.add('translate-y-0','opacity-100'); setTimeout(()=>{t.classList.remove('translate-y-0','opacity-100'); t.classList.add('translate-y-20','opacity-0');}, 2500); }
-    function copyHTMLForPublii() { const h = generateEntryHTML(); navigator.clipboard.writeText(h).then(()=>showToast("Copied!")).catch(()=>{const t=document.createElement('textarea'); t.value=h; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); showToast("Copied!");}); }
-    function escapeAttr(str) { return str?String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):''; }
+    function updateStateFromForm() {entryData.postTitle = document.getElementById('post-title').value; renderLivePreview();}
+    function handleManualCodeEdit() {document.getElementById('publii-live-output').innerHTML = document.getElementById('raw-html-editor').value; markDirty();}
+    function switchTab(t) {currentTab = t;['form', 'code', 'import'].forEach(x => {document.getElementById(`tab-btn-${x}`).className = x === t ? "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm" : "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200"; const c = document.getElementById(`tab-content-${x}`); if (x === t) c.classList.remove('hidden'); else c.classList.add('hidden');});}
+    function togglePreviewTheme() {isDarkPreview = !isDarkPreview; const f = document.getElementById('publii-live-output'), c = document.getElementById('preview-viewport-container'), b = document.getElementById('theme-btn-text'); if (isDarkPreview) {f.classList.add('dark-theme-preview'); c.classList.add('dark-theme-preview'); b.textContent = "Dark Theme";} else {f.classList.remove('dark-theme-preview'); c.classList.remove('dark-theme-preview'); b.textContent = "Light Theme";} }
+    function showToast(msg) {const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; t.classList.remove('translate-y-20', 'opacity-0'); t.classList.add('translate-y-0', 'opacity-100'); setTimeout(() => {t.classList.remove('translate-y-0', 'opacity-100'); t.classList.add('translate-y-20', 'opacity-0');}, 2500);}
+    function copyHTMLForPublii() {const h = generateEntryHTML(); navigator.clipboard.writeText(h).then(() => showToast("Copied!")).catch(() => {const t = document.createElement('textarea'); t.value = h; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); showToast("Copied!");});}
+    function escapeAttr(str) {return str ? String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';}
 
     function searchUMLS() {
       const term = document.getElementById('post-title').value.trim();
@@ -1759,16 +2195,16 @@ window.addEventListener('beforeunload', (e) => {
     }
 
     /* Master Rule Database Managers (Requirement 3) */
-    function openRulesManager() { document.getElementById('rules-manager-modal').classList.remove('hidden'); switchRulesTab('pron'); }
-    function closeRulesManager() { document.getElementById('rules-manager-modal').classList.add('hidden'); }
-    
+    function openRulesManager() {document.getElementById('rules-manager-modal').classList.remove('hidden'); switchRulesTab('pron');}
+    function closeRulesManager() {document.getElementById('rules-manager-modal').classList.add('hidden');}
+
     function switchRulesTab(t) {
-      ['pron','var'].forEach(x=>{ 
-        document.getElementById(`tab-rule-${x}`).className = x===t ? `flex-1 py-3 text-sm font-semibold ${t==='pron'?'text-indigo-400 border-indigo-500':'text-amber-400 border-amber-500'} border-b-2 bg-slate-800/50` : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent"; 
-      }); 
+      ['pron', 'var'].forEach(x => {
+        document.getElementById(`tab-rule-${x}`).className = x === t ? `flex-1 py-3 text-sm font-semibold ${t === 'pron' ? 'text-indigo-400 border-indigo-500' : 'text-amber-400 border-amber-500'} border-b-2 bg-slate-800/50` : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent";
+      });
       document.getElementById('add-rule-form-pron').classList.toggle('hidden', t !== 'pron');
       document.getElementById('add-rule-form-var').classList.toggle('hidden', t !== 'var');
-      loadRulesForManager(t); 
+      loadRulesForManager(t);
     }
 
     function updateMgrPronPreview() {
@@ -1779,7 +2215,7 @@ window.addEventListener('beforeunload', (e) => {
     function addMgrPronRule() {
       const target = document.getElementById('mgr-new-pron-target').value.trim();
       const ipa = document.getElementById('mgr-new-pron-ipa').value.trim();
-      if(!target || !ipa) { showToast("Please enter target word and IPA."); return; }
+      if (!target || !ipa) {showToast("Please enter target word and IPA."); return;}
       savePronRuleToDB(target, ipa);
       document.getElementById('mgr-new-pron-target').value = '';
       document.getElementById('mgr-new-pron-ipa').value = '';
@@ -1791,7 +2227,7 @@ window.addEventListener('beforeunload', (e) => {
     function addMgrVarRule() {
       const find = document.getElementById('mgr-new-var-find').value.trim();
       const vars = document.getElementById('mgr-new-var-variants').value.trim();
-      if(!find || !vars) { showToast("Please enter main word and variants."); return; }
+      if (!find || !vars) {showToast("Please enter main word and variants."); return;}
       saveVarRuleToDB(find, vars);
       document.getElementById('mgr-new-var-find').value = '';
       document.getElementById('mgr-new-var-variants').value = '';
@@ -1799,73 +2235,73 @@ window.addEventListener('beforeunload', (e) => {
       showToast("Variant rule saved!");
     }
 
-    function loadRulesForManager(type, q='') {
-      if(!db) return; const sN = type==='pron'?'pronunciation_rules':'variant_rules';
+    function loadRulesForManager(type, q = '') {
+      if (!db) return; const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
       db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
-        let rs = e.target.result.sort((a,b)=>b.createdAt-a.createdAt); if(q) rs = rs.filter(r=>JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
-        const c = document.getElementById('rules-manager-list'); c.innerHTML='';
-        if(rs.length===0) c.innerHTML=`<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
+        let rs = e.target.result.sort((a, b) => b.createdAt - a.createdAt); if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
+        const c = document.getElementById('rules-manager-list'); c.innerHTML = '';
+        if (rs.length === 0) c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
         rs.forEach(r => {
           const d = document.createElement('div'); d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-          d.innerHTML = type==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>`;
+          d.innerHTML = type === 'pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>`;
           c.appendChild(d);
         });
       };
     }
-    function filterRulesManager() { loadRulesForManager(document.getElementById('tab-rule-pron').classList.contains('text-indigo-400')?'pron':'var', document.getElementById('rules-search').value); }
+    function filterRulesManager() {loadRulesForManager(document.getElementById('tab-rule-pron').classList.contains('text-indigo-400') ? 'pron' : 'var', document.getElementById('rules-search').value);}
     function promptDeleteRule(type, id) {
       document.getElementById('confirm-delete-rule-modal').classList.remove('hidden');
       document.getElementById('confirm-delete-rule-text').textContent = "Delete this rule permanently?";
       document.getElementById('confirm-delete-rule-btn').onclick = () => {
-        const sN = type==='pron'?'pronunciation_rules':'variant_rules';
+        const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
         const tx = db.transaction(sN, 'readwrite'); tx.objectStore(sN).delete(id);
-        tx.oncomplete = () => { syncRulesToDrive(); filterRulesManager(); closeConfirmDeleteRuleModal(); };
+        tx.oncomplete = () => {syncRulesToDrive(); filterRulesManager(); closeConfirmDeleteRuleModal();};
       };
     }
-    function closeConfirmDeleteRuleModal() { document.getElementById('confirm-delete-rule-modal').classList.add('hidden'); }
+    function closeConfirmDeleteRuleModal() {document.getElementById('confirm-delete-rule-modal').classList.add('hidden');}
 
     /* Rule Suggestion with Reverse Matches (Requirement 4) */
-    function openRuleSuggest(t, tgt=null) { 
-      activeRuleSelectorType=t; 
-      activeRuleSelectorTargetInput=tgt; 
-      document.getElementById('rule-selector-title').textContent="Suggested Rules"; 
-      document.getElementById('rule-selector-search-container').classList.add('hidden'); 
-      document.getElementById('rule-selector-modal').classList.remove('hidden'); 
-      const txt = tgt ? tgt.toLowerCase() : entryData.terms.map(x=>x.headwordHTML||"").join(' ').toLowerCase(); 
-      if(!db) return; 
-      const sN=t==='pron'?'pronunciation_rules':'variant_rules'; 
-      db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>{ 
-        renderRuleSelectorList(e.target.result, t, txt); 
-      }; 
+    function openRuleSuggest(t, tgt = null) {
+      activeRuleSelectorType = t;
+      activeRuleSelectorTargetInput = tgt;
+      document.getElementById('rule-selector-title').textContent = "Suggested Rules";
+      document.getElementById('rule-selector-search-container').classList.add('hidden');
+      document.getElementById('rule-selector-modal').classList.remove('hidden');
+      const txt = tgt ? tgt.toLowerCase() : entryData.terms.map(x => x.headwordHTML || "").join(' ').toLowerCase();
+      if (!db) return;
+      const sN = t === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
+        renderRuleSelectorList(e.target.result, t, txt);
+      };
     }
 
-    function openRuleBrowse(t) { 
-      activeRuleSelectorType=t; 
-      activeRuleSelectorTargetInput=null;
-      document.getElementById('rule-selector-title').textContent="Browse Rules"; 
-      document.getElementById('rule-selector-search-container').classList.remove('hidden'); 
-      document.getElementById('rule-selector-search').value=""; 
-      document.getElementById('rule-selector-modal').classList.remove('hidden'); 
-      if(!db) return; 
-      const sN=t==='pron'?'pronunciation_rules':'variant_rules'; 
-      db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result, t, ""); 
+    function openRuleBrowse(t) {
+      activeRuleSelectorType = t;
+      activeRuleSelectorTargetInput = null;
+      document.getElementById('rule-selector-title').textContent = "Browse Rules";
+      document.getElementById('rule-selector-search-container').classList.remove('hidden');
+      document.getElementById('rule-selector-search').value = "";
+      document.getElementById('rule-selector-modal').classList.remove('hidden');
+      if (!db) return;
+      const sN = t === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => renderRuleSelectorList(e.target.result, t, "");
     }
 
-    function filterRuleSelector() { 
-      const q = document.getElementById('rule-selector-search').value.toLowerCase(); 
-      const t=activeRuleSelectorType, sN=t==='pron'?'pronunciation_rules':'variant_rules'; 
-      db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>{
-        const filtered = e.target.result.filter(r=>JSON.stringify(r).toLowerCase().includes(q));
+    function filterRuleSelector() {
+      const q = document.getElementById('rule-selector-search').value.toLowerCase();
+      const t = activeRuleSelectorType, sN = t === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
+        const filtered = e.target.result.filter(r => JSON.stringify(r).toLowerCase().includes(q));
         renderRuleSelectorList(filtered, t, "");
-      }; 
+      };
     }
 
-    function renderRuleSelectorList(rs, t, targetText = "") { 
-      const c=document.getElementById('rule-selector-list'); 
-      c.innerHTML=''; 
-      if(!rs || rs.length===0){ 
-        c.innerHTML=`<p class="text-slate-500 text-sm">No matching rules found.</p>`; 
-        return; 
+    function renderRuleSelectorList(rs, t, targetText = "") {
+      const c = document.getElementById('rule-selector-list');
+      c.innerHTML = '';
+      if (!rs || rs.length === 0) {
+        c.innerHTML = `<p class="text-slate-500 text-sm">No matching rules found.</p>`;
+        return;
       }
 
       if (t === 'var' && targetText) {
@@ -1876,7 +2312,7 @@ window.addEventListener('beforeunload', (e) => {
         rs.forEach(r => {
           const findLow = r.find.toLowerCase();
           const varsArr = parseVariantsString(r.variantsStr).map(v => v.toLowerCase());
-          
+
           const isDirect = tgtLow.includes(findLow);
           const isReverse = varsArr.some(v => tgtLow.includes(v) && v !== findLow);
 
@@ -1910,9 +2346,9 @@ window.addEventListener('beforeunload', (e) => {
     }
 
     function appendRuleItem(container, r, t, isReverse = false) {
-      const d = document.createElement('div'); 
-      d.className = "bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2 transition flex justify-between items-center"; 
-      d.onclick = () => selectRuleFromSelector(r, t, isReverse); 
+      const d = document.createElement('div');
+      d.className = "bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2 transition flex justify-between items-center";
+      d.onclick = () => selectRuleFromSelector(r, t, isReverse);
       if (t === 'pron') {
         d.innerHTML = `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-400 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div>`;
       } else {
@@ -1925,11 +2361,11 @@ window.addEventListener('beforeunload', (e) => {
       container.appendChild(d);
     }
 
-    function selectRuleFromSelector(r, t, isReverse = false) { 
-      if(activeRuleSelectorTargetInput !== null){ 
-        if(t === 'pron'){ 
-          document.getElementById('add-pron-input').value = r.ipa; 
-          updateAddPronPreview(); 
+    function selectRuleFromSelector(r, t, isReverse = false) {
+      if (activeRuleSelectorTargetInput !== null) {
+        if (t === 'pron') {
+          document.getElementById('add-pron-input').value = r.ipa;
+          updateAddPronPreview();
         } else {
           if (isReverse) {
             const allVariants = parseVariantsString(r.variantsStr);
@@ -1940,46 +2376,46 @@ window.addEventListener('beforeunload', (e) => {
             document.getElementById('add-var-input').value = parseVariantsString(r.variantsStr).join(', ');
           }
         }
-      } else { 
-        if(t==='pron'){ 
-          entryData.globalPronunciationRules = entryData.globalPronunciationRules || []; 
-          entryData.globalPronunciationRules.push({target: r.target, ipa: r.ipa}); 
-        } else { 
-          entryData.globalVariantRules = entryData.globalVariantRules || []; 
-          entryData.globalVariantRules.push({find: r.find, variantsStr: parseVariantsString(r.variantsStr).join(', ')}); 
-        } 
-        renderFormUI(); 
-      } 
-      closeRuleSelector(); 
+      } else {
+        if (t === 'pron') {
+          entryData.globalPronunciationRules = entryData.globalPronunciationRules || [];
+          entryData.globalPronunciationRules.push({target: r.target, ipa: r.ipa});
+        } else {
+          entryData.globalVariantRules = entryData.globalVariantRules || [];
+          entryData.globalVariantRules.push({find: r.find, variantsStr: parseVariantsString(r.variantsStr).join(', ')});
+        }
+        renderFormUI();
+      }
+      closeRuleSelector();
     }
-    function closeRuleSelector() { document.getElementById('rule-selector-modal').classList.add('hidden'); }
+    function closeRuleSelector() {document.getElementById('rule-selector-modal').classList.add('hidden');}
 
     /* Library Modals */
-    function openEntriesLibrary() { document.getElementById('entries-library-modal').classList.remove('hidden'); if(isDriveConnected) loadEntriesFromDrive(); }
-    function closeEntriesLibrary() { document.getElementById('entries-library-modal').classList.add('hidden'); }
+    function openEntriesLibrary() {document.getElementById('entries-library-modal').classList.remove('hidden'); if (isDriveConnected) loadEntriesFromDrive();}
+    function closeEntriesLibrary() {document.getElementById('entries-library-modal').classList.add('hidden');}
     function filterLibraryEntries() {
       const q = document.getElementById('library-search').value.toLowerCase(), c = document.getElementById('library-entries-list'); c.innerHTML = '';
-      const f = libraryEntriesCache.filter(e => e.searchStr.includes(q)); if(f.length===0) { c.innerHTML=`<p class="text-slate-500 text-sm">No entries found.</p>`; return; }
+      const f = libraryEntriesCache.filter(e => e.searchStr.includes(q)); if (f.length === 0) {c.innerHTML = `<p class="text-slate-500 text-sm">No entries found.</p>`; return;}
       f.forEach(e => {
-        const d = document.createElement('div'); d.className="flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-        d.innerHTML = `<div><strong class="text-indigo-300">${escapeAttr(e.data.postTitle||"Untitled")}</strong><span class="text-slate-500 text-xs block">${e.name}</span></div><div><button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2">Open</button><button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded">Delete</button></div>`;
+        const d = document.createElement('div'); d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+        d.innerHTML = `<div><strong class="text-indigo-300">${escapeAttr(e.data.postTitle || "Untitled")}</strong><span class="text-slate-500 text-xs block">${e.name}</span></div><div><button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2">Open</button><button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded">Delete</button></div>`;
         c.appendChild(d);
       });
     }
     async function loadEntryFromLibrary(name) {
       const item = libraryEntriesCache.find(e => e.name === name);
-      if(item) {
+      if (item) {
         if (hasUnsavedChanges && !confirm("You have unsaved changes. Are you sure you want to load a different entry?")) return;
         entryData = item.data; renderFormUI(); closeEntriesLibrary(); markClean(); showToast("Loaded!");
       }
     }
     async function deleteEntryFromDrive(fileId, name) {
-      if(confirm(`Delete ${name} from Google Drive?`)){
+      if (confirm(`Delete ${name} from Google Drive?`)) {
         try {
-          await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, { method: 'DELETE' });
+          await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {method: 'DELETE'});
           await loadEntriesFromDrive();
           showToast("Deleted!");
-        } catch(e) {
+        } catch (e) {
           showToast("Delete failed");
         }
       }
@@ -2124,6 +2560,7 @@ window.addEventListener('beforeunload', (e) => {
         renderFormUI();
         switchTab('form');
         showToast("HTML Imported Successfully!");
+        document.getElementById('import-html-input').value = '';
       } else {
         showToast("Failed to parse HTML.");
       }
@@ -2147,4 +2584,5 @@ window.addEventListener('beforeunload', (e) => {
     }
   </script>
 </body>
+
 </html>
