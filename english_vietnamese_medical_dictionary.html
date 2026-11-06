@@ -133,10 +133,7 @@
     .quote-editor, .quote-editor * { font-size: 0.75rem !important; line-height: 1.5 !important; }
     .publii-render-frame blockquote, .publii-render-frame blockquote p, .quote-editor, .quote-editor p { font-family: inherit !important; color: inherit !important; background-color: transparent !important; }
 
-    .term-card.dragging { opacity: 0.4; border-style: dashed; border-color: #6366f1; background-color: #1e293b; }
-    .drag-handle { cursor: grab; padding: 4px; border-radius: 4px; opacity: 0.6; }
-    .drag-handle:hover { opacity: 1; background-color: rgba(255,255,255,0.1); }
-    .drag-handle:active { cursor: grabbing; }
+    .term-card.dragging { opacity: 0.4; border-style: dashed; border-color: #6366f1; }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white">
@@ -214,7 +211,7 @@
           </div>
           <input type="text" id="add-pron-input" data-ipa-input="true" oninput="updateAddPronPreview()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-indigo-500">
         </div>
-        <div><label class="block text-slate-400 mb-1">Converts to Quốc ngữ:</label><div id="add-pron-preview" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-indigo-300 font-mono italic min-h-[34px] flex items-center"></div></div>
+        <div><label class="block text-slate-400 mb-1">Converts to Quấc ngữ:</label><div id="add-pron-preview" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-indigo-300 font-mono italic min-h-[34px] flex items-center"></div></div>
       </div>
       <div class="flex justify-end gap-2 pt-2"><button onclick="closeAddPronModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs">Cancel</button><button onclick="confirmAddPronunciation()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold">Apply</button></div>
     </div>
@@ -295,13 +292,7 @@
   <div id="rules-manager-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
-        <div class="flex items-center gap-4">
-          <h3 class="text-base font-bold text-white">Master Rules Database</h3>
-          <div class="flex gap-2">
-            <button onclick="addGlobalPronunciationRule()" class="text-[11px] bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded shadow">+ Add Pronunciation Rule</button>
-            <button onclick="addGlobalVariantRule()" class="text-[11px] bg-amber-600 hover:bg-amber-500 text-white px-2 py-1 rounded shadow">+ Add Variant Mapping</button>
-          </div>
-        </div>
+        <h3 class="text-base font-bold text-white">Master Rules Database</h3>
         <button onclick="closeRulesManager()" class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
       </div>
       <div class="flex border-b border-slate-700 bg-slate-900/50">
@@ -333,6 +324,53 @@
       <div class="flex justify-between pb-2 border-b border-slate-700"><h3 class="text-sm font-bold text-white">Delete Rule</h3><button onclick="closeConfirmDeleteRuleModal()" class="text-slate-400">×</button></div>
       <p id="confirm-delete-rule-text" class="text-xs text-slate-300"></p>
       <div class="flex justify-end gap-2 pt-2"><button onclick="closeConfirmDeleteRuleModal()" class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button id="confirm-delete-rule-btn" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs">Delete</button></div>
+    </div>
+  </div>
+
+  <!-- 9: Google Drive Auth Error / Troubleshooting Modal -->
+  <div id="drive-auth-error-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <h3 class="text-base font-bold text-rose-400 flex items-center gap-2">
+          <span>⚠️</span> Drive Connection Troubleshooting
+        </h3>
+        <button onclick="closeDriveAuthErrorModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300">
+        <div class="bg-rose-950/40 border border-rose-800/60 rounded-lg p-3">
+          <p class="font-semibold text-rose-300 mb-1">Error Details:</p>
+          <p id="drive-error-msg" class="font-mono text-[11px] text-rose-200 break-all"></p>
+        </div>
+
+        <div class="space-y-2">
+          <p class="font-semibold text-white">To fix this in your Google Cloud Console:</p>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-300 leading-relaxed pl-1">
+            <li>Open <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="text-indigo-400 underline font-semibold">Google Cloud Console Credentials</a>.</li>
+            <li>Click your Web Application Client ID.</li>
+            <li>Under <strong>Authorized JavaScript origins</strong>, ensure this exact URL is added:
+              <div class="mt-1 flex items-center gap-1.5">
+                <input type="text" id="drive-current-origin" readonly class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-indigo-300 font-mono text-[11px]">
+                <button onclick="copyCurrentOrigin()" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded font-medium shrink-0">Copy</button>
+              </div>
+            </li>
+            <li>Under <strong>OAuth consent screen</strong> &rarr; <strong>Test users</strong>, make sure your Google email address is added.</li>
+          </ol>
+        </div>
+
+        <div class="border-t border-slate-700/80 pt-3 space-y-2">
+          <p class="font-semibold text-slate-200">Option 2: Paste Access Token Manually</p>
+          <p class="text-slate-400 text-[11px]">If pop-up authorization is blocked by browser restrictions, paste a valid Access Token here:</p>
+          <div class="flex gap-2">
+            <input type="text" id="manual-access-token-input" placeholder="ya29.a0A..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono outline-none focus:border-indigo-500">
+            <button onclick="applyManualAccessToken()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-semibold text-xs shrink-0">Use Token</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeDriveAuthErrorModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold">Close</button>
+      </div>
     </div>
   </div>
 
@@ -481,8 +519,8 @@
         <div id="tab-content-import" class="space-y-4 hidden">
           <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 space-y-3">
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Paste HTML</h3>
-            <textarea id="import-html-input" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none" placeholder="Paste Publii HTML output here..."></textarea>
-            <button onclick="runImportHTML()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse &amp; Populate Form</button>
+            <textarea id="import-html-input" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none"></textarea>
+            <button onclick="runImportHTML()" class="w-full bg-indigo-600 text-white font-medium py-2 rounded-lg text-xs">Parse &amp; Populate Form</button>
           </div>
         </div>
       </div>
@@ -510,729 +548,1066 @@
        ========================================================================== */
     const CLIENT_ID = '588068745367-pspl34cbq8mb4uu6kqp7ei21c8ah5upd.apps.googleusercontent.com';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-    const FOLDER_NAME = 'Danh Từ Y Khoa Anh–Việt ';
+    const FOLDER_NAME = 'Danh Từ Y Khoa Anh–việt';
     const REDIRECT_URI = window.location.origin + window.location.pathname;
 
     let accessToken = localStorage.getItem('gdrive_access_token') || null;
+    let tokenExpiry = localStorage.getItem('gdrive_token_expiry') || 0;
     let driveFolderId = null;
     let isDriveConnected = false;
-    let db;
-    
-    // Globals for App State
-    let postTitle = "";
-    let altEnglishTerms = "";
-    let globalRules = [];
-    let globalPronRules = [];
-    let terms = [];
-    let references = [];
-    let isDarkTheme = false;
-    let driveEntries = [];
-    
-    // Drag & Drop State
-    let draggedTermIndex = null;
+    let hasUnsavedChanges = false;
 
-    function handleDriveAuthClick(event) {
-        if (event) event.preventDefault();
+    // Guard against closing tab when unsaved
+    window.addEventListener('beforeunload', (e) => {
+      if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    function markDirty() { hasUnsavedChanges = true; }
+    function markClean() { hasUnsavedChanges = false; }
+
+    function hideInitialOverlay() { const el = document.getElementById('initial-login-overlay'); if (el) el.classList.add('hidden'); }
+    function showInitialOverlay() { const el = document.getElementById('initial-login-overlay'); if (el) el.classList.remove('hidden'); }
+
+    // Bind initialization hooks to window
+    window.onload = async function() {
+      initIPAPalette();
+      await initDB();
+      await loadDraft();
+      renderFormUI();
+
+      // 1. Check if returning from Google OAuth Redirect
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const urlAccessToken = params.get('access_token');
+      const urlExpiresIn = params.get('expires_in');
+      const urlError = params.get('error');
+
+      if (urlError) {
+          showDriveAuthErrorModal("redirect_error", "Google returned an error: " + urlError);
+          window.history.replaceState(null, null, window.location.pathname);
+          showInitialOverlay();
+          return;
+      }
+
+      if (urlAccessToken) {
+        // Successfully got token from URL!
+        accessToken = urlAccessToken;
+        const expiresIn = (parseInt(urlExpiresIn, 10) || 3600) * 1000;
+        tokenExpiry = Date.now() + expiresIn - 60000;
         
-        const btns = [document.getElementById('drive-auth-btn'), document.getElementById('initial-drive-auth-btn')];
-        btns.forEach(btn => {
-            if (btn) {
-                btn.disabled = true;
-                const span = btn.querySelector('span');
-                if (span) span.innerText = "Redirecting to Google...";
-            }
-        });
-
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${encodeURIComponent(SCOPES)}&prompt=consent`;
-        window.location.href = authUrl;
-    }
-
-    function checkSavedDriveToken() {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const urlToken = params.get('access_token');
-
-        if (urlToken) {
-            accessToken = urlToken;
-            localStorage.setItem('gdrive_access_token', accessToken);
-            window.history.replaceState(null, null, window.location.pathname);
-        }
-
-        if (accessToken) {
-            updateDriveUIConnected();
-            setTimeout(() => { loadEntriesFromFolder(); }, 1000);
-        }
-    }
-
-    function updateDriveUIConnected() {
-        isDriveConnected = true;
-        const overlay = document.getElementById('initial-login-overlay');
-        if (overlay) overlay.style.display = 'none';
+        localStorage.setItem('gdrive_access_token', accessToken);
+        localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
         
-        const mainBtn = document.getElementById('drive-auth-btn');
-        if (mainBtn) {
-            mainBtn.disabled = false;
-            mainBtn.classList.remove('bg-slate-100', 'text-slate-800');
-            mainBtn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-500');
-            const span = mainBtn.querySelector('span');
-            if (span) span.innerText = "Drive Connected";
-        }
-        const libStatus = document.getElementById('library-folder-status');
-        if (libStatus) libStatus.innerText = `Connected to: /${FOLDER_NAME}`;
+        // Clean up the URL so the access token is hidden
+        window.history.replaceState(null, null, window.location.pathname);
+        
         showToast("Google Drive Connected!");
-    }
+        await verifyAndInitDrive();
+      } else {
+        // 2. Not returning from redirect; check for existing saved token
+        await checkSavedDriveToken();
+      }
+    };
 
-    /* ==========================================================================
-       1. INDEXEDDB SETUP (MASTER RULES CACHE)
-       ========================================================================== */
-    function initDB() {
-        const request = indexedDB.open("MedDictDB", 1);
-        request.onupgradeneeded = function(e) {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains("pronunciation_rules")) db.createObjectStore("pronunciation_rules", { keyPath: "id" });
-            if (!db.objectStoreNames.contains("variant_rules")) db.createObjectStore("variant_rules", { keyPath: "id" });
-        };
-        request.onsuccess = function(e) { db = e.target.result; };
-    }
-
-    /* ==========================================================================
-       2. GOOGLE DRIVE REST API CALLS
-       ========================================================================== */
-    async function driveFetch(path, options = {}) {
-        options.headers = options.headers || {};
-        options.headers['Authorization'] = `Bearer ${accessToken}`;
-        const response = await fetch(`https://www.googleapis.com/drive/v3/${path}`, options);
-        if (response.status === 401) {
-            localStorage.removeItem('gdrive_access_token');
-            accessToken = null;
-            window.location.reload();
+    async function verifyAndInitDrive() {
+      try {
+        const res = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        if (res.ok) {
+          setDriveConnectedUI(true);
+          await getOrCreateAppFolder();
+          await loadRulesFromDrive();
+          if (!document.getElementById('entries-library-modal').classList.contains('hidden')) {
+            await loadEntriesFromDrive();
+          }
+          return true;
         }
-        return response.json();
+      } catch(e) { console.warn("Drive token validation failed:", e); }
+      
+      clearSavedDriveToken();
+      return false;
     }
 
-    async function ensureFolderExists() {
-        if (driveFolderId) return driveFolderId;
-        const data = await driveFetch(`files?q=name='${FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false&fields=files(id)`);
+    async function checkSavedDriveToken() {
+      if (accessToken && Date.now() < parseInt(tokenExpiry, 10)) {
+        const isValid = await verifyAndInitDrive();
+        if (isValid) return true;
+      }
+      clearSavedDriveToken();
+      return false;
+    }
+
+    function clearSavedDriveToken() {
+      accessToken = null;
+      tokenExpiry = 0;
+      isDriveConnected = false;
+      localStorage.removeItem('gdrive_access_token');
+      localStorage.removeItem('gdrive_token_expiry');
+      setDriveDisconnectedUI();
+    }
+
+    function setDriveConnectedUI(connected) {
+      isDriveConnected = connected;
+      if (connected) hideInitialOverlay();
+      const btn = document.getElementById('drive-auth-btn');
+      if (!btn) return;
+      if (connected) {
+        btn.innerHTML = `
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
+            <mask id="drive-logo-mask-conn" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
+              <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+            </mask>
+            <g mask="url(#drive-logo-mask-conn)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
+              <path fill="url(#drive-logo-b-conn)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
+              <path fill="url(#drive-logo-c-conn)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
+              <path fill="url(#drive-logo-d-conn)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+            </g>
+            <defs>
+              <linearGradient id="drive-logo-b-conn" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
+                <stop offset=".09" stop-color="#ffe921"/>
+                <stop offset="1" stop-color="#fec700"/>
+              </linearGradient>
+              <linearGradient id="drive-logo-c-conn" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
+                <stop offset=".15" stop-color="#a9a8ff"/>
+                <stop offset=".33" stop-color="#6d97ff"/>
+                <stop offset=".48" stop-color="#3186ff"/>
+              </linearGradient>
+              <linearGradient id="drive-logo-d-conn" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
+                <stop offset=".55" stop-color="#0ebc5f"/>
+                <stop offset=".85" stop-color="#78c9ff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Drive Connected ✓</span>
+        `;
+        btn.className = 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-emerald-500 font-medium';
+      } else {
+        setDriveDisconnectedUI();
+      }
+    }
+
+    function setDriveDisconnectedUI() {
+      isDriveConnected = false;
+      showInitialOverlay();
+      const btn = document.getElementById('drive-auth-btn');
+      if (!btn) return;
+      btn.innerHTML = `
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
+          <mask id="drive-logo-mask" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
+            <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+          </mask>
+          <g mask="url(#drive-logo-mask)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
+            <path fill="url(#drive-logo-b)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
+            <path fill="url(#drive-logo-c)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
+            <path fill="url(#drive-logo-d)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+          </g>
+          <defs>
+            <linearGradient id="drive-logo-b" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
+              <stop offset=".09" stop-color="#ffe921"/>
+              <stop offset="1" stop-color="#fec700"/>
+            </linearGradient>
+            <linearGradient id="drive-logo-c" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
+              <stop offset=".15" stop-color="#a9a8ff"/>
+              <stop offset=".33" stop-color="#6d97ff"/>
+              <stop offset=".48" stop-color="#3186ff"/>
+            </linearGradient>
+            <linearGradient id="drive-logo-d" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
+              <stop offset=".55" stop-color="#0ebc5f"/>
+              <stop offset=".85" stop-color="#78c9ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Connect Drive</span>
+      `;
+      btn.className = 'text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium';
+      
+      const initBtn = document.getElementById('initial-drive-auth-btn');
+      if (initBtn) {
+        initBtn.disabled = false;
+        initBtn.innerHTML = `
+          <svg class="w-5 h-5 shrink-0" viewBox="0 0 800 741.37" fill="none">
+            <mask id="drive-logo-mask-init" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
+              <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+            </mask>
+            <g mask="url(#drive-logo-mask-init)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
+              <path fill="url(#drive-logo-b-init)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
+              <path fill="url(#drive-logo-c-init)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
+              <path fill="url(#drive-logo-d-init)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+            </g>
+            <defs>
+              <linearGradient id="drive-logo-b-init" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
+                <stop offset=".09" stop-color="#ffe921"/>
+                <stop offset="1" stop-color="#fec700"/>
+              </linearGradient>
+              <linearGradient id="drive-logo-c-init" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
+                <stop offset=".15" stop-color="#a9a8ff"/>
+                <stop offset=".33" stop-color="#6d97ff"/>
+                <stop offset=".48" stop-color="#3186ff"/>
+              </linearGradient>
+              <linearGradient id="drive-logo-d-init" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
+                <stop offset=".55" stop-color="#0ebc5f"/>
+                <stop offset=".85" stop-color="#78c9ff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Connect Google Drive</span>
+        `;
+      }
+    }
+
+    function resetDriveButtonLoading() {
+      if (isDriveConnected) setDriveConnectedUI(true);
+      else setDriveDisconnectedUI();
+    }
+
+    function handleDriveAuthClick(e) {
+      if (e) e.preventDefault();
+      
+      if (isDriveConnected) {
+        if (confirm("Google Drive is currently connected. Click OK to re-authorize or switch account, or Cancel to keep existing connection.")) {
+          clearSavedDriveToken();
+        } else {
+          return;
+        }
+      }
+
+      const btn1 = document.getElementById('drive-auth-btn');
+      const btn2 = document.getElementById('initial-drive-auth-btn');
+      [btn1, btn2].forEach(btn => {
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = `<span class="animate-spin text-indigo-600 font-bold">↻</span> <span>Redirecting...</span>`;
+        }
+      });
+
+      // Execute Redirect Authentication
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${encodeURIComponent(SCOPES)}&prompt=consent`;
+      window.location.href = authUrl;
+    }
+
+    function showDriveAuthErrorModal(errCode, errDetail) {
+      const modal = document.getElementById('drive-auth-error-modal');
+      const msgEl = document.getElementById('drive-error-msg');
+      const originEl = document.getElementById('drive-current-origin');
+      
+      if (msgEl) msgEl.textContent = `[${errCode}] ${errDetail || ''}`;
+      if (originEl) originEl.value = window.location.origin;
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeDriveAuthErrorModal() {
+      const modal = document.getElementById('drive-auth-error-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyCurrentOrigin() {
+      const originEl = document.getElementById('drive-current-origin');
+      if (originEl) {
+        navigator.clipboard.writeText(originEl.value).then(() => showToast("Origin copied!")).catch(() => {
+          originEl.select(); document.execCommand('copy'); showToast("Origin copied!");
+        });
+      }
+    }
+
+    async function applyManualAccessToken() {
+      const tokenInp = document.getElementById('manual-access-token-input');
+      const token = tokenInp ? tokenInp.value.trim() : '';
+      if (!token) { showToast("Please paste an access token."); return; }
+
+      accessToken = token;
+      tokenExpiry = Date.now() + 3600 * 1000;
+      localStorage.setItem('gdrive_access_token', accessToken);
+      localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
+
+      const isValid = await verifyAndInitDrive();
+      if (isValid) {
+        closeDriveAuthErrorModal();
+        showToast("Google Drive Connected with Manual Token!");
+      } else {
+        showToast("Token invalid or expired.");
+      }
+    }
+
+    // Direct REST API fetch wrapper
+    async function driveFetch(url, options = {}) {
+      if (!accessToken) throw new Error("Not authenticated");
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = `Bearer ${accessToken}`;
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const errText = await res.text();
+        if (res.status === 401) {
+          clearSavedDriveToken();
+          showToast("Drive session expired. Please click 'Connect Drive' again.");
+        }
+        throw new Error(`Drive API Error ${res.status}: ${errText}`);
+      }
+      return res;
+    }
+
+    async function getOrCreateAppFolder() {
+      if (!accessToken) return;
+      try {
+        const q = encodeURIComponent(`mimeType='application/vnd.google-apps.folder' and name='${FOLDER_NAME}' and trashed=false`);
+        const res = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+        const data = await res.json();
         if (data.files && data.files.length > 0) {
-            driveFolderId = data.files[0].id;
-            return driveFolderId;
-        }
-        const createData = await fetch('https://www.googleapis.com/drive/v3/files', {
+          driveFolderId = data.files[0].id;
+        } else {
+          const createRes = await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id', {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
-        }).then(res => res.json());
-        driveFolderId = createData.id;
-        return driveFolderId;
+          });
+          const createData = await createRes.json();
+          driveFolderId = createData.id;
+        }
+        const statusEl = document.getElementById('library-folder-status');
+        if (statusEl) statusEl.textContent = `Connected: ${FOLDER_NAME}`;
+      } catch (e) { console.error("Error creating/finding folder", e); }
     }
 
-    async function loadEntriesFromFolder() {
-        if (!accessToken) return;
-        const folderId = await ensureFolderExists();
-        const data = await driveFetch(`files?q='${folderId}' in parents and trashed=false&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`);
+    async function uploadJsonToDrive(fileName, content) {
+      if (!accessToken || !driveFolderId) return;
+      try {
+        const q = encodeURIComponent(`name='${fileName}' and '${driveFolderId}' in parents and trashed=false`);
+        const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`);
+        const searchData = await searchRes.json();
+        const existingFileId = searchData.files && searchData.files.length > 0 ? searchData.files[0].id : null;
         
-        let foundPronRules = false;
-        let foundVarRules = false;
+        const fileMetadata = { name: fileName, parents: existingFileId ? [] : [driveFolderId] };
+        const boundary = '-------314159265358979323846';
+        const delimiter = "\r\n--" + boundary + "\r\n";
+        const close_delim = "\r\n--" + boundary + "--";
+        const multipartRequestBody =
+          delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(fileMetadata) +
+          delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + content + close_delim;
 
-        driveEntries = data.files ? data.files.filter(f => {
-            if (f.name === '_pronunciation_rules.json') { foundPronRules = true; syncRulesFromDrive(f.id, 'pron'); return false; }
-            if (f.name === '_variant_rules.json') { foundVarRules = true; syncRulesFromDrive(f.id, 'var'); return false; }
-            return f.name.endsWith('.json');
-        }) : [];
+        const url = existingFileId
+          ? `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=multipart`
+          : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+
+        await driveFetch(url, {
+          method: existingFileId ? 'PATCH' : 'POST',
+          headers: { 'Content-Type': `multipart/related; boundary="${boundary}"` },
+          body: multipartRequestBody
+        });
+      } catch (e) { console.error("Upload failed", e); }
+    }
+
+    async function readJsonFromDrive(fileName) {
+      if (!accessToken || !driveFolderId) return null;
+      try {
+        const q = encodeURIComponent(`name='${fileName}' and '${driveFolderId}' in parents and trashed=false`);
+        const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`);
+        const searchData = await searchRes.json();
+        if (searchData.files && searchData.files.length > 0) {
+          const fileId = searchData.files[0].id;
+          const getRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
+          return await getRes.json();
+        }
+      } catch (e) { console.error("Read failed", e); }
+      return null;
+    }
+
+    async function syncRulesToDrive() {
+      if (!isDriveConnected || !driveFolderId || !db) return;
+      const getStoreData = (storeName) => new Promise((resolve) => {
+        const tx = db.transaction(storeName, 'readonly');
+        tx.objectStore(storeName).getAll().onsuccess = (e) => resolve(e.target.result);
+      });
+      const pRules = await getStoreData('pronunciation_rules');
+      await uploadJsonToDrive('_pronunciation_rules.json', JSON.stringify(pRules, null, 2));
+      const vRules = await getStoreData('variant_rules');
+      await uploadJsonToDrive('_variant_rules.json', JSON.stringify(vRules, null, 2));
+    }
+
+    async function loadRulesFromDrive() {
+      if (!isDriveConnected || !driveFolderId) return;
+      try {
+        const pRules = await readJsonFromDrive('_pronunciation_rules.json');
+        if (pRules && Array.isArray(pRules)) {
+          const tx = db.transaction('pronunciation_rules', 'readwrite');
+          pRules.forEach(r => tx.objectStore('pronunciation_rules').put(r));
+        }
+        const vRules = await readJsonFromDrive('_variant_rules.json');
+        if (vRules && Array.isArray(vRules)) {
+          const tx = db.transaction('variant_rules', 'readwrite');
+          vRules.forEach(r => tx.objectStore('variant_rules').put(r));
+        }
         
-        if (!foundPronRules) saveRulesToDrive('pron');
-        if (!foundVarRules) saveRulesToDrive('var');
-        renderEntriesLibrary();
+        // Force an upward sync to ensure any local rules created before connecting are backed up to Drive
+        await syncRulesToDrive();
+      } catch (e) {
+        console.error("Failed to sync rules from drive", e);
+      }
     }
 
     async function saveEntryToDrive() {
-        if (!accessToken) return showToast("Connect Drive first");
-        if (!postTitle.trim()) return showToast("Entry needs a title");
+      if (!isDriveConnected) { showToast("Please 'Connect Drive' first!"); return; }
+      const title = entryData.postTitle.trim() || 'Untitled_Entry';
+      const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+      showToast("Saving to Drive...");
+      await uploadJsonToDrive(fileName, JSON.stringify(entryData, null, 2));
+      showToast(`Saved to ${fileName}`);
+      markClean();
+    }
+
+    let libraryEntriesCache = [];
+    async function loadEntriesFromDrive() {
+      if (!isDriveConnected || !driveFolderId) return;
+      const list = document.getElementById('library-entries-list');
+      list.innerHTML = `<p class="text-slate-400 text-xs">Loading files from Google Drive...</p>`;
+      libraryEntriesCache = [];
+
+      try {
+        const q = encodeURIComponent(`'${driveFolderId}' in parents and mimeType='application/json' and trashed=false`);
+        const listRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+        const data = await listRes.json();
         
-        const folderId = await ensureFolderExists();
-        const fileName = `${postTitle.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
-        
-        const entryData = {
-            postTitle, altEnglishTerms, globalRules, globalPronRules, terms, references, lastModified: new Date().toISOString()
-        };
-        
-        const existingData = await driveFetch(`files?q=name='${fileName}' and '${folderId}' in parents and trashed=false&fields=files(id)`);
-        
-        let url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-        let method = 'POST';
-        
-        let metadata = { name: fileName, parents: [folderId], mimeType: 'application/json' };
-        if (existingData.files && existingData.files.length > 0) {
-            url = `https://www.googleapis.com/upload/drive/v3/files/${existingData.files[0].id}?uploadType=multipart`;
-            method = 'PATCH';
-            metadata = { mimeType: 'application/json' };
+        if (!data.files || data.files.length === 0) {
+          list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Drive folder yet.</p>`;
+          return;
         }
-        
-        const fileContent = JSON.stringify(entryData, null, 2);
-        const boundary = '-------314159265358979323846';
-        const delimiter = `\r\n--${boundary}\r\n`;
-        const close_delim = `\r\n--${boundary}--`;
 
-        const multipartRequestBody =
-            delimiter +
-            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-            JSON.stringify(metadata) +
-            delimiter +
-            'Content-Type: application/json\r\n\r\n' +
-            fileContent +
-            close_delim;
-
-        await fetch(url, {
-            method: method,
-            headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': `multipart/related; boundary="${boundary}"` },
-            body: multipartRequestBody
-        });
-        showToast("Entry saved to Drive!");
-        loadEntriesFromFolder();
-    }
-
-    async function loadEntryDataFromDrive(fileId) {
-        showToast("Loading entry...");
-        const data = await driveFetch(`files/${fileId}?alt=media`);
-        postTitle = data.postTitle || "";
-        altEnglishTerms = data.altEnglishTerms || "";
-        globalRules = data.globalRules || [];
-        globalPronRules = data.globalPronRules || [];
-        terms = data.terms || [];
-        references = data.references || [];
-        
-        document.getElementById('post-title').value = postTitle;
-        document.getElementById('alt-english-terms').innerHTML = altEnglishTerms;
-        updateStateFromForm();
-        closeEntriesLibrary();
-        showToast("Entry loaded!");
-    }
-
-    // --- Master Rules Cloud Sync ---
-    async function syncRulesFromDrive(fileId, type) {
-        const data = await driveFetch(`files/${fileId}?alt=media`);
-        if (data && Array.isArray(data)) {
-            const storeName = type === 'pron' ? "pronunciation_rules" : "variant_rules";
-            const tx = db.transaction(storeName, "readwrite");
-            const store = tx.objectStore(storeName);
-            store.clear();
-            data.forEach(rule => store.put(rule));
+        for (const file of data.files) {
+          if (file.name.startsWith('_')) continue; // Skip rule files
+          const content = await readJsonFromDrive(file.name);
+          if (content) {
+            const enTitle = content.postTitle || "";
+            const altEn = content.altEnglishTerms || "";
+            const vnTerms = (content.terms || []).map(t => {
+              const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
+            }).join(' ');
+            libraryEntriesCache.push({ name: file.name, fileId: file.id, data: content, searchStr: `${enTitle} ${altEn} ${vnTerms}`.toLowerCase() });
+          }
         }
-    }
-
-    async function saveRulesToDrive(type) {
-        if (!accessToken || !db) return;
-        const storeName = type === 'pron' ? "pronunciation_rules" : "variant_rules";
-        const fileName = type === 'pron' ? "_pronunciation_rules.json" : "_variant_rules.json";
-        const folderId = await ensureFolderExists();
-        
-        const tx = db.transaction(storeName, "readonly");
-        const store = tx.objectStore(storeName);
-        const req = store.getAll();
-        
-        req.onsuccess = async function() {
-            const rules = req.result;
-            const existingData = await driveFetch(`files?q=name='${fileName}' and '${folderId}' in parents and trashed=false&fields=files(id)`);
-            let url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-            let method = 'POST';
-            let metadata = { name: fileName, parents: [folderId], mimeType: 'application/json' };
-            if (existingData.files && existingData.files.length > 0) {
-                url = `https://www.googleapis.com/upload/drive/v3/files/${existingData.files[0].id}?uploadType=multipart`;
-                method = 'PATCH';
-                metadata = { mimeType: 'application/json' };
-            }
-            
-            const boundary = '-------314159265358979323846';
-            const multipartRequestBody =
-                `\r\n--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n` +
-                JSON.stringify(metadata) +
-                `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n` +
-                JSON.stringify(rules, null, 2) +
-                `\r\n--${boundary}--`;
-            
-            await fetch(url, {
-                method: method,
-                headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': `multipart/related; boundary="${boundary}"` },
-                body: multipartRequestBody
-            });
-        };
+        filterLibraryEntries();
+      } catch (e) { 
+        console.error(e);
+        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Drive folder: ${e.message}</p>`; 
+      }
     }
 
     /* ==========================================================================
-       3. CORE LOGIC (DB CRUD, UI, PREVIEW)
+       1. STATE MANAGEMENT, PRESETS, & INDEXED_DB STORAGE
        ========================================================================== */
-    function showToast(msg) {
-        const el = document.getElementById('toast');
-        document.getElementById('toast-msg').innerText = msg;
-        el.classList.remove('translate-y-20', 'opacity-0');
-        setTimeout(() => el.classList.add('translate-y-20', 'opacity-0'), 2500);
+    const PRESET_LABELS = ["Vernacular", "Jargon", "Rare", "Northern", "Central", "Southern", "Traditional medicine"];
+    const IPA_SYMBOLS = ['ᵶ', 'ꭨ', 'ⱴ', 'ʷ', 'ʰ', 'd͡ʒ', 'ʃ', 'ʒ', 'ɛ', 'ə', 'ɔ', 'ɨ', 'ᵼ', 'ꬿ', 'ᵰ', 'ᵵ', 'ɲ', 'ŋ', 'ɣ', 'ʝ', 'ɹ', 'ʂ', 'ʈ', '\u0306', '\u0301', '\u0300', '\u0309', '\u0303', '\u0323'];
+
+    let currentTab = 'form';
+    let isDarkPreview = false;
+    let activeHeadwordEditorId = null;
+    let savedRange = null;
+    let activeIPAInput = null;
+    let savedQuoteRange = null;
+    let savedQuoteEditorIdx = null;
+    let activeAnnotationSpan = null;
+    let activeAnnotationTermId = null;
+    let activeQuoteRefIdx = null;
+    let db = null;
+    let autoSaveTimeout = null;
+    let activeRuleSelectorType = null;
+    let activeRuleSelectorTargetInput = null;
+
+    let entryData = getBlankEntry();
+
+    function getBlankEntry() {
+      return {
+        postTitle: "", altEnglishTerms: "", globalVariantRules: [], globalPronunciationRules: [],
+        terms: [{ id: "term-" + Date.now(), headwordHTML: "", labels: [], customLabels: [], commentsHTML: "" }],
+        references: []
+      };
     }
 
-    function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
-    function sanitizeHeadwordHTML(html) {
-        if (!html) return "";
-        let clean = html.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '');
-        clean = clean.replace(/<p[^>]*>/gi, '<br>').replace(/<\/p>/gi, '');
-        clean = clean.replace(/<span[^>]*>/gi, '').replace(/<\/span>/gi, '');
-        clean = clean.replace(/<h\d[^>]*>/gi, '').replace(/<\/h\d>/gi, '');
-        clean = clean.replace(/style="[^"]*"/gi, '');
-        clean = clean.replace(/class="[^"]*"/gi, '');
-        clean = clean.replace(/(<br\s*\/?>\s*)+/gi, '<br>');
-        return clean.replace(/^<br\s*\/?>/i, '').trim();
+    function attemptResetToBlankState() {
+      if (hasUnsavedChanges && !confirm("You have unsaved changes. Are you sure you want to clear the editor?")) return;
+      entryData = getBlankEntry();
+      renderFormUI();
+      markClean();
+      showToast("Cleared entry");
     }
-    
-    function switchTab(tabId) {
-        ['form', 'code', 'import'].forEach(t => {
-            document.getElementById(`tab-content-${t}`).classList.toggle('hidden', t !== tabId);
-            const btn = document.getElementById(`tab-btn-${t}`);
-            if (t === tabId) {
-                btn.classList.add('bg-rose-600', 'text-white', 'shadow-sm');
-                btn.classList.remove('text-slate-400', 'hover:text-slate-200');
-            } else {
-                btn.classList.remove('bg-rose-600', 'text-white', 'shadow-sm');
-                btn.classList.add('text-slate-400', 'hover:text-slate-200');
+
+    async function initDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('DictStudioDB', 1);
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('active_draft')) database.createObjectStore('active_draft', { keyPath: 'id' });
+          if (!database.objectStoreNames.contains('pronunciation_rules')) database.createObjectStore('pronunciation_rules', { keyPath: 'id' }).createIndex('target', 'target', { unique: false });
+          if (!database.objectStoreNames.contains('variant_rules')) database.createObjectStore('variant_rules', { keyPath: 'id' }).createIndex('find', 'find', { unique: false });
+          if (!database.objectStoreNames.contains('config')) database.createObjectStore('config', { keyPath: 'id' });
+        };
+        req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+        req.onerror = (e) => reject(e);
+      });
+    }
+
+    function autoSaveDraft() {
+      if (!db) return;
+      if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        try {
+          const tx = db.transaction('active_draft', 'readwrite');
+          tx.objectStore('active_draft').put({ id: 'current_draft', data: entryData, updatedAt: Date.now() });
+          markDirty(); // Any typing marks the file as dirty
+        } catch (e) { console.error("Auto-save error:", e); }
+      }, 300);
+    }
+
+    async function loadDraft() {
+      if (!db) return;
+      return new Promise((resolve) => {
+        const tx = db.transaction('active_draft', 'readonly');
+        const req = tx.objectStore('active_draft').get('current_draft');
+        req.onsuccess = () => { if (req.result && req.result.data) entryData = req.result.data; resolve(); };
+        req.onerror = () => resolve();
+      });
+    }
+
+    function savePronRuleToDB(target, ipa) {
+      if(!db || !target.trim() || !ipa.trim()) return;
+      const t = target.trim();
+      const tx = db.transaction('pronunciation_rules', 'readwrite');
+      const store = tx.objectStore('pronunciation_rules');
+      const id = 'pron_' + t.toLowerCase();
+      store.put({ id, target: t, ipa: ipa.trim(), quốcNgữ: convertQuasiIPA(ipa.trim()), createdAt: Date.now() });
+      tx.oncomplete = () => syncRulesToDrive();
+    }
+
+    function saveVarRuleToDB(find, variantsStr) {
+      if(!db || !find.trim() || !variantsStr.trim()) return;
+      const f = find.trim();
+      const tx = db.transaction('variant_rules', 'readwrite');
+      const store = tx.objectStore('variant_rules');
+      const id = 'var_' + f.toLowerCase();
+      store.put({ id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now() });
+      tx.oncomplete = () => syncRulesToDrive();
+    }
+
+    /* ==========================================================================
+       2. TRANSLITERATION ENGINE
+       ========================================================================== */
+    function convertQuasiIPA(ipaInput) {
+      if (!ipaInput) return "";
+      let cleaned = ipaInput.trim();
+      if (cleaned.startsWith('/') && cleaned.endsWith('/')) cleaned = cleaned.slice(1, -1).trim();
+      return cleaned.split('~').map(alt => convertSingleIPAPhrase(alt.trim())).join(' ~ ');
+    }
+
+    function convertSingleIPAPhrase(phrase) {
+      return phrase.split(/\s+/).map(word => word.split('.').map(syl => convertIPASyllable(syl)).join('-')).join(' ');
+    }
+
+    function convertIPASyllable(syl) {
+      if (!syl) return "";
+      let res = syl.replace(/d͡ʒ/g, 'ᴊ').replace(/ꭨ/g, 'ʀ').replace(/ᵰ/g, 'ɴ').replace(/ᵵ/g, 'ᴛ').replace(/ꬿ/g, 'oo')
+                   .replace(/ʒ/g, 'j').replace(/ʝ/g, 'gi').replace(/ᵶ/g, 'z').replace(/ⱴ/g, 'ⱴ').replace(/ᵼ/g, 'ɪ').replace(/j/g, 'ʏ')
+                   .replace(/^tʰ/, 'th').replace(/^ʈ/, 'tr').replace(/^ngh(?=[i|e|ê|y|ɪ])/g, 'ngh').replace(/^ŋ(?=[i|e|ê|y|ɪ])/g, 'ngh')
+                   .replace(/^ŋ/g, 'ng').replace(/^ɣ(?=[i|e|ê|y|ɪ])/g, 'gh').replace(/^ɣ/g, 'g').replace(/^k(?=[i|e|ê|y|ɪ])/g, 'k')
+                   .replace(/^k(?=u)/g, 'q').replace(/^k/g, 'c').replace(/^c/g, 'ch').replace(/^z/g, 'd').replace(/^d/g, 'đ')
+                   .replace(/^x/g, 'kh').replace(/^ɲ/g, 'nh').replace(/^f/g, 'ph').replace(/^ɹ/g, 'r').replace(/^ʂ/g, 's').replace(/^s/g, 'x')
+                   .replace(/ɨə/g, 'ươ').replace(/ɨ/g, 'ư').replace(/ə̆/g, 'â').replace(/ə/g, 'ơ').replace(/ɛ/g, 'e')
+                   .replace(/e/g, 'ê').replace(/ɔ/g, 'o').replace(/o/g, 'ô').replace(/uə/g, 'uô').replace(/iə/g, 'iê')
+                   .replace(/(?<=[a-zA-Zàáảãạăằắẳẵặâầấẩẫậeèéẻẽẹêềếểễệiìíỉĩịoòóỏõọôồốổỗộơờớởỡợuùúủũụưừứửữựyỳýỷỹỵɪoo])k([\u0300-\u036f]*)$/gi, 'c$1');
+      if (res.endsWith('k') && !res.endsWith('hk')) res = res.slice(0, -1) + 'c';
+      else if (res.endsWith('c') && !res.endsWith('ch')) res = res.slice(0, -1) + 'ch';
+      else if (res.endsWith('ŋ')) res = res.slice(0, -1) + 'ng';
+      else if (res.endsWith('ɲ')) res = res.slice(0, -1) + 'nh';
+      return res;
+    }
+
+    /* ==========================================================================
+       3. SANITIZER & PARSERS
+       ========================================================================== */
+    function escapeRegExp(string) { return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+    function createWholeWordRegex(term) { return new RegExp(`(?<=^|[^\\p{L}\\p{M}\\p{N}_])${escapeRegExp(term.trim())}(?=[^\\p{L}\\p{M}\\p{N}_]|$)`, 'gui'); }
+
+    function processHeadwordWithGlobalRules(rawHTML, targetData = entryData) {
+      if (!rawHTML) return rawHTML;
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = rawHTML;
+      const applyRules = (rules, isPron) => {
+        if (!rules) return;
+        rules.forEach(rule => {
+          const t = (isPron ? rule.target : rule.find)?.trim();
+          if (!t) return;
+          const val = isPron ? convertQuasiIPA(rule.ipa) : parseVariantsString(rule.variantsStr).join(', ');
+          const regex = createWholeWordRegex(t);
+          const walk = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+          const nodes = [];
+          let node;
+          while (node = walk.nextNode()) if (!node.parentElement.closest('.pronunciation, .lexical-variant')) nodes.push(node);
+          nodes.forEach(n => {
+            if (regex.test(n.nodeValue)) {
+              regex.lastIndex = 0;
+              const wrapper = document.createElement('span');
+              wrapper.innerHTML = n.nodeValue.replace(regex, `<span class="${isPron?'pronunciation':'lexical-variant'}" data-${isPron?'pronunciation':'variant'}="${escapeAttr(val)}">$&</span>`);
+              n.replaceWith(...wrapper.childNodes);
             }
+          });
         });
-        if (tabId === 'code') document.getElementById('raw-html-editor').value = generateHTML();
+      };
+      applyRules(targetData.globalPronunciationRules, true);
+      applyRules(targetData.globalVariantRules, false);
+      return tempDiv.innerHTML;
     }
 
-    function searchUMLS() {
-        const term = document.getElementById('post-title').value.trim();
-        if(term) window.open(`https://uts.nlm.nih.gov/uts/umls/searchResults?searchString=${encodeURIComponent(term)}`, '_blank');
-        else showToast("Enter an English Headword first.");
+    function parseVariantsString(str) { return (str||"").split(/[\n,]+/).map(v => v.trim()).filter(Boolean); }
+
+    function formatHeadwordAsBrSeparated(rawHTML) {
+      if (!rawHTML) return "";
+      const temp = document.createElement('div');
+      temp.innerHTML = rawHTML;
+      const lines = [];
+      let currentLine = "";
+      function walk(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const pts = node.nodeValue.split(/\r?\n/);
+          pts.forEach((p, i) => { if(i>0){ lines.push(currentLine.trim()); currentLine = ""; } currentLine += p; });
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'br') { lines.push(currentLine.trim()); currentLine = ""; }
+          else if (tag === 'div' || tag === 'p') { if(currentLine.trim()){lines.push(currentLine.trim()); currentLine="";} node.childNodes.forEach(walk); if(currentLine.trim()){lines.push(currentLine.trim()); currentLine="";} }
+          else currentLine += node.outerHTML;
+        }
+      }
+      temp.childNodes.forEach(walk);
+      if (currentLine.trim()) lines.push(currentLine.trim());
+      return lines.filter(Boolean).join('<br>');
     }
 
-    function updateStateFromForm() {
-        postTitle = document.getElementById('post-title').value;
-        terms.forEach(t => {
-            t.headwordHTML = sanitizeHeadwordHTML(document.getElementById(`term-hw-${t.id}`).innerHTML);
-            t.commentsHTML = document.getElementById(`term-com-${t.id}`).innerHTML;
-            
-            const labels = [];
-            document.querySelectorAll(`input[name="labels-${t.id}"]:checked`).forEach(cb => labels.push(cb.value));
-            t.labels = labels;
-        });
-        references.forEach(r => {
-            r.authors = document.getElementById(`ref-auth-${r.id}`).value;
-            r.title = document.getElementById(`ref-title-${r.id}`).value;
-            r.titleFormat = document.getElementById(`ref-format-${r.id}`).value;
-            r.pages = document.getElementById(`ref-pages-${r.id}`).value;
-            r.quoteHTML = document.getElementById(`ref-quote-${r.id}`).innerHTML;
-        });
-        updatePreview();
+    function formatAltEnglishOutput(rawHTML) {
+      if (!rawHTML) return "";
+      const temp = document.createElement('div');
+      // Convert block elements (div, p) into <br> tags to normalize line breaks, 
+      // then split by <br> or newline characters (\n)
+      temp.innerHTML = rawHTML.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '').replace(/<p[^>]*>/gi, '<br>').replace(/<\/p>/gi, '');
+      const lines = temp.innerHTML.split(/<br\s*\/?>|\n/gi);
+      return lines.map(l => l.trim()).filter(Boolean).join('; ');
     }
 
-    function onAltEnglishTermsInput() { altEnglishTerms = document.getElementById('alt-english-terms').innerHTML; updatePreview(); }
-    function formatAltEnglishText(cmd) { document.execCommand(cmd, false, null); updateStateFromForm(); document.getElementById('alt-english-terms').focus(); }
+    function computeAutomaticAltSpellings(targetData = entryData) {
+      const altSpellingsSet = new Set();
+      (targetData.terms || []).forEach(term => {
+        const formatted = formatHeadwordAsBrSeparated(processHeadwordWithGlobalRules(term.headwordHTML || "", targetData));
+        formatted.split(/<br\s*\/?>/gi).forEach(line => {
+          if (!line.trim()) return;
+          const temp = document.createElement('div'); temp.innerHTML = line;
+          if (temp.querySelectorAll('.lexical-variant').length === 0) return;
+          let combos = [""];
+          Array.from(temp.childNodes).forEach(child => {
+            const opts = (child.nodeType === Node.ELEMENT_NODE && child.classList.contains('lexical-variant')) ? [child.textContent, ...parseVariantsString(child.getAttribute('data-variant')||"")] : [child.textContent];
+            const next = [];
+            combos.forEach(pfx => opts.forEach(o => next.push(pfx + o)));
+            combos = next;
+          });
+          combos.forEach(c => { if(c.trim() && c.trim() !== temp.textContent.trim()) altSpellingsSet.add(c.trim()); });
+        });
+      });
+      return Array.from(altSpellingsSet).join(', ');
+    }
 
-    function addNewTerm() { terms.push({ id: generateId(), headwordHTML: '', labels: [], commentsHTML: '' }); renderTermsUI(); updatePreview(); }
-    function deleteTerm(id) { terms = terms.filter(t => t.id !== id); renderTermsUI(); updatePreview(); }
+    function sanitizeHTMLBlock(rawHtml) {
+      if (!rawHtml) return '';
+      const doc = new DOMParser().parseFromString(`<div>${rawHtml}</div>`, 'text/html');
+      const root = doc.body.firstElementChild;
+      root.querySelectorAll('*').forEach(el => ['style','class','width','height','id','dir','align','valign','cellspacing','cellpadding','border','color','face','size'].forEach(a => el.removeAttribute(a)));
+      root.querySelectorAll('span').forEach(s => { if(s.attributes.length===0) s.replaceWith(doc.createTextNode(s.innerHTML)); });
+      root.querySelectorAll('div').forEach(d => { if(d.querySelector('table, p, blockquote')){ while(d.firstChild) d.parentNode.insertBefore(d.firstChild, d); d.remove(); } else { const p = doc.createElement('p'); p.innerHTML = d.innerHTML; d.parentNode.replaceChild(p, d); }});
+      
+      const childNodes = Array.from(root.childNodes);
+      let curP = null;
+      childNodes.forEach(n => {
+        const isInline = n.nodeType===3 || (n.nodeType===1 && ['sub','sup','b','i','u','strong','em','span','a','code','small','strike','br'].includes(n.tagName.toLowerCase()));
+        if (isInline) {
+          if(n.nodeType===3 && !n.nodeValue.trim() && !curP) { n.remove(); return; }
+          if(!curP) { curP = doc.createElement('p'); root.insertBefore(curP, n); }
+          curP.appendChild(n);
+        } else if (n.nodeType===1) {
+          const t = n.tagName.toLowerCase();
+          if(t==='p') curP = n;
+          else if(t==='table'||t==='blockquote') curP = null;
+          else { const p = doc.createElement('p'); p.innerHTML = n.innerHTML; n.replaceWith(p); curP = p; }
+        }
+      });
+      root.querySelectorAll('p').forEach(p => { if(!p.textContent.trim() && !p.querySelector('table, img, br, sub, sup')) p.remove(); });
+      return root.innerHTML.trim();
+    }
+
+    /* ==========================================================================
+       4. HTML RENDERER & UI BINDINGS
+       ========================================================================== */
+    function generateEntryHTML() {
+      let html = '';
+      const formattedAltEnglish = formatAltEnglishOutput(entryData.altEnglishTerms);
+      if (formattedAltEnglish) html += `<p><em>${formattedAltEnglish}</em></p>\n`;
+      
+      html += '<div class="medical-terms">\n';
+      entryData.terms.forEach(term => {
+        html += '  <section class="medical-term">\n';
+        html += `    <h3>${formatHeadwordAsBrSeparated(processHeadwordWithGlobalRules(term.headwordHTML || ""))}</h3>\n`;
+        const lbls = [...(term.labels || []), ...(term.customLabels || [])];
+        if (lbls.length > 0) html += '    <p>' + lbls.map(l => `<span class="term-label">${l}</span>`).join(' ') + '</p>\n';
+        if (term.commentsHTML?.trim()) html += sanitizeHTMLBlock(term.commentsHTML).split('\n').map(l => '    ' + l).join('\n') + '\n';
+        html += '  </section>\n';
+      });
+      html += '</div>\n';
+
+      const autoSp = computeAutomaticAltSpellings();
+      if (autoSp) html += `<p><em>Alternative spellings: ${autoSp}</em></p>\n`;
+
+      const validRefs = (entryData.references||[]).filter(r => r.authors?.trim() || r.title?.trim() || r.pages?.trim() || r.quoteHTML?.trim());
+      if (validRefs.length > 0) {
+        html += '<details>\n  <summary>References</summary>\n';
+        validRefs.sort((a, b) => {
+          if ((a.authors||"").toLowerCase() !== (b.authors||"").toLowerCase()) return (a.authors||"").localeCompare(b.authors||"");
+          if ((a.title||"").toLowerCase() !== (b.title||"").toLowerCase()) return (a.title||"").localeCompare(b.title||"");
+          const parseP = p => p?.match(/\d+/) ? parseInt(p.match(/\d+/)[0], 10) : 0;
+          return parseP(a.pages) - parseP(b.pages);
+        });
+        let prevA = null, prevT = null;
+        validRefs.forEach(r => {
+          const a = r.authors?.trim()||"", t = r.title?.trim()||"", p = r.pages?.trim()||"", q = sanitizeHTMLBlock(r.quoteHTML?.trim()||"");
+          const fp = p ? ( /^\d+$/.test(p) ? `p ${p}` : `pp ${p.replace(/(\d+)\s*-\s*(\d+)/g, '$1–$2')}` ) : "";
+          let cp = "";
+          if (prevA && a.toLowerCase() === prevA.toLowerCase()) {
+            if (prevT && t.toLowerCase() === prevT.toLowerCase()) cp = fp ? `<p>ibid., ${fp}.</p>` : `<p>ibid.</p>`;
+            else cp = `<p>${["id.", r.titleFormat==='quotes'?`‘${t}’`:`<em>${t}</em>`, fp].filter(Boolean).join(', ')}.</p>`;
+          } else {
+            let pts = [a, t ? (r.titleFormat==='quotes'?`‘${t}’`:`<em>${t}</em>`) : "", fp].filter(Boolean);
+            cp = `<p>${pts.join(', ')}${pts.join(', ').endsWith('.')?'':'.'}</p>`;
+          }
+          if (cp) html += `  ${cp}\n`;
+          if (q) html += `  <blockquote>\n    ${q}\n  </blockquote>\n`;
+          prevA = a; prevT = t;
+        });
+        html += '</details>\n';
+      }
+      return html;
+    }
+
+    function renderLivePreview() {
+      const gHTML = generateEntryHTML();
+      const codeEditor = document.getElementById('raw-html-editor');
+      if (document.activeElement !== codeEditor) codeEditor.value = gHTML;
+      document.getElementById('preview-post-title').textContent = entryData.postTitle || 'Entry Title';
+      
+      const out = document.getElementById('publii-live-output');
+      const wasOpen = out.querySelector('details')?.open ?? true;
+      out.innerHTML = gHTML;
+      const newDet = out.querySelector('details');
+      if (newDet) newDet.open = wasOpen;
+      autoSaveDraft();
+    }
+
+    function renderFormUI() {
+      document.getElementById('post-title').value = entryData.postTitle || "";
+      const altEl = document.getElementById('alt-english-terms');
+      if (altEl) altEl.innerHTML = entryData.altEnglishTerms || "";
+      renderGlobalPronunciationRulesUI();
+      renderGlobalRulesUI();
+      renderTermsUI();
+      renderReferencesListUI();
+      renderLivePreview();
+    }
+
+    function onAltEnglishTermsInput() { const e = document.getElementById('alt-english-terms'); if(e){ entryData.altEnglishTerms = e.innerHTML; renderLivePreview(); } }
+    function formatAltEnglishText(cmd) { const e = document.getElementById('alt-english-terms'); if(e){ e.focus(); document.execCommand(cmd, false, null); onAltEnglishTermsInput(); } }
+
+    function renderGlobalPronunciationRulesUI() {
+      const c = document.getElementById('global-pron-rules-container'); if (!c) return; c.innerHTML = '';
+      if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) { c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global rules.</p>`; return; }
+      entryData.globalPronunciationRules.forEach((r, idx) => {
+        const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
+        div.innerHTML = `
+          <div class="flex-1"><span class="text-[11px] text-slate-400 block">Target:</span><input value="${escapeAttr(r.target)}" oninput="updateGlobalPronRule(${idx}, 'target', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"></div>
+          <div class="flex-1"><span class="text-[11px] text-slate-400 block">IPA:</span><input value="${escapeAttr(r.ipa)}" oninput="updateGlobalPronRule(${idx}, 'ipa', this.value)" data-ipa-input="true" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono"></div>
+          <div class="flex-1"><span class="text-[11px] text-slate-400 block">Quấc ngữ:</span><div class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono italic h-[28px] overflow-hidden">${escapeAttr(convertQuasiIPA(r.ipa))}</div></div>
+          <button onclick="removeGlobalPronRule(${idx})" class="text-rose-400 mt-4">&times;</button>
+        `;
+        c.appendChild(div);
+      });
+    }
+    function addGlobalPronunciationRule() { if(!entryData.globalPronunciationRules) entryData.globalPronunciationRules=[]; entryData.globalPronunciationRules.push({target:"",ipa:""}); renderGlobalPronunciationRulesUI(); renderLivePreview(); }
+    function updateGlobalPronRule(idx, field, val) { entryData.globalPronunciationRules[idx][field] = val; savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa); renderGlobalPronunciationRulesUI(); renderLivePreview(); }
+    function removeGlobalPronRule(idx) { entryData.globalPronunciationRules.splice(idx,1); renderGlobalPronunciationRulesUI(); renderLivePreview(); }
+
+    function renderGlobalRulesUI() {
+      const c = document.getElementById('global-rules-container'); c.innerHTML = '';
+      if (!entryData.globalVariantRules || entryData.globalVariantRules.length === 0) { c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global variants.</p>`; return; }
+      entryData.globalVariantRules.forEach((r, idx) => {
+        const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
+        div.innerHTML = `
+          <div class="flex-1"><span class="text-[11px] text-slate-400 block">Main:</span><input value="${escapeAttr(r.find)}" oninput="updateGlobalRule(${idx}, 'find', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"></div>
+          <div class="flex-[2]"><span class="text-[11px] text-slate-400 block">Variants:</span><textarea rows="1" oninput="updateGlobalRule(${idx}, 'variantsStr', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-amber-300 font-mono resize-none">${escapeAttr(r.variantsStr)}</textarea></div>
+          <button onclick="removeGlobalRule(${idx})" class="text-rose-400 mt-4">&times;</button>
+        `;
+        c.appendChild(div);
+      });
+    }
+    function addGlobalVariantRule() { if(!entryData.globalVariantRules) entryData.globalVariantRules=[]; entryData.globalVariantRules.push({find:"",variantsStr:""}); renderGlobalRulesUI(); renderLivePreview(); }
+    function updateGlobalRule(idx, field, val) { entryData.globalVariantRules[idx][field] = val; saveVarRuleToDB(entryData.globalVariantRules[idx].find, entryData.globalVariantRules[idx].variantsStr); renderLivePreview(); }
+    function removeGlobalRule(idx) { entryData.globalVariantRules.splice(idx,1); renderGlobalRulesUI(); renderLivePreview(); }
 
     function renderTermsUI() {
-        const c = document.getElementById('terms-container');
-        c.innerHTML = terms.map((t, idx) => `
-          <div class="term-card bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 shadow-sm" draggable="true" ondragstart="handleDragStart(event, ${idx})" ondragover="handleDragOver(event)" ondrop="handleDrop(event, ${idx})" ondragend="handleDragEnd(event)">
-            <div class="flex justify-between items-start mb-3 gap-2">
-              <div class="drag-handle text-slate-500 hover:text-slate-300" title="Drag to reorder">⋮⋮</div>
-              <div class="flex-1 space-y-1 relative">
-                <div class="flex justify-between items-center"><label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Vietnamese Headword</label><div class="flex gap-1"><button onclick="document.getElementById('term-hw-${t.id}').focus(); document.execCommand('italic', false, null);" class="text-[10px] bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded italic">I</button></div></div>
-                <div id="term-hw-${t.id}" contenteditable="true" oninput="updateStateFromForm()" onmouseup="handleSelection(event)" class="headword-editor bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm focus:border-indigo-500 transition">${t.headwordHTML}</div>
-              </div>
-              <button onclick="deleteTerm('${t.id}')" class="text-rose-400 hover:bg-rose-500/10 p-1.5 rounded-lg transition mt-4"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-            </div>
-            <div class="mb-3 space-y-1"><label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Labels</label>
-              <div class="flex flex-wrap gap-2 text-xs">
-                ${['Vernacular','Traditional medicine','Northern dialect','Southern dialect'].map(l => 
-                  `<label class="flex items-center gap-1 bg-slate-900/50 px-2 py-1 rounded border border-slate-700"><input type="checkbox" name="labels-${t.id}" value="${l}" onchange="updateStateFromForm()" ${t.labels.includes(l)?'checked':''} class="accent-indigo-500 w-3 h-3 text-indigo-600 bg-slate-700 border-slate-600 rounded"> ${l}</label>`
-                ).join('')}
-              </div>
-            </div>
-            <div class="space-y-1">
-              <div class="flex justify-between items-center"><label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Explanatory Comments</label><div class="flex gap-1"><button onclick="document.getElementById('term-com-${t.id}').focus(); document.execCommand('bold', false, null);" class="px-1.5 py-0.5 text-[10px] bg-slate-900 border border-slate-700 rounded font-bold">B</button><button onclick="document.getElementById('term-com-${t.id}').focus(); document.execCommand('italic', false, null);" class="px-1.5 py-0.5 text-[10px] bg-slate-900 border border-slate-700 rounded italic">I</button><button onclick="document.getElementById('term-com-${t.id}').focus(); document.execCommand('underline', false, null);" class="px-1.5 py-0.5 text-[10px] bg-slate-900 border border-slate-700 rounded underline">U</button></div></div>
-              <div id="term-com-${t.id}" contenteditable="true" oninput="updateStateFromForm()" onmouseup="handleSelection(event)" class="comment-editor bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-300 focus:border-indigo-500 whitespace-pre-wrap">${t.commentsHTML}</div>
+      const c = document.getElementById('terms-container'); c.innerHTML = '';
+      entryData.terms.forEach((t, i) => {
+        const div = document.createElement('div'); div.className = "term-card bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 space-y-3";
+        div.innerHTML = `
+          <div class="flex justify-between pb-2 border-b border-slate-700/60">
+            <span class="text-xs font-bold text-slate-300">Term #${i+1}</span>
+            ${entryData.terms.length > 1 ? `<button onclick="removeTerm('${t.id}')" class="text-xs text-rose-400">Remove</button>` : ''}
+          </div>
+          <div><label class="block text-xs font-semibold text-slate-300 mb-1">Vietnamese Headword</label><div id="hw-editor-${t.id}" contenteditable="true" onfocus="activeHeadwordEditorId='${t.id}'" oninput="onHeadwordInput('${t.id}')" onclick="handleHeadwordSpanClick(event, '${t.id}')" class="headword-editor bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:border-rose-500"></div></div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Labels</label>
+            <div class="flex flex-wrap gap-1.5">
+              ${PRESET_LABELS.map(l => `<button onclick="togglePresetLabel('${t.id}','${l}')" class="text-xs px-2.5 py-1 rounded-full border transition ${(t.labels||[]).includes(l)?'bg-indigo-600 text-white border-indigo-500':'bg-slate-900 text-slate-400 border-slate-700'}">${l}</button>`).join('')}
             </div>
           </div>
-        `).join('');
-    }
-
-    // Drag and Drop Logic
-    function handleDragStart(e, index) { draggedTermIndex = index; e.dataTransfer.effectAllowed = 'move'; setTimeout(() => e.target.classList.add('dragging'), 0); }
-    function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
-    function handleDrop(e, index) {
-        e.preventDefault();
-        if (draggedTermIndex === null || draggedTermIndex === index) return;
-        const moved = terms.splice(draggedTermIndex, 1)[0];
-        terms.splice(index, 0, moved);
-        updateStateFromForm();
-        renderTermsUI();
-    }
-    function handleDragEnd(e) { e.target.classList.remove('dragging'); draggedTermIndex = null; }
-
-    /* ==========================================================================
-       4. HTML GENERATION & PREVIEW
-       ========================================================================== */
-    function generateHTML() {
-        let html = '';
-        if (globalRules.length > 0 || globalPronRules.length > 0) {
-            html += `<div style="display:none;" id="global-rules">\n`;
-            globalRules.forEach(r => { html += `  <span class="lexical-variant" data-variant="${r.variants.join(', ')}">${r.find}</span>\n`; });
-            globalPronRules.forEach(r => { html += `  <span class="pronunciation" data-pronunciation="${r.ipa}">${r.target}</span>\n`; });
-            html += `</div>\n`;
-        }
-        if (altEnglishTerms.trim()) html += `<p>${altEnglishTerms.trim()}</p>\n`;
-        if (terms.length > 0) {
-            html += `<div class="medical-terms">\n`;
-            terms.forEach(t => {
-                html += `  <section class="medical-term">\n    <h3>${t.headwordHTML}</h3>\n`;
-                if (t.labels.length > 0) html += `    <p>\n${t.labels.map(l => `      <span class="term-label">${l}</span>`).join('\n')}\n    </p>\n`;
-                if (t.commentsHTML.trim()) {
-                    t.commentsHTML.split(/<br\s*\/?>|<\/p><p>|<div><\/div>|\n/gi).forEach(p => {
-                        let text = p.replace(/<[^>]*>?/gm, (m) => m.match(/<\/?(span|i|em|b|strong)[^>]*>/i) ? m : '').trim();
-                        if (text) html += `    <p>${text}</p>\n`;
-                    });
-                }
-                html += `  </section>\n`;
-            });
-            html += `</div>\n`;
-        }
-        if (references.length > 0) {
-            html += `<details>\n  <summary>References</summary>\n`;
-            references.forEach(r => {
-                let refHTML = `  <p>${r.authors ? r.authors + ', ' : ''}`;
-                if (r.titleFormat === 'italics') refHTML += `<em>${r.title}</em>`;
-                else if (r.titleFormat === 'quotes') refHTML += `‘${r.title}’`;
-                else refHTML += r.title;
-                if (r.pages) refHTML += `, p. ${r.pages}`;
-                refHTML += `.</p>\n`;
-                if (r.quoteHTML.trim()) {
-                    let cleanedQuote = r.quoteHTML.replace(/<p[^>]*>/gi, '').replace(/<\/p>/gi, '<br>').replace(/^(<br>)+|(<br>)+$/g, '');
-                    refHTML += `  <blockquote>${cleanedQuote}</blockquote>\n`;
-                }
-                html += refHTML;
-            });
-            html += `</details>\n`;
-        }
-        return html;
-    }
-
-    function updatePreview() {
-        document.getElementById('preview-post-title').innerText = document.getElementById('post-title').value || 'Entry Title';
-        document.getElementById('publii-live-output').innerHTML = generateHTML();
-    }
-    
-    function togglePreviewTheme() {
-        isDarkTheme = !isDarkTheme;
-        const cont = document.getElementById('preview-viewport-container');
-        cont.classList.toggle('dark-theme-preview', isDarkTheme);
-        cont.classList.toggle('bg-white', !isDarkTheme);
-        document.getElementById('theme-btn-text').innerText = isDarkTheme ? 'Dark Theme' : 'Light Theme';
-    }
-
-    /* ==========================================================================
-       5. RULES MANAGER (GLOBAL DB)
-       ========================================================================== */
-    function addGlobalPronunciationRule() {
-        const t = prompt("Vietnamese Target Phrase:");
-        if (!t) return;
-        const ipa = prompt("Quasi-IPA Transliteration:");
-        if (!ipa) return;
-        const rule = { id: generateId(), target: t, ipa: ipa };
-        globalPronRules.push(rule);
-        saveRuleToDB('pronunciation_rules', rule);
-        renderGlobalRules(); updatePreview();
-    }
-    function addGlobalVariantRule() {
-        const t = prompt("Main Word / Phrase (Find):");
-        if (!t) return;
-        const vars = prompt("Comma-separated variants:");
-        if (!vars) return;
-        const rule = { id: generateId(), find: t, variants: vars.split(',').map(s=>s.trim()) };
-        globalRules.push(rule);
-        saveRuleToDB('variant_rules', rule);
-        renderGlobalRules(); updatePreview();
-    }
-    
-    function saveRuleToDB(storeName, rule) {
-        if (!db) return;
-        db.transaction(storeName, "readwrite").objectStore(storeName).put({...rule, createdAt: Date.now()});
-        saveRulesToDrive(storeName === 'pronunciation_rules' ? 'pron' : 'var');
-    }
-
-    function renderGlobalRules() {
-        document.getElementById('global-pron-rules-container').innerHTML = globalPronRules.map(r => `<div class="flex justify-between items-center bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs"><span class="text-indigo-300 font-medium">${r.target} <span class="text-slate-500">→</span> <i class="font-mono text-indigo-400">${r.ipa}</i></span><button onclick="globalPronRules = globalPronRules.filter(x=>x.id!=='${r.id}'); renderGlobalRules(); updatePreview();" class="text-slate-500 hover:text-rose-400">&times;</button></div>`).join('');
-        document.getElementById('global-rules-container').innerHTML = globalRules.map(r => `<div class="flex justify-between items-center bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs"><span class="text-amber-300 font-medium">${r.find} <span class="text-slate-500">→</span> <span class="font-mono text-amber-400">${r.variants.join(', ')}</span></span><button onclick="globalRules = globalRules.filter(x=>x.id!=='${r.id}'); renderGlobalRules(); updatePreview();" class="text-slate-500 hover:text-rose-400">&times;</button></div>`).join('');
-    }
-
-    // Modal logic for Rules DB Manager
-    function openRulesManager() {
-        document.getElementById('rules-manager-modal').classList.remove('hidden');
-        switchRulesTab('pron');
-    }
-    function closeRulesManager() { document.getElementById('rules-manager-modal').classList.add('hidden'); }
-    function switchRulesTab(tab) {
-        document.getElementById('tab-rule-pron').className = `flex-1 py-3 text-sm font-semibold transition ${tab === 'pron' ? 'text-indigo-400 border-b-2 border-indigo-500 bg-slate-800/50' : 'text-slate-400 border-b-2 border-transparent'}`;
-        document.getElementById('tab-rule-var').className = `flex-1 py-3 text-sm font-semibold transition ${tab === 'var' ? 'text-amber-400 border-b-2 border-amber-500 bg-slate-800/50' : 'text-slate-400 border-b-2 border-transparent'}`;
-        document.getElementById('rules-manager-list').dataset.currentTab = tab;
-        loadRulesFromDB(tab);
-    }
-    
-    function loadRulesFromDB(tab) {
-        if(!db) return;
-        const storeName = tab === 'pron' ? "pronunciation_rules" : "variant_rules";
-        const req = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
-        req.onsuccess = () => renderRulesManagerList(req.result, tab);
-    }
-    
-    function renderRulesManagerList(rules, tab) {
-        const c = document.getElementById('rules-manager-list');
-        const q = document.getElementById('rules-search').value.toLowerCase();
-        const filtered = rules.filter(r => (tab==='pron' ? r.target+r.ipa : r.find+r.variants.join(',')).toLowerCase().includes(q));
-        
-        if (filtered.length === 0) { c.innerHTML = '<div class="text-center text-slate-500 py-4 text-xs">No rules found.</div>'; return; }
-        
-        c.innerHTML = filtered.map(r => `
-            <div class="flex justify-between items-center bg-slate-900 border border-slate-700 p-3 mb-2 rounded-lg">
-                <div class="text-xs">
-                    ${tab === 'pron' ? `<span class="text-white font-medium">${r.target}</span> <span class="text-slate-500 mx-2">→</span> <i class="text-indigo-400 font-mono">${r.ipa}</i>` : `<span class="text-white font-medium">${r.find}</span> <span class="text-slate-500 mx-2">→</span> <span class="text-amber-400 font-mono">${r.variants.join(', ')}</span>`}
-                </div>
-                <button onclick="confirmDeleteMasterRule('${r.id}', '${tab}')" class="text-rose-400 hover:bg-rose-500/20 px-2 py-1 rounded transition text-xs">Delete</button>
-            </div>
-        `).join('');
-    }
-
-    function filterRulesManager() { loadRulesFromDB(document.getElementById('rules-manager-list').dataset.currentTab); }
-    
-    let pendingDeleteRule = null;
-    function confirmDeleteMasterRule(id, tab) {
-        pendingDeleteRule = { id, tab };
-        document.getElementById('confirm-delete-rule-text').innerText = "Are you sure you want to permanently delete this rule from the Master DB?";
-        document.getElementById('confirm-delete-rule-btn').onclick = deleteMasterRule;
-        document.getElementById('confirm-delete-rule-modal').classList.remove('hidden');
-    }
-    function closeConfirmDeleteRuleModal() { pendingDeleteRule = null; document.getElementById('confirm-delete-rule-modal').classList.add('hidden'); }
-    function deleteMasterRule() {
-        if(!pendingDeleteRule || !db) return;
-        const storeName = pendingDeleteRule.tab === 'pron' ? "pronunciation_rules" : "variant_rules";
-        db.transaction(storeName, "readwrite").objectStore(storeName).delete(pendingDeleteRule.id);
-        saveRulesToDrive(pendingDeleteRule.tab);
-        closeConfirmDeleteRuleModal();
-        loadRulesFromDB(pendingDeleteRule.tab);
-        showToast("Rule deleted from Master DB");
-    }
-
-    // Rules Suggestions Bi-directional
-    function openRuleSuggest(type, explicitQuery = null) {
-        const termsText = explicitQuery || terms.map(t => document.getElementById(`term-hw-${t.id}`).innerText).join(' ');
-        if(!termsText.trim()) { showToast("No text to analyze for suggestions"); return; }
-        
-        const storeName = type === 'pron' ? "pronunciation_rules" : "variant_rules";
-        const req = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
-        req.onsuccess = () => {
-            const rules = req.result;
-            const matches = [];
-            const reverseMatches = [];
-            
-            rules.forEach(r => {
-                if (type === 'pron') {
-                    if (termsText.includes(r.target)) matches.push(r);
-                } else {
-                    const findStr = r.find.toLowerCase();
-                    const varsStr = r.variants.join(' ').toLowerCase();
-                    const q = termsText.toLowerCase();
-                    if (q.includes(findStr)) matches.push(r);
-                    else if (r.variants.some(v => q.includes(v.toLowerCase()))) reverseMatches.push(r);
-                }
-            });
-            
-            let html = "";
-            if (matches.length > 0) {
-                html += `<div class="text-xs font-bold text-slate-400 mb-2 uppercase">Main Matches</div>`;
-                html += matches.map(r => renderRuleSelectable(r, type)).join('');
-            }
-            if (reverseMatches.length > 0) {
-                html += `<div class="text-xs font-bold text-amber-500 mt-4 mb-2 uppercase">Reverse Matches (Found Variant instead of Main word)</div>`;
-                html += reverseMatches.map(r => renderRuleSelectable(r, type)).join('');
-            }
-            if (!html) html = '<div class="text-center text-slate-500 py-4 text-xs">No suggested rules found.</div>';
-            
-            document.getElementById('rule-selector-list').innerHTML = html;
-            document.getElementById('rule-selector-title').innerText = `Suggested ${type==='pron'?'Pronunciation':'Variant'} Rules`;
-            document.getElementById('rule-selector-search-container').classList.add('hidden');
-            document.getElementById('rule-selector-modal').classList.remove('hidden');
-        };
-    }
-    
-    function openRuleBrowse(type) {
-        const storeName = type === 'pron' ? "pronunciation_rules" : "variant_rules";
-        const req = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
-        req.onsuccess = () => {
-            document.getElementById('rule-selector-list').innerHTML = req.result.map(r => renderRuleSelectable(r, type)).join('');
-            document.getElementById('rule-selector-title').innerText = `Browse DB: ${type==='pron'?'Pronunciation':'Variant'} Rules`;
-            document.getElementById('rule-selector-search-container').classList.remove('hidden');
-            document.getElementById('rule-selector-search').dataset.type = type;
-            document.getElementById('rule-selector-modal').classList.remove('hidden');
-        };
-    }
-    
-    function filterRuleSelector() {
-        const q = document.getElementById('rule-selector-search').value.toLowerCase();
-        const type = document.getElementById('rule-selector-search').dataset.type;
-        const storeName = type === 'pron' ? "pronunciation_rules" : "variant_rules";
-        const req = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
-        req.onsuccess = () => {
-            const filtered = req.result.filter(r => (type==='pron' ? r.target+r.ipa : r.find+r.variants.join(',')).toLowerCase().includes(q));
-            document.getElementById('rule-selector-list').innerHTML = filtered.map(r => renderRuleSelectable(r, type)).join('');
-        };
-    }
-
-    function renderRuleSelectable(r, type) {
-        const dataStr = encodeURIComponent(JSON.stringify(r));
-        return `
-            <div class="flex justify-between items-center bg-slate-900 border border-slate-700 p-3 mb-2 rounded-lg cursor-pointer hover:border-indigo-500 transition" onclick="selectRuleFromDialog('${dataStr}', '${type}')">
-                <div class="text-xs">
-                    ${type === 'pron' ? `<span class="text-white font-medium">${r.target}</span> <span class="text-slate-500 mx-2">→</span> <i class="text-indigo-400 font-mono">${r.ipa}</i>` : `<span class="text-white font-medium">${r.find}</span> <span class="text-slate-500 mx-2">→</span> <span class="text-amber-400 font-mono">${r.variants.join(', ')}</span>`}
-                </div>
-                <div class="text-indigo-400 font-bold text-lg">+</div>
-            </div>
+          <div>
+            <div class="flex justify-between mb-1"><label class="text-xs font-semibold text-slate-300">Comments</label><div class="flex gap-1 text-[11px]"><button onclick="formatCommentText('${t.id}','bold')" class="px-2 bg-slate-900 border border-slate-700 rounded text-slate-300 font-bold">B</button><button onclick="formatCommentText('${t.id}','italic')" class="px-2 bg-slate-900 border border-slate-700 rounded text-slate-300 italic">I</button><button onclick="formatCommentText('${t.id}','underline')" class="px-2 bg-slate-900 border border-slate-700 rounded text-slate-300 underline">U</button><button onclick="formatCommentText('${t.id}','superscript')" class="px-2 bg-slate-900 border border-slate-700 rounded text-slate-300">x²</button><button onclick="formatCommentText('${t.id}','subscript')" class="px-2 bg-slate-900 border border-slate-700 rounded text-slate-300">x₂</button></div></div>
+            <div id="comment-editor-${t.id}" contenteditable="true" oninput="onCommentInput('${t.id}')" class="comment-editor bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 focus:border-rose-500"></div>
+          </div>
         `;
+        c.appendChild(div);
+        document.getElementById(`hw-editor-${t.id}`).innerHTML = t.headwordHTML || "";
+        document.getElementById(`comment-editor-${t.id}`).innerHTML = t.commentsHTML || "";
+      });
     }
-    function selectRuleFromDialog(dataStr, type) {
-        const rule = JSON.parse(decodeURIComponent(dataStr));
-        if(type==='pron') {
-            if(!globalPronRules.some(x=>x.target===rule.target)) globalPronRules.push(rule);
+    function onHeadwordInput(id) { const t = entryData.terms.find(x => x.id === id); const el = document.getElementById(`hw-editor-${id}`); if(t && el){ t.headwordHTML = el.innerHTML; renderLivePreview(); } }
+    function onCommentInput(id) { const t = entryData.terms.find(x => x.id === id); const el = document.getElementById(`comment-editor-${id}`); if(t && el){ t.commentsHTML = el.innerHTML; renderLivePreview(); } }
+    function formatCommentText(id, cmd) { const el = document.getElementById(`comment-editor-${id}`); if(el){ el.focus(); document.execCommand(cmd, false, null); onCommentInput(id); } }
+    function togglePresetLabel(id, lbl) { const t = entryData.terms.find(x => x.id === id); if(t){ t.labels = t.labels || []; if(t.labels.includes(lbl)) t.labels = t.labels.filter(x => x!==lbl); else t.labels.push(lbl); renderFormUI(); } }
+    function addNewTerm() { entryData.terms.push({id: "term-"+Date.now(), headwordHTML:"", labels:[], customLabels:[], commentsHTML:""}); renderFormUI(); }
+    function removeTerm(id) { if(entryData.terms.length>1){ entryData.terms = entryData.terms.filter(x => x.id!==id); renderFormUI(); } }
+
+    /* Highlights & Modals */
+    function handleTextSelection() {
+      const sel = window.getSelection(); const tb = document.getElementById('selection-toolbar');
+      if (!sel || sel.isCollapsed || !sel.toString().trim() || !sel.anchorNode) { tb.classList.add('hidden'); return; }
+      const ed = sel.anchorNode.nodeType===3 ? sel.anchorNode.parentElement.closest('.headword-editor') : sel.anchorNode.closest('.headword-editor');
+      if (!ed) { tb.classList.add('hidden'); return; }
+      activeHeadwordEditorId = ed.id.replace('hw-editor-',''); savedRange = sel.getRangeAt(0).cloneRange();
+      const rect = savedRange.getBoundingClientRect();
+      tb.style.top = `${rect.top > 60 ? rect.top - 50 : rect.bottom + 10}px`; tb.style.left = `${Math.max(10, rect.left + rect.width/2 - 130)}px`;
+      tb.classList.remove('hidden');
+    }
+    document.addEventListener('selectionchange', handleTextSelection);
+
+    function openAddPronModal() {
+      if(!savedRange) return;
+      document.getElementById('add-pron-target').value = savedRange.toString().trim();
+      document.getElementById('add-pron-input').value = ""; document.getElementById('add-pron-preview').textContent = "";
+      document.getElementById('add-pron-modal').classList.remove('hidden'); document.getElementById('add-pron-input').focus();
+      document.getElementById('selection-toolbar').classList.add('hidden');
+    }
+    function closeAddPronModal() { document.getElementById('add-pron-modal').classList.add('hidden'); }
+    function updateAddPronPreview() { document.getElementById('add-pron-preview').textContent = convertQuasiIPA(document.getElementById('add-pron-input').value); }
+    function confirmAddPronunciation() {
+      const ipa = document.getElementById('add-pron-input').value.trim();
+      if(!savedRange || !ipa) return closeAddPronModal();
+      savePronRuleToDB(savedRange.toString(), ipa);
+      const span = document.createElement('span'); span.className = 'pronunciation'; span.setAttribute('data-pronunciation', convertQuasiIPA(ipa)); span.textContent = savedRange.toString().trim();
+      savedRange.deleteContents(); savedRange.insertNode(span);
+      onHeadwordInput(activeHeadwordEditorId); closeAddPronModal(); savedRange=null; showToast("Added Pronunciation!");
+    }
+
+    function openAddVarModal() {
+      if(!savedRange) return;
+      document.getElementById('add-var-target').value = savedRange.toString().trim();
+      document.getElementById('add-var-input').value = "";
+      document.getElementById('add-var-modal').classList.remove('hidden'); document.getElementById('add-var-input').focus();
+      document.getElementById('selection-toolbar').classList.add('hidden');
+    }
+    function closeAddVarModal() { document.getElementById('add-var-modal').classList.add('hidden'); }
+    function confirmAddVariant() {
+      const v = document.getElementById('add-var-input').value.trim();
+      if(!savedRange || !v) return closeAddVarModal();
+      saveVarRuleToDB(savedRange.toString(), v);
+      const span = document.createElement('span'); span.className = 'lexical-variant'; span.setAttribute('data-variant', parseVariantsString(v).join(', ')); span.textContent = savedRange.toString().trim();
+      savedRange.deleteContents(); savedRange.insertNode(span);
+      onHeadwordInput(activeHeadwordEditorId); closeAddVarModal(); savedRange=null; showToast("Added Variant!");
+    }
+
+    function handleHeadwordSpanClick(e, tId) {
+      const span = e.target.closest('.pronunciation, .lexical-variant'); if(!span) return;
+      activeAnnotationSpan = span; activeAnnotationTermId = tId; const isP = span.classList.contains('pronunciation');
+      document.getElementById('annotation-modal-title').textContent = isP ? "Edit Pronunciation" : "Edit Variant";
+      document.getElementById('annotation-target-text').value = span.textContent;
+      document.getElementById('annotation-value-label').textContent = isP ? "Quấc ngữ" : "Variant(s)";
+      const inp = document.getElementById('annotation-value-input');
+      inp.value = span.getAttribute(isP ? 'data-pronunciation' : 'data-variant') || "";
+      if(isP) inp.setAttribute('data-ipa-input', 'true'); else inp.removeAttribute('data-ipa-input');
+      document.getElementById('annotation-modal').classList.remove('hidden');
+    }
+    function closeAnnotationModal() { document.getElementById('annotation-modal').classList.add('hidden'); }
+    function saveAnnotationFromModal() {
+      if(!activeAnnotationSpan) return; const val = document.getElementById('annotation-value-input').value.trim();
+      if(activeAnnotationSpan.classList.contains('pronunciation')) activeAnnotationSpan.setAttribute('data-pronunciation', convertQuasiIPA(val));
+      else activeAnnotationSpan.setAttribute('data-variant', parseVariantsString(val).join(', '));
+      onHeadwordInput(activeAnnotationTermId); closeAnnotationModal(); showToast("Updated!");
+    }
+    function removeAnnotationFromModal() {
+      if(!activeAnnotationSpan) return;
+      activeAnnotationSpan.replaceWith(document.createTextNode(activeAnnotationSpan.textContent));
+      onHeadwordInput(activeAnnotationTermId); closeAnnotationModal(); showToast("Removed!");
+    }
+
+    function renderReferencesListUI() {
+      const c = document.getElementById('references-list'); c.innerHTML = '';
+      if (!entryData.references || entryData.references.length === 0) { c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No references.</p>`; return; }
+      entryData.references.forEach((r, idx) => {
+        const div = document.createElement('div'); div.className = "bg-slate-900/90 border border-slate-700/80 rounded-xl p-3.5 space-y-3";
+        div.innerHTML = `
+          <div class="flex justify-between pb-2 border-b border-slate-700/60"><span class="text-xs font-semibold text-emerald-400">Ref #${idx+1}</span><button onclick="removeReferenceItem(${idx})" class="text-xs text-rose-400">Remove</button></div>
+          <div><label class="block text-slate-400 text-xs mb-1">Author</label><input value="${escapeAttr(r.authors)}" oninput="updateReferenceField(${idx},'authors',this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></div>
+          <div><div class="flex justify-between mb-1"><label class="text-xs text-slate-400">Title</label><div class="flex gap-3 text-[11px] text-slate-300"><label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tFmt-${idx}" ${r.titleFormat!=='quotes'?'checked':''} onchange="updateReferenceField(${idx},'titleFormat','italics')" class="text-rose-600"><span>Italics</span></label><label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tFmt-${idx}" ${r.titleFormat==='quotes'?'checked':''} onchange="updateReferenceField(${idx},'titleFormat','quotes')" class="text-rose-600"><span>Quotes</span></label></div></div><input value="${escapeAttr(r.title)}" oninput="updateReferenceField(${idx},'title',this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></div>
+          <div><label class="block text-slate-400 text-xs mb-1">Pages</label><input value="${escapeAttr(r.pages)}" oninput="updateReferenceField(${idx},'pages',this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></div>
+          <div>
+            <div class="flex justify-between mb-1"><label class="text-xs text-slate-400">Quote Material</label><div class="flex gap-1 text-[11px]"><button onclick="formatQuoteText(${idx},'bold')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300 font-bold">B</button><button onclick="formatQuoteText(${idx},'italic')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300 italic">I</button><button onclick="formatQuoteText(${idx},'underline')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300 underline">U</button><button onclick="formatQuoteText(${idx},'superscript')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300">x²</button><button onclick="formatQuoteText(${idx},'subscript')" class="px-2 bg-slate-800 border border-slate-700 rounded text-slate-300">x₂</button><button onclick="openTableModal(${idx})" class="px-2 ml-2 bg-indigo-600/30 text-indigo-300 rounded">+ Table</button></div></div>
+            <div id="quote-editor-${idx}" contenteditable="true" oninput="onQuoteInput(${idx})" class="quote-editor bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200"></div>
+          </div>
+        `;
+        c.appendChild(div);
+        const qE = document.getElementById(`quote-editor-${idx}`);
+        if(qE){ qE.innerHTML = r.quoteHTML||""; qE.addEventListener('keyup', ()=>saveQuoteCursorLocation(idx)); qE.addEventListener('mouseup', ()=>saveQuoteCursorLocation(idx)); }
+      });
+    }
+    function addReferenceItem() { if(!entryData.references) entryData.references=[]; entryData.references.push({id:"ref-"+Date.now(),authors:"",title:"",titleFormat:"italics",pages:"",quoteHTML:""}); renderReferencesListUI(); renderLivePreview(); }
+    function removeReferenceItem(idx) { entryData.references.splice(idx,1); renderReferencesListUI(); renderLivePreview(); }
+    function updateReferenceField(idx, field, val) { entryData.references[idx][field] = val; renderLivePreview(); }
+    function onQuoteInput(idx) { const el = document.getElementById(`quote-editor-${idx}`); if(el){ entryData.references[idx].quoteHTML = el.innerHTML; renderLivePreview(); } }
+    function formatQuoteText(idx, cmd) { const el = document.getElementById(`quote-editor-${idx}`); if(el){ el.focus(); document.execCommand(cmd, false, null); onQuoteInput(idx); } }
+
+    function saveQuoteCursorLocation(idx) { const sel = window.getSelection(); if(sel && sel.rangeCount>0) { savedQuoteRange=sel.getRangeAt(0).cloneRange(); savedQuoteEditorIdx=idx; } }
+    function openTableModal(refIdx) { activeQuoteRefIdx=refIdx; saveQuoteCursorLocation(refIdx); document.getElementById('table-rows-input').value=""; document.getElementById('table-cols-input').value=""; document.getElementById('table-modal').classList.remove('hidden'); }
+    function closeTableModal() { document.getElementById('table-modal').classList.add('hidden'); }
+    function confirmInsertTable() {
+      const r = parseInt(document.getElementById('table-rows-input').value)||2, c = parseInt(document.getElementById('table-cols-input').value)||3, h = document.getElementById('table-header-check').checked;
+      let ht = '<table>'; if(h){ ht+='<thead><tr>'; for(let i=0;i<c;i++) ht+='<th></th>'; ht+='</tr></thead>'; }
+      ht+='<tbody>'; for(let i=0;i<(h?Math.max(1,r-1):r);i++){ ht+='<tr>'; for(let j=0;j<c;j++) ht+='<td></td>'; ht+='</tr>'; } ht+='</tbody></table>';
+      const el = document.getElementById(`quote-editor-${activeQuoteRefIdx}`);
+      if(el){ el.focus(); if(savedQuoteRange) { const s=window.getSelection(); s.removeAllRanges(); s.addRange(savedQuoteRange); } document.execCommand('insertHTML', false, ht); onQuoteInput(activeQuoteRefIdx); }
+      closeTableModal(); showToast("Table Inserted");
+    }
+
+    /* Modals & Handlers */
+    function initIPAPalette() {
+      const c = document.getElementById('ipa-buttons-container'); c.innerHTML='';
+      IPA_SYMBOLS.forEach(sym => {
+        const b = document.createElement('button'); b.className = "px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm"; b.textContent = sym;
+        b.onmousedown = (e) => { e.preventDefault(); if(!activeIPAInput) return; const start = activeIPAInput.selectionStart||0, val = activeIPAInput.value; activeIPAInput.value = val.substring(0,start)+sym+val.substring(activeIPAInput.selectionEnd||0); activeIPAInput.selectionStart = activeIPAInput.selectionEnd = start+sym.length; activeIPAInput.dispatchEvent(new Event('input',{bubbles:true})); activeIPAInput.focus(); };
+        c.appendChild(b);
+      });
+    }
+    document.addEventListener('focusin', e => { if(e.target?.getAttribute('data-ipa-input')==='true') { activeIPAInput=e.target; const rect=e.target.getBoundingClientRect(); const tb = document.getElementById('ipa-toolbar'); tb.style.top=`${rect.bottom+6 > window.innerHeight-120 ? rect.top-116 : rect.bottom+6}px`; tb.style.left=`${Math.max(10, rect.left)}px`; tb.classList.remove('hidden'); } });
+    document.addEventListener('focusout', () => { setTimeout(() => { if(!document.getElementById('ipa-toolbar').contains(document.activeElement)) document.getElementById('ipa-toolbar').classList.add('hidden'); }, 150); });
+
+    function updateStateFromForm() { entryData.postTitle = document.getElementById('post-title').value; renderLivePreview(); }
+    function handleManualCodeEdit() { document.getElementById('publii-live-output').innerHTML = document.getElementById('raw-html-editor').value; markDirty(); }
+    function switchTab(t) { currentTab=t; ['form','code','import'].forEach(x => { document.getElementById(`tab-btn-${x}`).className = x===t ? "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm" : "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200"; const c = document.getElementById(`tab-content-${x}`); if(x===t) c.classList.remove('hidden'); else c.classList.add('hidden'); }); }
+    function togglePreviewTheme() { isDarkPreview = !isDarkPreview; const f=document.getElementById('publii-live-output'), c=document.getElementById('preview-viewport-container'), b=document.getElementById('theme-btn-text'); if(isDarkPreview){f.classList.add('dark-theme-preview');c.classList.add('dark-theme-preview');b.textContent="Dark Theme";}else{f.classList.remove('dark-theme-preview');c.classList.remove('dark-theme-preview');b.textContent="Light Theme";} }
+    function showToast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').textContent=msg; t.classList.remove('translate-y-20','opacity-0'); t.classList.add('translate-y-0','opacity-100'); setTimeout(()=>{t.classList.remove('translate-y-0','opacity-100'); t.classList.add('translate-y-20','opacity-0');}, 2500); }
+    function copyHTMLForPublii() { const h = generateEntryHTML(); navigator.clipboard.writeText(h).then(()=>showToast("Copied!")).catch(()=>{const t=document.createElement('textarea'); t.value=h; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); showToast("Copied!");}); }
+    function escapeAttr(str) { return str?String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):''; }
+
+    function searchUMLS() {
+      const term = document.getElementById('post-title').value.trim();
+      if (term) {
+        window.open(`https://uts.nlm.nih.gov/uts/umls/searchResults?searchString=${encodeURIComponent(term)}`, '_blank');
+      } else {
+        showToast("Please enter an English Headword first.");
+      }
+    }
+
+    /* Rule Modals */
+    function openRulesManager() { document.getElementById('rules-manager-modal').classList.remove('hidden'); switchRulesTab('pron'); }
+    function closeRulesManager() { document.getElementById('rules-manager-modal').classList.add('hidden'); }
+    function switchRulesTab(t) { ['pron','var'].forEach(x=>{ document.getElementById(`tab-rule-${x}`).className = x===t ? `flex-1 py-3 text-sm font-semibold ${t==='pron'?'text-indigo-400 border-indigo-500':'text-amber-400 border-amber-500'} border-b-2 bg-slate-800/50` : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent"; }); loadRulesForManager(t); }
+    function loadRulesForManager(type, q='') {
+      if(!db) return; const sN = type==='pron'?'pronunciation_rules':'variant_rules';
+      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
+        let rs = e.target.result.sort((a,b)=>b.createdAt-a.createdAt); if(q) rs = rs.filter(r=>JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
+        const c = document.getElementById('rules-manager-list'); c.innerHTML='';
+        if(rs.length===0) c.innerHTML=`<p class="text-slate-500 text-sm">No rules.</p>`;
+        rs.forEach(r => {
+          const d = document.createElement('div'); d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+          d.innerHTML = type==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
+          c.appendChild(d);
+        });
+      };
+    }
+    function filterRulesManager() { loadRulesForManager(document.getElementById('tab-rule-pron').classList.contains('text-indigo-400')?'pron':'var', document.getElementById('rules-search').value); }
+    function promptDeleteRule(type, id) {
+      document.getElementById('confirm-delete-rule-modal').classList.remove('hidden');
+      document.getElementById('confirm-delete-rule-text').textContent = "Delete this rule permanently?";
+      document.getElementById('confirm-delete-rule-btn').onclick = () => {
+        const sN = type==='pron'?'pronunciation_rules':'variant_rules';
+        const tx = db.transaction(sN, 'readwrite'); tx.objectStore(sN).delete(id);
+        tx.oncomplete = () => { syncRulesToDrive(); filterRulesManager(); closeConfirmDeleteRuleModal(); };
+      };
+    }
+    function closeConfirmDeleteRuleModal() { document.getElementById('confirm-delete-rule-modal').classList.add('hidden'); }
+
+    function openRuleSuggest(t, tgt=null) { activeRuleSelectorType=t; activeRuleSelectorTargetInput=tgt; document.getElementById('rule-selector-title').textContent="Suggested Rules"; document.getElementById('rule-selector-search-container').classList.add('hidden'); document.getElementById('rule-selector-modal').classList.remove('hidden'); const txt = tgt ? tgt.toLowerCase() : entryData.terms.map(x=>x.headwordHTML||"").join(' ').toLowerCase(); if(!db) return; const sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>{ renderRuleSelectorList(e.target.result.filter(r=>txt.includes((t==='pron'?r.target:r.find).toLowerCase())), t); }; }
+    function openRuleBrowse(t) { activeRuleSelectorType=t; document.getElementById('rule-selector-title').textContent="Browse Rules"; document.getElementById('rule-selector-search-container').classList.remove('hidden'); document.getElementById('rule-selector-search').value=""; document.getElementById('rule-selector-modal').classList.remove('hidden'); if(!db) return; const sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result, t); }
+    function filterRuleSelector() { const q = document.getElementById('rule-selector-search').value.toLowerCase(); const t=activeRuleSelectorType, sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result.filter(r=>JSON.stringify(r).toLowerCase().includes(q)), t); }
+    function renderRuleSelectorList(rs, t) { const c=document.getElementById('rule-selector-list'); c.innerHTML=''; if(rs.length===0){ c.innerHTML=`<p class="text-slate-500 text-sm">No rules match.</p>`; return; } rs.forEach(r => { const d = document.createElement('div'); d.className="bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2"; d.onclick=()=>selectRuleFromSelector(r,t); d.innerHTML = t==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span></div>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div>`; c.appendChild(d); }); }
+    function selectRuleFromSelector(r, t) { 
+      if(activeRuleSelectorTargetInput!==null){ 
+        if(t==='pron'){ 
+          document.getElementById('add-pron-input').value=r.ipa; 
+          updateAddPronPreview(); 
         } else {
-            if(!globalRules.some(x=>x.find===rule.find)) globalRules.push(rule);
+          document.getElementById('add-var-input').value = parseVariantsString(r.variantsStr).join(', ');
         }
-        renderGlobalRules(); updatePreview(); closeRuleSelector();
+      } else { 
+        if(t==='pron'){ 
+          entryData.globalPronunciationRules=entryData.globalPronunciationRules||[]; 
+          entryData.globalPronunciationRules.push({target:r.target, ipa:r.ipa}); 
+        } else { 
+          entryData.globalVariantRules=entryData.globalVariantRules||[]; 
+          entryData.globalVariantRules.push({find:r.find, variantsStr: parseVariantsString(r.variantsStr).join(', ')}); 
+        } 
+        renderFormUI(); 
+      } 
+      closeRuleSelector(); 
     }
     function closeRuleSelector() { document.getElementById('rule-selector-modal').classList.add('hidden'); }
 
-    /* ==========================================================================
-       6. HTML IMPORT FUNCTIONALITY (DOM PARSER)
-       ========================================================================== */
-    function runImportHTML() {
-        const html = document.getElementById('import-html-input').value;
-        if (!html.trim()) return showToast("Please paste HTML first");
-        
-        attemptResetToBlankState(true);
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-
-        const rulesEl = doc.getElementById('global-rules');
-        if (rulesEl) {
-            rulesEl.querySelectorAll('.lexical-variant').forEach(el => {
-                const variants = el.getAttribute('data-variant').split(',').map(s=>s.trim());
-                const rule = { id: generateId(), find: el.innerText, variants: variants };
-                globalRules.push(rule); saveRuleToDB('variant_rules', rule);
-            });
-            rulesEl.querySelectorAll('.pronunciation').forEach(el => {
-                const rule = { id: generateId(), target: el.innerText, ipa: el.getAttribute('data-pronunciation') };
-                globalPronRules.push(rule); saveRuleToDB('pronunciation_rules', rule);
-            });
-        }
-
-        const medicalTerms = doc.querySelectorAll('.medical-term');
-        if (medicalTerms.length > 0) {
-            medicalTerms.forEach(mt => {
-                const hw = mt.querySelector('h3');
-                const term = { id: generateId(), headwordHTML: hw ? hw.innerHTML : '', labels: [], commentsHTML: '' };
-                
-                const labelPs = Array.from(mt.querySelectorAll('p')).filter(p => p.querySelector('.term-label'));
-                labelPs.forEach(p => p.querySelectorAll('.term-label').forEach(l => term.labels.push(l.innerText)));
-                
-                const commentPs = Array.from(mt.querySelectorAll('p')).filter(p => !p.querySelector('.term-label'));
-                term.commentsHTML = commentPs.map(p => p.innerHTML).join('<br><br>');
-                
-                terms.push(term);
-            });
-        } else {
-            // Fallback for flat structure
-            const h3s = doc.querySelectorAll('h3');
-            h3s.forEach(h3 => { terms.push({ id: generateId(), headwordHTML: h3.innerHTML, labels: [], commentsHTML: '' }); });
-        }
-
-        const details = doc.querySelector('details');
-        if (details) {
-            details.querySelectorAll('p').forEach(p => {
-                if (p.innerText.trim() === 'References' || p.closest('summary')) return;
-                const ref = { id: generateId(), authors: '', title: '', titleFormat: 'normal', pages: '', quoteHTML: '' };
-                let pHTML = p.innerHTML;
-                let textContent = p.innerText;
-                
-                if (textContent.toLowerCase().startsWith('ibid')) {
-                    const lastRef = references[references.length - 1];
-                    if (lastRef) {
-                        ref.authors = lastRef.authors; ref.title = lastRef.title; ref.titleFormat = lastRef.titleFormat;
-                        const pageMatch = textContent.match(/pp?\.?\s*([\d–-]+)/);
-                        if (pageMatch) ref.pages = pageMatch[1];
-                    }
-                } else if (textContent.toLowerCase().startsWith('id.')) {
-                    const lastRef = references[references.length - 1];
-                    if (lastRef) ref.authors = lastRef.authors;
-                    const em = p.querySelector('em');
-                    if (em) { ref.title = em.innerText; ref.titleFormat = 'italics'; }
-                    const pageMatch = textContent.match(/pp?\.?\s*([\d–-]+)/);
-                    if (pageMatch) ref.pages = pageMatch[1];
-                } else {
-                    const parts = pHTML.split(/<em>|‘|'/);
-                    if (parts.length > 1) {
-                        ref.authors = parts[0].replace(/,\s*$/, '').trim();
-                        if (pHTML.includes('<em>')) { ref.title = p.querySelector('em').innerText; ref.titleFormat = 'italics'; }
-                        else if (pHTML.includes('‘')) { ref.title = pHTML.split('‘')[1].split('’')[0]; ref.titleFormat = 'quotes'; }
-                    } else {
-                        ref.title = textContent.split(', p.')[0];
-                    }
-                    const pageMatch = textContent.match(/pp?\.?\s*([\d–-]+)/);
-                    if (pageMatch) ref.pages = pageMatch[1];
-                }
-                
-                const nextEl = p.nextElementSibling;
-                if (nextEl && nextEl.tagName === 'BLOCKQUOTE') ref.quoteHTML = nextEl.innerHTML;
-                references.push(ref);
-            });
-        }
-
-        // Title and Alt Terms
-        const firstP = doc.querySelector('p');
-        if (firstP && !firstP.closest('.medical-term') && !firstP.closest('details')) altEnglishTerms = firstP.innerHTML;
-        
-        switchTab('form');
-        document.getElementById('post-title').value = "Imported Entry";
-        renderTermsUI(); renderReferencesListUI(); updateStateFromForm();
-        showToast("HTML Imported successfully");
-    }
-
-    /* ==========================================================================
-       7. UTILS & EVENT LISTENERS
-       ========================================================================== */
-    function attemptResetToBlankState(force=false) {
-        if (!force && !confirm("Clear everything and start a new entry?")) return;
-        postTitle = ""; altEnglishTerms = ""; globalRules = []; globalPronRules = []; terms = []; references = [];
-        document.getElementById('post-title').value = ""; document.getElementById('alt-english-terms').innerHTML = "";
-        renderTermsUI(); renderReferencesListUI(); renderGlobalRules(); updatePreview();
-        showToast("Started new entry");
-    }
-
-    function copyHTMLForPublii() {
-        const html = generateHTML();
-        navigator.clipboard.writeText(html).then(() => showToast("HTML Copied to Clipboard!")).catch(() => showToast("Failed to copy. Use Raw HTML tab."));
-    }
-
-    function openEntriesLibrary() { document.getElementById('entries-library-modal').classList.remove('hidden'); loadEntriesFromFolder(); }
+    /* Library Modals */
+    function openEntriesLibrary() { document.getElementById('entries-library-modal').classList.remove('hidden'); if(isDriveConnected) loadEntriesFromDrive(); }
     function closeEntriesLibrary() { document.getElementById('entries-library-modal').classList.add('hidden'); }
-    function renderEntriesLibrary() {
-        const q = document.getElementById('library-search').value.toLowerCase();
-        const filtered = driveEntries.filter(f => f.name.toLowerCase().includes(q));
-        const html = filtered.map(f => `<div class="flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg"><span class="text-sm font-medium text-white">${f.name.replace('.json','')}</span><div class="text-xs text-slate-500">${new Date(f.modifiedTime).toLocaleDateString()} <button onclick="loadEntryDataFromDrive('${f.id}')" class="ml-4 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded transition shadow">Load</button></div></div>`).join('');
-        document.getElementById('library-entries-list').innerHTML = html || '<div class="text-center py-10 text-slate-500">No entries found.</div>';
+    function filterLibraryEntries() {
+      const q = document.getElementById('library-search').value.toLowerCase(), c = document.getElementById('library-entries-list'); c.innerHTML = '';
+      const f = libraryEntriesCache.filter(e => e.searchStr.includes(q)); if(f.length===0) { c.innerHTML=`<p class="text-slate-500 text-sm">No entries found.</p>`; return; }
+      f.forEach(e => {
+        const d = document.createElement('div'); d.className="flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+        d.innerHTML = `<div><strong class="text-indigo-300">${escapeAttr(e.data.postTitle||"Untitled")}</strong><span class="text-slate-500 text-xs block">${e.name}</span></div><div><button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2">Open</button><button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded">Delete</button></div>`;
+        c.appendChild(d);
+      });
     }
-    function filterLibraryEntries() { renderEntriesLibrary(); }
-
-    window.onload = function() {
-        initDB();
-        renderTermsUI();
-    };
-
+    async function loadEntryFromLibrary(name) {
+      const item = libraryEntriesCache.find(e => e.name === name);
+      if(item) {
+        if (hasUnsavedChanges && !confirm("You have unsaved changes. Are you sure you want to load a different entry?")) return;
+        entryData = item.data; renderFormUI(); closeEntriesLibrary(); markClean(); showToast("Loaded!");
+      }
+    }
+    async function deleteEntryFromDrive(fileId, name) {
+      if(confirm(`Delete ${name} from Google Drive?`)){
+        try {
+          await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, { method: 'DELETE' });
+          await loadEntriesFromDrive();
+          showToast("Deleted!");
+        } catch(e) {
+          showToast("Delete failed");
+        }
+      }
+    }
   </script>
 </body>
 </html>
