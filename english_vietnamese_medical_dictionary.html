@@ -305,8 +305,12 @@
       <button onclick="openRulesManager()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">Manage Rules DB</button>
       
       <!-- Google Drive Auth Button -->
-      <button id="drive-auth-btn" onclick="handleDriveAuthClick()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6 6.55-11.5M9.73 15L16.29 24h6.56l-6.55-11.5M12 3.5l6.55 11.5h-6.55L5.45 3.5"/></svg>
+      <button id="drive-auth-btn" onclick="handleDriveAuthClick()" class="text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium">
+        <svg class="w-4 h-4" viewBox="0 0 87.3 78">
+          <path d="M58.2 78h29.1L58.2 27.5H29.1z" fill="#0f9d58"/>
+          <path d="M29.1 78L0 27.5h29.1l29.1 50.5z" fill="#4285f4"/>
+          <path d="M58.2 0H0l29.1 50.5h58.2z" fill="#f4b400"/>
+        </svg>
         Connect Drive
       </button>
 
@@ -360,7 +364,7 @@
                     <button onclick="formatAltEnglishText('subscript')" class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">x₂</button>
                   </div>
                 </div>
-                <div id="alt-english-terms" contenteditable="true" oninput="onAltEnglishTermsInput()" class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 min-h-[44px] text-xs text-slate-200 outline-none focus:border-rose-500"></div>
+                <div id="alt-english-terms" contenteditable="true" oninput="onAltEnglishTermsInput()" class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 min-h-[44px] text-xs text-slate-200 outline-none focus:border-rose-500 whitespace-pre-wrap"></div>
               </div>
             </div>
           </div>
@@ -453,8 +457,8 @@
     function markDirty() { hasUnsavedChanges = true; }
     function markClean() { hasUnsavedChanges = false; }
 
-    function gapiLoaded() { gapi.load('client', intializeGapiClient); }
-    async function intializeGapiClient() {
+    function gapiLoaded() { gapi.load('client', initializeGapiClient); }
+    async function initializeGapiClient() {
       await gapi.client.init({ discoveryDocs: [DISCOVERY_DOC] });
       // Attempt silent auth if previously authorized
     }
@@ -463,12 +467,21 @@
         client_id: CLIENT_ID, scope: SCOPES,
         callback: async (resp) => {
           if (resp.error) throw resp;
+          gapi.client.setToken(resp); // CRITICAL: Set the authorized token so GAPI can make Drive requests
           isDriveConnected = true;
-          document.getElementById('drive-auth-btn').innerHTML = 'Drive Connected ✓';
-          document.getElementById('drive-auth-btn').classList.replace('bg-blue-600', 'bg-emerald-600');
+          
+          const btn = document.getElementById('drive-auth-btn');
+          btn.innerHTML = 'Drive Connected ✓';
+          btn.className = 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-emerald-500 font-medium';
+          
           showToast("Google Drive Connected!");
-          await getOrCreateAppFolder();
-          await loadRulesFromDrive();
+          try {
+            await getOrCreateAppFolder();
+            await loadRulesFromDrive();
+          } catch (e) {
+            console.error("Drive setup error:", e);
+            showToast("Error reading Drive folder.");
+          }
         }
       });
     }
@@ -484,6 +497,10 @@
     };
 
     function handleDriveAuthClick() {
+      if (!tokenClient) {
+        showToast("Google Auth is loading, please wait...");
+        return;
+      }
       if (gapi.client.getToken() === null) tokenClient.requestAccessToken({prompt: 'consent'});
       else tokenClient.requestAccessToken({prompt: ''});
     }
@@ -798,6 +815,16 @@
       return lines.filter(Boolean).join('<br>');
     }
 
+    function formatAltEnglishOutput(rawHTML) {
+      if (!rawHTML) return "";
+      const temp = document.createElement('div');
+      // Convert block elements (div, p) into <br> tags to normalize line breaks, 
+      // then split by <br> or newline characters (\n)
+      temp.innerHTML = rawHTML.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '').replace(/<p[^>]*>/gi, '<br>').replace(/<\/p>/gi, '');
+      const lines = temp.innerHTML.split(/<br\s*\/?>|\n/gi);
+      return lines.map(l => l.trim()).filter(Boolean).join('; ');
+    }
+
     function computeAutomaticAltSpellings(targetData = entryData) {
       const altSpellingsSet = new Set();
       (targetData.terms || []).forEach(term => {
@@ -851,7 +878,9 @@
        ========================================================================== */
     function generateEntryHTML() {
       let html = '';
-      if (entryData.altEnglishTerms?.trim()) html += `<p><em>${entryData.altEnglishTerms.trim()}</em></p>\n`;
+      const formattedAltEnglish = formatAltEnglishOutput(entryData.altEnglishTerms);
+      if (formattedAltEnglish) html += `<p><em>${formattedAltEnglish}</em></p>\n`;
+      
       html += '<div class="medical-terms">\n';
       entryData.terms.forEach(term => {
         html += '  <section class="medical-term">\n';
