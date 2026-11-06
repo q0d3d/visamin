@@ -351,7 +351,7 @@
       <button onclick="openRulesManager()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">Manage Rules DB</button>
       
       <!-- Google Drive Auth Button -->
-      <button id="drive-auth-btn" onclick="handleDriveAuthClick()" class="text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium">
+      <button type="button" id="drive-auth-btn" onclick="handleDriveAuthClick(event)" class="text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium">
         <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
           <mask id="drive-logo-mask" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
             <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
@@ -534,12 +534,23 @@
           client_id: CLIENT_ID,
           scope: SCOPES,
           callback: async (resp) => {
+            const btn = document.getElementById('drive-auth-btn');
+            if (btn) btn.disabled = false;
+            
             resetDriveButtonLoading();
             if (resp.error) {
               console.error("Auth error object:", resp);
               showDriveAuthErrorModal(resp.error, resp.error_description || resp.details || "Authorization prompt failed or was cancelled.");
               return;
             }
+
+            // Ensure the user actually checked the granular permission checkbox on Google's UI
+            const hasAccess = google.accounts.oauth2.hasGrantedAllScopes(resp, SCOPES);
+            if (!hasAccess) {
+              showDriveAuthErrorModal("permission_denied", "Connection failed: You must check the box to grant Google Drive access on the consent screen.");
+              return;
+            }
+
             if (!resp.access_token) {
               showDriveAuthErrorModal("no_token", "Google authorization succeeded but returned no access token.");
               return;
@@ -565,9 +576,14 @@
             }
           },
           error_callback: (err) => {
+            const btn = document.getElementById('drive-auth-btn');
+            if (btn) btn.disabled = false;
+            
             resetDriveButtonLoading();
             console.error("Token client error_callback:", err);
-            showDriveAuthErrorModal(err.type || "popup_error", err.message || "Failed to complete Google Sign In.");
+            if (err.type !== 'popup_closed') {
+              showDriveAuthErrorModal(err.type || "popup_error", err.message || "Failed to complete Google Sign In.");
+            }
           }
         });
       } catch(e) {
@@ -681,7 +697,9 @@
       else setDriveDisconnectedUI();
     }
 
-    function handleDriveAuthClick() {
+    function handleDriveAuthClick(e) {
+      if (e) e.preventDefault(); // Prevent accidental page reloads
+      
       if (isDriveConnected) {
         if (confirm("Google Drive is currently connected. Click OK to re-authorize or switch account, or Cancel to keep existing connection.")) {
           clearSavedDriveToken();
@@ -707,15 +725,17 @@
 
       const btn = document.getElementById('drive-auth-btn');
       if (btn) {
+        btn.disabled = true; // Disable button to prevent double-click pop_up_closed bug
         btn.innerHTML = `<span class="animate-spin text-indigo-600 font-bold">↻</span> <span>Connecting...</span>`;
       }
 
       try {
-        tokenClient.requestAccessToken({ prompt: 'select_account' });
-      } catch (e) {
+        tokenClient.requestAccessToken({ prompt: 'consent' });
+      } catch (err) {
+        if (btn) btn.disabled = false;
         resetDriveButtonLoading();
-        console.error("Error requesting access token:", e);
-        showDriveAuthErrorModal("request_error", e.message || "Failed to open Google login popup.");
+        console.error("Error requesting access token:", err);
+        showDriveAuthErrorModal("request_error", err.message || "Failed to open Google login popup.");
       }
     }
 
@@ -799,18 +819,6 @@
       await checkSavedDriveToken();
       renderFormUI();
     };
-
-    function handleDriveAuthClick() {
-      if (!tokenClient) {
-        if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-          gisLoaded();
-        } else {
-          showToast("Google Auth library loading, please retry...");
-          return;
-        }
-      }
-      tokenClient.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
-    }
 
     async function getOrCreateAppFolder() {
       if (!accessToken) return;
