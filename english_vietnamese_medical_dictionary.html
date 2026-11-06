@@ -922,15 +922,22 @@
 
     async function loadRulesFromDrive() {
       if (!isDriveConnected || !driveFolderId) return;
-      const pRules = await readJsonFromDrive('_pronunciation_rules.json');
-      if (pRules && Array.isArray(pRules)) {
-        const tx = db.transaction('pronunciation_rules', 'readwrite');
-        pRules.forEach(r => tx.objectStore('pronunciation_rules').put(r));
-      }
-      const vRules = await readJsonFromDrive('_variant_rules.json');
-      if (vRules && Array.isArray(vRules)) {
-        const tx = db.transaction('variant_rules', 'readwrite');
-        vRules.forEach(r => tx.objectStore('variant_rules').put(r));
+      try {
+        const pRules = await readJsonFromDrive('_pronunciation_rules.json');
+        if (pRules && Array.isArray(pRules)) {
+          const tx = db.transaction('pronunciation_rules', 'readwrite');
+          pRules.forEach(r => tx.objectStore('pronunciation_rules').put(r));
+        }
+        const vRules = await readJsonFromDrive('_variant_rules.json');
+        if (vRules && Array.isArray(vRules)) {
+          const tx = db.transaction('variant_rules', 'readwrite');
+          vRules.forEach(r => tx.objectStore('variant_rules').put(r));
+        }
+        
+        // Force an upward sync to ensure any local rules created before connecting are backed up to Drive
+        await syncRulesToDrive();
+      } catch (e) {
+        console.error("Failed to sync rules from drive", e);
       }
     }
 
@@ -1516,7 +1523,7 @@
         if(rs.length===0) c.innerHTML=`<p class="text-slate-500 text-sm">No rules.</p>`;
         rs.forEach(r => {
           const d = document.createElement('div'); d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-          d.innerHTML = type==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(r.variantsStr)}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
+          d.innerHTML = type==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
           c.appendChild(d);
         });
       };
@@ -1536,8 +1543,27 @@
     function openRuleSuggest(t, tgt=null) { activeRuleSelectorType=t; activeRuleSelectorTargetInput=tgt; document.getElementById('rule-selector-title').textContent="Suggested Rules"; document.getElementById('rule-selector-search-container').classList.add('hidden'); document.getElementById('rule-selector-modal').classList.remove('hidden'); const txt = tgt ? tgt.toLowerCase() : entryData.terms.map(x=>x.headwordHTML||"").join(' ').toLowerCase(); if(!db) return; const sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>{ renderRuleSelectorList(e.target.result.filter(r=>txt.includes((t==='pron'?r.target:r.find).toLowerCase())), t); }; }
     function openRuleBrowse(t) { activeRuleSelectorType=t; document.getElementById('rule-selector-title').textContent="Browse Rules"; document.getElementById('rule-selector-search-container').classList.remove('hidden'); document.getElementById('rule-selector-search').value=""; document.getElementById('rule-selector-modal').classList.remove('hidden'); if(!db) return; const sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result, t); }
     function filterRuleSelector() { const q = document.getElementById('rule-selector-search').value.toLowerCase(); const t=activeRuleSelectorType, sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result.filter(r=>JSON.stringify(r).toLowerCase().includes(q)), t); }
-    function renderRuleSelectorList(rs, t) { const c=document.getElementById('rule-selector-list'); c.innerHTML=''; if(rs.length===0){ c.innerHTML=`<p class="text-slate-500 text-sm">No rules match.</p>`; return; } rs.forEach(r => { const d = document.createElement('div'); d.className="bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2"; d.onclick=()=>selectRuleFromSelector(r,t); d.innerHTML = t==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span></div>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(r.variantsStr)}</span></div>`; c.appendChild(d); }); }
-    function selectRuleFromSelector(r, t) { if(activeRuleSelectorTargetInput!==null){ if(t==='pron'){ document.getElementById('add-pron-input').value=r.ipa; updateAddPronPreview(); } else document.getElementById('add-var-input').value=r.variantsStr; } else { if(t==='pron'){ entryData.globalPronunciationRules=entryData.globalPronunciationRules||[]; entryData.globalPronunciationRules.push({target:r.target, ipa:r.ipa}); } else { entryData.globalVariantRules=entryData.globalVariantRules||[]; entryData.globalVariantRules.push({find:r.find, variantsStr:r.variantsStr}); } renderFormUI(); } closeRuleSelector(); }
+    function renderRuleSelectorList(rs, t) { const c=document.getElementById('rule-selector-list'); c.innerHTML=''; if(rs.length===0){ c.innerHTML=`<p class="text-slate-500 text-sm">No rules match.</p>`; return; } rs.forEach(r => { const d = document.createElement('div'); d.className="bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2"; d.onclick=()=>selectRuleFromSelector(r,t); d.innerHTML = t==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span></div>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div>`; c.appendChild(d); }); }
+    function selectRuleFromSelector(r, t) { 
+      if(activeRuleSelectorTargetInput!==null){ 
+        if(t==='pron'){ 
+          document.getElementById('add-pron-input').value=r.ipa; 
+          updateAddPronPreview(); 
+        } else {
+          document.getElementById('add-var-input').value = parseVariantsString(r.variantsStr).join(', ');
+        }
+      } else { 
+        if(t==='pron'){ 
+          entryData.globalPronunciationRules=entryData.globalPronunciationRules||[]; 
+          entryData.globalPronunciationRules.push({target:r.target, ipa:r.ipa}); 
+        } else { 
+          entryData.globalVariantRules=entryData.globalVariantRules||[]; 
+          entryData.globalVariantRules.push({find:r.find, variantsStr: parseVariantsString(r.variantsStr).join(', ')}); 
+        } 
+        renderFormUI(); 
+      } 
+      closeRuleSelector(); 
+    }
     function closeRuleSelector() { document.getElementById('rule-selector-modal').classList.add('hidden'); }
 
     /* Library Modals */
