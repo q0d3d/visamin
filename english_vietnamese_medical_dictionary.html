@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English–Vietnamese Medical Dictionary</title>
+  
+  <!-- Favicon matching top logo with clean, thin line-art stroke -->
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'&gt;&lt;defs&gt;&lt;linearGradient id='g' x1='0%' y1='100%' x2='100%' y2='0%'&gt;&lt;stop offset='0%' stop-color='%23f43f5e'/&gt;&lt;stop offset='100%' stop-color='%234f46e5'/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;rect width='24' height='24' rx='6' fill='url(%23g)'/&gt;&lt;path fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'/&gt;&lt;/svg&gt;">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Brygada 1918, Cormorant Garamond, Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Brygada+1918:ital,wght@0,400..700;1,400..700&amp;family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            publiiBody: ['"Brygada 1918"', 'serif'],
+            publiiHeading: ['"Cormorant Garamond"', 'serif']
+          },
+          colors: {
+            publiiRed: '#d73a42',
+            publiiBlue: '#425c97'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    .dark ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
+
+    /* Rendered Entry Styles Shared Across Editor & Live Preview */
+    .publii-render-frame {
+      --body-font: "Brygada 1918", serif;
+      --heading-font: "Cormorant Garamond", serif;
+      --page-bg: #ffffff;
+      --text-color: #17181e;
+      --headings-color: #17181e;
+      --dark: #17181e;
+      --light: #cacbcf;
+      --lighter: #f3f3f3;
+      --color: #d73a42;
+      
+      font-family: var(--body-font);
+      background-color: var(--page-bg);
+      color: var(--text-color);
+      line-height: 1.7;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .dark-theme-preview {
+      --page-bg: #181818 !important;
+      --text-color: #bfbfbf !important;
+      --headings-color: #eeeded !important;
+      --dark: #cecbcb !important;
+      --light: #373737 !important;
+      --lighter: #1e1e1e !important;
+      --color: #ffc074 !important;
+      background-color: #181818 !important;
+      color: #bfbfbf !important;
+    }
+
+    .dark-theme-preview h1,
+    .dark-theme-preview h2,
+    .dark-theme-preview h3,
+    .dark-theme-preview .preview-post-title {
+      color: #eeeded !important;
+    }
+
+    .publii-render-frame p {
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .publii-render-frame .medical-terms {
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .publii-render-frame .medical-term {
+      border: 1px solid #dedede;
+      border-radius: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      padding: 1.25rem;
+      display: flex;
+    }
+
+    .dark-theme-preview .medical-term {
+      border-color: #373737 !important;
+    }
+
+    .publii-render-frame .medical-term h3 {
+      margin: 0;
+      line-height: 1.2 !important;
+      font-family: var(--heading-font);
+      font-size: clamp(1.25rem, 1.5vw + 1rem, 1.75rem);
+      font-weight: 700;
+      color: var(--headings-color);
+    }
+
+    .publii-render-frame .medical-term > p {
+      margin: 0;
+    }
+
+    .publii-render-frame .medical-term > p:has(.term-label) {
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1;
+      display: flex;
+    }
+
+    .publii-render-frame .medical-term > p:not(:has(.term-label)) {
+      flex-basis: 100%;
+    }
+
+    .publii-render-frame .term-label {
+      color: #f3f3f3;
+      background: #425c97;
+      border-radius: 999px;
+      margin: 0;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: inline-block;
+    }
+
+    /* Underlines & Hover Tooltips with Pointer Triangles */
+    .headword-editor .lexical-variant,
+    .publii-render-frame .lexical-variant {
+      -webkit-text-decoration-skip-ink: auto;
+      text-decoration-skip-ink: auto;
+      text-decoration: underline dotted #858585;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .headword-editor .lexical-variant:after,
+    .publii-render-frame .lexical-variant:after {
+      content: attr(data-variant);
+      color: #fff;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1000;
+      pointer-events: none;
+      background: #333;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 14px;
+      font-weight: 400;
+      font-family: var(--body-font), sans-serif;
+      transition: opacity 0.2s, visibility 0.2s;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translate(-50%);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .headword-editor .lexical-variant:before,
+    .publii-render-frame .lexical-variant:before {
+      content: "";
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1001;
+      border: 6px solid transparent;
+      border-top-color: #333;
+      border-bottom-width: 0;
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translate(-50%);
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .headword-editor .lexical-variant:hover:after,
+    .headword-editor .lexical-variant:hover:before,
+    .publii-render-frame .lexical-variant:hover:after,
+    .publii-render-frame .lexical-variant:hover:before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .headword-editor .pronunciation,
+    .publii-render-frame .pronunciation {
+      -webkit-text-decoration-skip-ink: auto;
+      text-decoration-skip-ink: auto;
+      text-decoration: underline dotted #a5c2e5;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .headword-editor .pronunciation:after,
+    .publii-render-frame .pronunciation:after {
+      content: attr(data-pronunciation);
+      color: #fff;
+      font-style: italic;
+      font-family: var(--body-font), sans-serif;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1000;
+      pointer-events: none;
+      background: #333;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 14px;
+      font-weight: 400 !important;
+      transition: opacity 0.2s, visibility 0.2s;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translate(-50%);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .headword-editor .pronunciation:before,
+    .publii-render-frame .pronunciation:before {
+      content: "";
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1001;
+      border: 6px solid transparent;
+      border-top-color: #333;
+      border-bottom-width: 0;
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translate(-50%);
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .headword-editor .pronunciation:hover:after,
+    .headword-editor .pronunciation:hover:before,
+    .publii-render-frame .pronunciation:hover:after,
+    .publii-render-frame .pronunciation:hover:before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* References & Collapsible */
+    .publii-render-frame details {
+      margin-top: 1.5rem;
+      border: 1px solid var(--light);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      background-color: var(--lighter);
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .dark-theme-preview details {
+      border-color: #373737 !important;
+      background-color: #1e1e1e !important;
+    }
+
+    .publii-render-frame details summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--headings-color);
+      font-size: 0.95rem !important;
+      user-select: none;
+    }
+
+    .publii-render-frame details p {
+      font-size: 0.85rem !important;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .publii-render-frame blockquote {
+      border-left: 3px solid var(--dark);
+      border-top: none;
+      border-bottom: none;
+      margin: 0.75rem 0;
+      padding: 0.25rem 0 0.25rem 1rem;
+      background: transparent;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    /* Table Formatting in Preview Frame */
+    .publii-render-frame table {
+      border: 1px solid var(--light);
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem !important;
+      empty-cells: show;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .publii-render-frame table th {
+      font-weight: 700;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--light);
+      background: var(--lighter);
+      text-align: left;
+      min-height: 2.2rem;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .publii-render-frame table td {
+      border: 1px solid var(--light);
+      padding: 0.5rem 0.75rem;
+      min-height: 2.2rem;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    /* Visual Table Borders & Header Shading in Citation Quote Editor */
+    .quote-editor table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      border: 1px solid #475569;
+      empty-cells: show;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .quote-editor table th,
+    .quote-editor table td {
+      border: 1px solid #475569;
+      padding: 6px 10px;
+      min-width: 36px;
+      height: 2.2rem;
+      min-height: 2.2rem;
+      vertical-align: top;
+      box-sizing: border-box;
+    }
+
+    .quote-editor table th {
+      background-color: #334155;
+      color: #f8fafc;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .quote-editor table td {
+      background-color: rgba(15, 23, 42, 0.4);
+      color: #cbd5e1;
+    }
+
+    /* Editable Field Formatting */
+    .headword-editor {
+      min-height: 44px;
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .comment-editor, .quote-editor {
+      min-height: 48px;
+      outline: none;
+    }
+
+    .quote-editor,
+    .quote-editor * {
+      font-size: 0.75rem !important;
+      line-height: 1.5 !important;
+    }
+
+    /* Quoted Material Uniform Styling Guardrail */
+    .publii-render-frame blockquote,
+    .publii-render-frame blockquote p,
+    .quote-editor,
+    .quote-editor p {
+      font-family: inherit !important;
+      color: inherit !important;
+      background-color: transparent !important;
+    }
+
+    /* Drag and Drop Card Styles */
+    .term-card.dragging {
+      opacity: 0.4;
+      border-style: dashed;
+      border-color: #6366f1;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white">
+
+  <!-- Floating Selection Toolbar for Headword Fields -->
+  <div id="selection-toolbar" class="fixed z-50 bg-slate-800 border border-slate-700 shadow-2xl rounded-xl p-1.5 flex items-center gap-1.5 backdrop-blur-md hidden">
+    <button onmousedown="event.preventDefault(); openAddPronModal();" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"></path></svg>
+      + Pronunciation
+    </button>
+    <button onmousedown="event.preventDefault(); openAddVarModal();" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h10m-7 5h7"></path></svg>
+      + Lexical Variant
+    </button>
+  </div>
+
+  <!-- Floating Quasi-IPA Character Insertion Palette -->
+  <div id="ipa-toolbar" class="fixed z-50 bg-slate-800/95 border border-indigo-500/40 shadow-2xl rounded-xl p-2 flex flex-wrap items-center gap-1 backdrop-blur-md hidden max-w-sm sm:max-w-md">
+    <div class="w-full text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1 flex items-center justify-between border-b border-slate-700/60 pb-1">
+      <span>Quasi-IPA Symbols &amp; Diacritics</span>
+      <span class="text-slate-500 font-normal">Click to insert</span>
+    </div>
+    <div id="ipa-buttons-container" class="flex flex-wrap gap-1"></div>
+  </div>
+
+  <!-- Modal 1: Add Pronunciation to Selection -->
+  <div id="add-pron-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">Add Pronunciation</h3>
+        <button onclick="closeAddPronModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Selected Text</label>
+          <input type="text" id="add-pron-target" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 font-medium cursor-not-allowed">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-slate-300 font-semibold">Quasi-IPA Transcription</label>
+            <div class="flex gap-1">
+              <button onclick="openRuleSuggest('pron', document.getElementById('add-pron-target').value)" class="text-[10px] bg-indigo-600/30 text-indigo-300 px-2 rounded hover:bg-indigo-600/50">Suggest</button>
+              <button onclick="openRuleBrowse('pron')" class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse DB</button>
+            </div>
+          </div>
+          <input type="text" id="add-pron-input" data-ipa-input="true" oninput="updateAddPronPreview()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Converts to Quấc ngữ:</label>
+          <div id="add-pron-preview" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-indigo-300 font-mono italic min-h-[34px] flex items-center"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeAddPronModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-medium transition">Cancel</button>
+        <button onclick="confirmAddPronunciation()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition">Apply Pronunciation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add Lexical Variant to Selection -->
+  <div id="add-var-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">Add Lexical Variant</h3>
+        <button onclick="closeAddVarModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Selected Text</label>
+          <input type="text" id="add-var-target" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 font-medium cursor-not-allowed">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-slate-300 font-semibold">Variant(s) (comma or newline separated)</label>
+            <div class="flex gap-1">
+              <button onclick="openRuleSuggest('var', document.getElementById('add-var-target').value)" class="text-[10px] bg-amber-600/30 text-amber-300 px-2 rounded hover:bg-amber-600/50">Suggest</button>
+              <button onclick="openRuleBrowse('var')" class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse DB</button>
+            </div>
+          </div>
+          <textarea id="add-var-input" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeAddVarModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-medium transition">Cancel</button>
+        <button onclick="confirmAddVariant()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold transition">Apply Variant</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Edit/Remove Applied Annotation -->
+  <div id="annotation-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+        <h3 id="annotation-modal-title" class="text-sm font-bold text-white flex items-center gap-2">Edit Annotation</h3>
+        <button onclick="closeAnnotationModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Annotated Phrase</label>
+          <input type="text" id="annotation-target-text" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 font-medium cursor-not-allowed">
+        </div>
+
+        <div>
+          <label id="annotation-value-label" class="block text-slate-300 font-semibold mb-1">Value</label>
+          <input type="text" id="annotation-value-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-rose-500">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button onclick="removeAnnotationFromModal()" class="px-3 py-1.5 bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-semibold transition">
+          Remove Annotation
+        </button>
+        
+        <div class="flex items-center gap-2">
+          <button onclick="closeAnnotationModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-medium transition">Cancel</button>
+          <button onclick="saveAnnotationFromModal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Table Size Dialog -->
+  <div id="table-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">Insert Table</h3>
+        <button onclick="closeTableModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Number of Rows</label>
+          <input type="number" id="table-rows-input" min="1" max="30" placeholder="Rows" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-rose-500">
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Number of Columns</label>
+          <input type="number" id="table-cols-input" min="1" max="15" placeholder="Columns" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-rose-500">
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="table-header-check" checked class="w-4 h-4 rounded text-rose-600 focus:ring-0 bg-slate-900 border-slate-700">
+          <label for="table-header-check" class="text-slate-300 text-xs font-medium cursor-pointer">Include Header Row (<code>&lt;thead&gt;</code>)</label>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeTableModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-medium transition">Cancel</button>
+        <button onclick="confirmInsertTable()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition">Insert Table</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Entries Library (Local Folder Sync) -->
+  <div id="entries-library-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-3xl w-full h-[80vh] flex flex-col shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-slate-700">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            Entries Library
+          </h3>
+          <p class="text-xs text-slate-400 mt-1" id="library-folder-status">No folder connected.</p>
+        </div>
+        <button onclick="closeEntriesLibrary()" class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
+      </div>
+      
+      <div class="p-4 border-b border-slate-700 bg-slate-900/50">
+        <input type="text" id="library-search" oninput="filterLibraryEntries()" placeholder="Search English or Vietnamese headwords & spellings..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4 space-y-2" id="library-entries-list">
+        <div class="text-center py-10 text-slate-500 text-sm">
+          Please select a local folder to view saved entries.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: Master Rules DB Manager -->
+  <div id="rules-manager-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-slate-700">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          Master Rules Database
+        </h3>
+        <button onclick="closeRulesManager()" class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
+      </div>
+
+      <div class="flex border-b border-slate-700 bg-slate-900/50">
+        <button id="tab-rule-pron" onclick="switchRulesTab('pron')" class="flex-1 py-3 text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 bg-slate-800/50 transition">Pronunciation Rules</button>
+        <button id="tab-rule-var" onclick="switchRulesTab('var')" class="flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition">Lexical Variant Rules</button>
+      </div>
+
+      <div class="p-4 border-b border-slate-700">
+        <input type="text" id="rules-search" oninput="filterRulesManager()" placeholder="Search rules..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-rose-500">
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4" id="rules-manager-list"></div>
+    </div>
+  </div>
+
+  <!-- Modal 7: Rule Suggestions / Browse Modal -->
+  <div id="rule-selector-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-slate-700">
+        <h3 id="rule-selector-title" class="text-base font-bold text-white flex items-center gap-2">Suggested Rules</h3>
+        <button onclick="closeRuleSelector()" class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
+      </div>
+      
+      <div class="p-4 border-b border-slate-700 bg-slate-900/50 hidden" id="rule-selector-search-container">
+        <input type="text" id="rule-selector-search" oninput="filterRuleSelector()" placeholder="Search rules..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4 space-y-2" id="rule-selector-list"><p class="text-slate-500 text-sm">No rules match.</p></div>
+    </div>
+  </div>
+
+  <!-- Modal 8: Custom Confirmation Modal for Rule Deletion -->
+  <div id="confirm-delete-rule-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">Confirm Rule Deletion</h3>
+        <button onclick="closeConfirmDeleteRuleModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+      </div>
+      <p id="confirm-delete-rule-text" class="text-xs text-slate-300">Are you sure you want to permanently delete this rule from the database?</p>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeConfirmDeleteRuleModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-medium transition">Cancel</button>
+        <button id="confirm-delete-rule-btn" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold transition">Delete Rule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="bg-slate-800/90 border-b border-slate-700/80 sticky top-0 z-40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 backdrop-blur shadow-md">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+          English–Vietnamese Medical Dictionary
+        </h1>
+      </div>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <button onclick="openEntriesLibrary()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-indigo-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-indigo-500/30">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        Entries Library
+      </button>
+
+      <button onclick="openRulesManager()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        Manage Rules DB
+      </button>
+
+      <button onclick="selectFolder()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+        Select Folder
+      </button>
+
+      <div class="w-px h-6 bg-slate-700 mx-1"></div>
+
+      <button onclick="saveEntryToFile()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+        Save JSON
+      </button>
+
+      <button onclick="resetToBlankState()" class="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        Clear
+      </button>
+
+      <button onclick="copyHTMLForPublii()" class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg active:scale-95">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 012-2h2a2 2 0 012-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+        Copy HTML
+      </button>
+    </div>
+  </header>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 bg-emerald-600 text-white font-medium text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 pointer-events-none translate-y-20 opacity-0">
+    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toast-msg">Action Completed</span>
+  </div>
+
+  <!-- Main Studio Layout -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
+
+    <!-- LEFT PANEL: Editor Forms & Controls -->
+    <div class="lg:col-span-6 bg-slate-900 border-r border-slate-800 flex flex-col h-[calc(100vh-61px)] overflow-hidden">
+      
+      <!-- Studio Tabs Header -->
+      <div class="bg-slate-800/80 border-b border-slate-700/80 px-4 h-12 flex items-center justify-between gap-2 overflow-x-auto">
+        <div class="flex items-center gap-1">
+          <button id="tab-btn-form" onclick="switchTab('form')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-rose-600 text-white shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Form Editor
+          </button>
+
+          <button id="tab-btn-code" onclick="switchTab('code')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 flex items-center gap-1.5 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            Raw HTML
+          </button>
+
+          <button id="tab-btn-import" onclick="switchTab('import')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 flex items-center gap-1.5 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            HTML Import
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Contents Container -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-6">
+
+        <!-- TAB 1: FORM BUILDER -->
+        <div id="tab-content-form" class="space-y-6">
+          
+          <!-- Entry Overview Section -->
+          <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span> Entry Overview
+            </h3>
+            
+            <div class="space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-xs font-semibold text-slate-300">English Headword</label>
+                  <button onclick="searchUMLS()" type="button" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-800/60 px-2 py-0.5 rounded-md transition shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    UMLS Search
+                  </button>
+                </div>
+                <input type="text" id="post-title" oninput="updateStateFromForm()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500 font-medium">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-xs font-semibold text-slate-300">Alternative English Terms</label>
+                  <div class="flex gap-1 text-[11px]">
+                    <button onclick="formatAltEnglishText('bold')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded font-bold text-slate-300">B</button>
+                    <button onclick="formatAltEnglishText('italic')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded italic text-slate-300">I</button>
+                    <button onclick="formatAltEnglishText('underline')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded underline text-slate-300">U</button>
+                    <button onclick="formatAltEnglishText('superscript')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">x²</button>
+                    <button onclick="formatAltEnglishText('subscript')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">x₂</button>
+                  </div>
+                </div>
+                <div id="alt-english-terms" contenteditable="true" oninput="onAltEnglishTermsInput()" class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 min-h-[44px] text-xs text-slate-200 focus:outline-none focus:border-rose-500"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Global Pronunciation Rules Manager -->
+          <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Global Pronunciation Rules
+              </h3>
+              <div class="flex gap-2">
+                <button onclick="openRuleSuggest('pron')" class="text-xs bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-medium px-2 py-1 rounded-lg transition">Suggest</button>
+                <button onclick="openRuleBrowse('pron')" class="text-xs bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-medium px-2 py-1 rounded-lg transition">Browse</button>
+                <button onclick="addGlobalPronunciationRule()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-2.5 py-1 rounded-lg transition">+ Add Rule</button>
+              </div>
+            </div>
+            
+            <div id="global-pron-rules-container" class="space-y-2"><p class="text-[11px] text-slate-500 italic">No global pronunciation rules added yet.</p></div>
+          </div>
+
+          <!-- Global Lexical Variant Rules Manager -->
+          <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Global Lexical Variant Rules
+              </h3>
+              <div class="flex gap-2">
+                <button onclick="openRuleSuggest('var')" class="text-xs bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 font-medium px-2 py-1 rounded-lg transition">Suggest</button>
+                <button onclick="openRuleBrowse('var')" class="text-xs bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 font-medium px-2 py-1 rounded-lg transition">Browse</button>
+                <button onclick="addGlobalVariantRule()" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-medium px-2.5 py-1 rounded-lg transition">+ Add Rule</button>
+              </div>
+            </div>
+            
+            <div id="global-rules-container" class="space-y-2"><p class="text-[11px] text-slate-500 italic">No global variant rules added yet.</p></div>
+          </div>
+
+          <!-- Terms Section -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Vietnamese Medical Terms &amp; Headwords
+              </h3>
+              <button onclick="addNewTerm()" class="text-xs bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-medium px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+                + Add Term
+              </button>
+            </div>
+
+            <div id="terms-container" class="space-y-4"></div>
+          </div>
+
+          <!-- References Section -->
+          <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> References &amp; Citations
+              </h3>
+              <button onclick="addReferenceItem()" class="text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-medium px-2.5 py-1 rounded-lg transition">
+                + Add Reference
+              </button>
+            </div>
+
+            <div id="references-list" class="space-y-4"></div>
+          </div>
+
+        </div>
+
+        <!-- TAB 2: RAW HTML EDITOR -->
+        <div id="tab-content-code" class="space-y-3 h-full flex flex-col hidden">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Direct Entry HTML Code View</span>
+            <button onclick="parseCodeBackToForm()" class="text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              Parse Code To Form
+            </button>
+          </div>
+          <textarea id="raw-html-editor" oninput="handleManualCodeEdit()" class="w-full flex-1 bg-slate-950 text-rose-300 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:outline-none focus:border-rose-500/80 leading-relaxed resize-none shadow-inner" rows="22" spellcheck="false"></textarea>
+        </div>
+
+        <!-- TAB 3: HTML IMPORT -->
+        <div id="tab-content-import" class="space-y-4 hidden">
+          <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Paste HTML to Import</h3>
+            <textarea id="import-html-input" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+            
+            <button onclick="runImportHTML()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2 shadow-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+              Parse HTML &amp; Populate Form
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Desktop Live Preview Studio -->
+    <div class="lg:col-span-6 bg-slate-950 flex flex-col h-[calc(100vh-61px)] overflow-hidden">
+      
+      <!-- Preview Header Toolbar -->
+      <div class="bg-slate-800/80 border-b border-slate-700/80 px-4 h-12 flex items-center justify-end gap-3">
+        <button onclick="togglePreviewTheme()" id="theme-toggle-btn" class="bg-slate-900 border border-slate-700 text-xs px-2.5 py-1 rounded-lg text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          <span id="theme-btn-text">Light Theme</span>
+        </button>
+      </div>
+
+      <!-- Preview Viewport Container -->
+      <div class="flex-1 bg-slate-900/50 p-4 sm:p-6 overflow-y-auto flex justify-center items-start">
+        <div id="preview-viewport-container" class="w-full max-w-2xl transition-all duration-300 rounded-xl shadow-2xl border border-slate-200/20 overflow-hidden bg-white">
+          <div class="p-6 sm:p-8">
+            <div class="border-b border-slate-200/80 pb-3 mb-4">
+              <h1 id="preview-post-title" class="preview-post-title text-3xl font-bold font-publiiHeading text-slate-900 tracking-tight">Entry Title</h1>
+            </div>
+
+            <!-- Main Rendered Output -->
+            <div id="publii-live-output" class="publii-render-frame"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    /* ==========================================================================
+       1. STATE MANAGEMENT, PRESETS, & INDEXED_DB STORAGE INIT
+       ========================================================================== */
+
+    const PRESET_LABELS = [
+      "Vernacular", "Jargon", "Rare", "Northern", "Central", "Southern", "Traditional medicine"
+    ];
+
+    const IPA_SYMBOLS = [
+      'ᵶ', 'ꭨ', 'ⱴ', 'ʷ', 'ʰ', 'd͡ʒ', 'ʃ', 'ʒ', 'ɛ', 'ə', 'ɔ', 'ɨ', 'ᵼ', 'ꬿ', 'ᵰ', 'ᵵ', 'ɲ', 'ŋ', 'ɣ', 'ʝ', 'ɹ', 'ʂ', 'ʈ',
+      '\u0306', '\u0301', '\u0300', '\u0309', '\u0303', '\u0323'
+    ];
+
+    let currentTab = 'form';
+    let isDarkPreview = false;
+    let activeHeadwordEditorId = null;
+    let savedRange = null;
+    let activeIPAInput = null;
+    let savedQuoteRange = null;
+    let savedQuoteEditorIdx = null;
+    let activeAnnotationSpan = null;
+    let activeAnnotationTermId = null;
+    let activeQuoteRefIdx = null;
+    
+    // DB & File System States
+    let db = null;
+    let dirHandle = null;
+    let autoSaveTimeout = null;
+    let activeRuleSelectorType = null;
+    let activeRuleSelectorTargetInput = null;
+
+    let entryData = getBlankEntry();
+
+    function getBlankEntry() {
+      return {
+        postTitle: "",
+        altEnglishTerms: "",
+        globalVariantRules: [],
+        globalPronunciationRules: [],
+        terms: [
+          { id: "term-" + Date.now(), headwordHTML: "", labels: [], customLabels: [], commentsHTML: "" }
+        ],
+        references: []
+      };
+    }
+
+    function resetToBlankState() {
+      entryData = getBlankEntry();
+      renderFormUI();
+      autoSaveDraft();
+      showToast("Cleared entry");
+    }
+
+    /* Database Initialization */
+    async function initDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('DictStudioDB', 1);
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('active_draft')) {
+            database.createObjectStore('active_draft', { keyPath: 'id' });
+          }
+          if (!database.objectStoreNames.contains('pronunciation_rules')) {
+            const store = database.createObjectStore('pronunciation_rules', { keyPath: 'id' });
+            store.createIndex('target', 'target', { unique: false });
+          }
+          if (!database.objectStoreNames.contains('variant_rules')) {
+            const store = database.createObjectStore('variant_rules', { keyPath: 'id' });
+            store.createIndex('find', 'find', { unique: false });
+          }
+          if (!database.objectStoreNames.contains('config')) {
+            database.createObjectStore('config', { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = (e) => {
+          db = e.target.result;
+          resolve(db);
+        };
+        req.onerror = (e) => reject(e);
+      });
+    }
+
+    function autoSaveDraft() {
+      if (!db) return;
+      if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        try {
+          const tx = db.transaction('active_draft', 'readwrite');
+          tx.objectStore('active_draft').put({ id: 'current_draft', data: entryData, updatedAt: Date.now() });
+        } catch (e) {
+          console.error("Auto-save error:", e);
+        }
+      }, 300);
+    }
+
+    async function loadDraft() {
+      if (!db) return;
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction('active_draft', 'readonly');
+          const req = tx.objectStore('active_draft').get('current_draft');
+          req.onsuccess = () => {
+            if (req.result && req.result.data) {
+              entryData = req.result.data;
+            }
+            resolve();
+          };
+          req.onerror = () => resolve();
+        } catch (e) {
+          resolve();
+        }
+      });
+    }
+
+    async function syncRulesToDirectory() {
+      if (!dirHandle) return;
+      try {
+        if (!(await verifyPermission(dirHandle))) return;
+        
+        // Save Pronunciation Rules
+        const txPron = db.transaction('pronunciation_rules', 'readonly');
+        const reqPron = txPron.objectStore('pronunciation_rules').getAll();
+        reqPron.onsuccess = async () => {
+          const fileHandle = await dirHandle.getFileHandle('_pronunciation_rules.json', { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(JSON.stringify(reqPron.result, null, 2));
+          await writable.close();
+        };
+
+        // Save Variant Rules
+        const txVar = db.transaction('variant_rules', 'readonly');
+        const reqVar = txVar.objectStore('variant_rules').getAll();
+        reqVar.onsuccess = async () => {
+          const fileHandle = await dirHandle.getFileHandle('_variant_rules.json', { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(JSON.stringify(reqVar.result, null, 2));
+          await writable.close();
+        };
+      } catch (e) {
+        console.error("Error syncing rules to directory:", e);
+      }
+    }
+
+    async function loadRulesFromDirectory() {
+      if (!dirHandle) return;
+      try {
+        if (!(await verifyPermission(dirHandle))) return;
+
+        // Load Pronunciation Rules
+        try {
+          const fileHandle = await dirHandle.getFileHandle('_pronunciation_rules.json');
+          const file = await fileHandle.getFile();
+          const rules = JSON.parse(await file.text());
+          if (Array.isArray(rules)) {
+            const tx = db.transaction('pronunciation_rules', 'readwrite');
+            const store = tx.objectStore('pronunciation_rules');
+            rules.forEach(r => store.put(r));
+          }
+        } catch (e) {}
+
+        // Load Variant Rules
+        try {
+          const fileHandle = await dirHandle.getFileHandle('_variant_rules.json');
+          const file = await fileHandle.getFile();
+          const rules = JSON.parse(await file.text());
+          if (Array.isArray(rules)) {
+            const tx = db.transaction('variant_rules', 'readwrite');
+            const store = tx.objectStore('variant_rules');
+            rules.forEach(r => store.put(r));
+          }
+        } catch (e) {}
+      } catch (e) {
+        console.error("Error loading rules from directory:", e);
+      }
+    }
+
+    async function loadConfig() {
+      return new Promise((resolve) => {
+        const tx = db.transaction('config', 'readonly');
+        const req = tx.objectStore('config').get('dirHandle');
+        req.onsuccess = async () => {
+          if (req.result && req.result.handle) {
+            dirHandle = req.result.handle;
+            await loadRulesFromDirectory();
+          }
+          resolve();
+        };
+        req.onerror = () => resolve();
+      });
+    }
+
+    /* File System Access API */
+    async function selectFolder() {
+      try {
+        dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        const tx = db.transaction('config', 'readwrite');
+        tx.objectStore('config').put({ id: 'dirHandle', handle: dirHandle });
+        await loadRulesFromDirectory();
+        await syncRulesToDirectory();
+        showToast("Folder connected & rules synced!");
+        document.getElementById('library-folder-status').textContent = `Connected: ${dirHandle.name}`;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function verifyPermission(handle) {
+      if ((await handle.queryPermission({ mode: 'readwrite' })) === 'granted') {
+        return true;
+      }
+      if ((await handle.requestPermission({ mode: 'readwrite' })) === 'granted') {
+        return true;
+      }
+      return false;
+    }
+
+    async function saveEntryToFile() {
+      if (!dirHandle) {
+        showToast("Please 'Select Folder' first to link local storage.");
+        return;
+      }
+      const title = entryData.postTitle.trim() || 'Untitled_Entry';
+      const safeTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      const fileName = `${safeTitle}.json`;
+
+      try {
+        if (!(await verifyPermission(dirHandle))) return;
+        const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(JSON.stringify(entryData, null, 2));
+        await writable.close();
+        showToast(`Saved to ${fileName}`);
+      } catch (e) {
+        console.error(e);
+        showToast("Error saving file. Check console.");
+      }
+    }
+
+    /* Master Rules DB Helpers */
+    function savePronRuleToDB(target, ipa) {
+      if(!db || !target.trim() || !ipa.trim()) return;
+      const t = target.trim();
+      const tx = db.transaction('pronunciation_rules', 'readwrite');
+      const store = tx.objectStore('pronunciation_rules');
+      const id = 'pron_' + t.toLowerCase();
+      store.put({ id, target: t, ipa: ipa.trim(), quốcNgữ: convertQuasiIPA(ipa.trim()), createdAt: Date.now() });
+      tx.oncomplete = () => syncRulesToDirectory();
+    }
+
+    function saveVarRuleToDB(find, variantsStr) {
+      if(!db || !find.trim() || !variantsStr.trim()) return;
+      const f = find.trim();
+      const tx = db.transaction('variant_rules', 'readwrite');
+      const store = tx.objectStore('variant_rules');
+      const id = 'var_' + f.toLowerCase();
+      store.put({ id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now() });
+      tx.oncomplete = () => syncRulesToDirectory();
+    }
+
+    /* ==========================================================================
+       2. QUASI-IPA TO QUẤC NGỮ TRANSLITERATION ENGINE
+       ========================================================================== */
+
+    function convertQuasiIPA(ipaInput) {
+      if (!ipaInput) return "";
+      let cleaned = ipaInput.trim();
+      if (cleaned.startsWith('/') && cleaned.endsWith('/')) {
+        cleaned = cleaned.slice(1, -1).trim();
+      }
+      const alternatives = cleaned.split('~');
+      const convertedAlts = alternatives.map(alt => convertSingleIPAPhrase(alt.trim()));
+      return convertedAlts.join(' ~ ');
+    }
+
+    function convertSingleIPAPhrase(phrase) {
+      const words = phrase.split(/\s+/);
+      return words.map(word => {
+        const syllables = word.split('.');
+        return syllables.map(syl => convertIPASyllable(syl)).join('-');
+      }).join(' ');
+    }
+
+    function convertIPASyllable(syl) {
+      if (!syl) return "";
+      let res = syl;
+
+      res = res.replace(/d͡ʒ/g, 'ᴊ');
+      res = res.replace(/ꭨ/g, 'ʀ');
+      res = res.replace(/ᵰ/g, 'ɴ');
+      res = res.replace(/ᵵ/g, 'ᴛ');
+      res = res.replace(/ꬿ/g, 'oo');
+      res = res.replace(/ʒ/g, 'j');
+      res = res.replace(/ʝ/g, 'gi');
+      res = res.replace(/ᵶ/g, 'z');
+      res = res.replace(/ⱴ/g, 'ⱴ');
+      res = res.replace(/ᵼ/g, 'ɪ');
+      res = res.replace(/j/g, 'ʏ');
+
+      res = res.replace(/^tʰ/, 'th');
+      res = res.replace(/^ʈ/, 'tr');
+      res = res.replace(/^ngh(?=[i|e|ê|y|ɪ])/g, 'ngh');
+      res = res.replace(/^ŋ(?=[i|e|ê|y|ɪ])/g, 'ngh');
+      res = res.replace(/^ŋ/g, 'ng');
+      res = res.replace(/^ɣ(?=[i|e|ê|y|ɪ])/g, 'gh');
+      res = res.replace(/^ɣ/g, 'g');
+      res = res.replace(/^k(?=[i|e|ê|y|ɪ])/g, 'k');
+      res = res.replace(/^k(?=u)/g, 'q');
+      res = res.replace(/^k/g, 'c');
+      res = res.replace(/^c/g, 'ch');
+      res = res.replace(/^z/g, 'd');
+      res = res.replace(/^d/g, 'đ');
+      res = res.replace(/^x/g, 'kh');
+      res = res.replace(/^ɲ/g, 'nh');
+      res = res.replace(/^f/g, 'ph');
+      res = res.replace(/^ɹ/g, 'r');
+      res = res.replace(/^ʂ/g, 's');
+      res = res.replace(/^s/g, 'x');
+
+      res = res.replace(/ɨə/g, 'ươ');
+      res = res.replace(/ɨ/g, 'ư');
+      res = res.replace(/ə̆/g, 'â');
+      res = res.replace(/ə/g, 'ơ');
+      res = res.replace(/ɛ/g, 'e');
+      res = res.replace(/e/g, 'ê');
+      res = res.replace(/ɔ/g, 'o');
+      res = res.replace(/o/g, 'ô');
+      res = res.replace(/uə/g, 'uô');
+      res = res.replace(/iə/g, 'iê');
+
+      res = res.replace(/(?<=[a-zA-Zàáảãạăằắẳẵặâầấẩẫậeèéẻẽẹêềếểễệiìíỉĩịoòóỏõọôồốổỗộơờớởỡợuùúủũụưừứửữựyỳýỷỹỵɪoo])k([\u0300-\u036f]*)$/gi, 'c$1');
+      if (res.endsWith('k') && !res.endsWith('hk')) res = res.slice(0, -1) + 'c';
+      else if (res.endsWith('c') && !res.endsWith('ch')) res = res.slice(0, -1) + 'ch';
+      else if (res.endsWith('ŋ')) res = res.slice(0, -1) + 'ng';
+      else if (res.endsWith('ɲ')) res = res.slice(0, -1) + 'nh';
+
+      return res;
+    }
+
+    /* ==========================================================================
+       3. HTML SANITIZER & PARSERS
+       ========================================================================== */
+
+    function createWholeWordRegex(term) {
+      const escaped = escapeRegExp(term.trim());
+      return new RegExp(`(?<=^|[^\\p{L}\\p{M}\\p{N}_])${escaped}(?=[^\\p{L}\\p{M}\\p{N}_]|$)`, 'gui');
+    }
+
+    function processHeadwordWithGlobalRules(rawHTML, targetData = entryData) {
+      if (!rawHTML) return rawHTML;
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = rawHTML;
+
+      const pronRules = targetData ? targetData.globalPronunciationRules : entryData.globalPronunciationRules;
+      const varRules = targetData ? targetData.globalVariantRules : entryData.globalVariantRules;
+
+      if (pronRules && pronRules.length > 0) {
+        pronRules.forEach(rule => {
+          if (!rule.target || !rule.ipa) return;
+          const targetTerm = rule.target.trim();
+          if (!targetTerm) return;
+          const convertedPron = convertQuasiIPA(rule.ipa);
+          const regex = createWholeWordRegex(targetTerm);
+          const walk = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+          const textNodes = [];
+          let node;
+          while (node = walk.nextNode()) {
+            if (!node.parentElement.closest('.pronunciation, .lexical-variant')) textNodes.push(node);
+          }
+          textNodes.forEach(tNode => {
+            const text = tNode.nodeValue;
+            if (regex.test(text)) {
+              regex.lastIndex = 0;
+              const wrapper = document.createElement('span');
+              wrapper.innerHTML = text.replace(regex, `<span class="pronunciation" data-pronunciation="${escapeAttr(convertedPron)}">$&</span>`);
+              tNode.replaceWith(...wrapper.childNodes);
+            }
+          });
+        });
+      }
+
+      if (varRules && varRules.length > 0) {
+        varRules.forEach(rule => {
+          if (!rule.find || !rule.variantsStr) return;
+          const findTerm = rule.find.trim();
+          if (!findTerm) return;
+          const variantAttrValue = parseVariantsString(rule.variantsStr).join(', ');
+          const regex = createWholeWordRegex(findTerm);
+          const walk = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+          const textNodes = [];
+          let node;
+          while (node = walk.nextNode()) {
+            if (!node.parentElement.closest('.lexical-variant, .pronunciation')) textNodes.push(node);
+          }
+          textNodes.forEach(tNode => {
+            const text = tNode.nodeValue;
+            if (regex.test(text)) {
+              regex.lastIndex = 0;
+              const wrapper = document.createElement('span');
+              wrapper.innerHTML = text.replace(regex, `<span class="lexical-variant" data-variant="${escapeAttr(variantAttrValue)}">$&</span>`);
+              tNode.replaceWith(...wrapper.childNodes);
+            }
+          });
+        });
+      }
+      return tempDiv.innerHTML;
+    }
+
+    function parseVariantsString(str) {
+      if (!str) return [];
+      return str.split(/[\n,]+/).map(v => v.trim()).filter(Boolean);
+    }
+
+    function formatHeadwordAsBrSeparated(rawHTML) {
+      if (!rawHTML) return "";
+      const temp = document.createElement('div');
+      temp.innerHTML = rawHTML;
+      const lines = [];
+      let currentLine = "";
+
+      function walk(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const textParts = node.nodeValue.split(/\r?\n/);
+          for (let i = 0; i < textParts.length; i++) {
+            if (i > 0) { lines.push(currentLine.trim()); currentLine = ""; }
+            currentLine += textParts[i];
+          }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'br') {
+            lines.push(currentLine.trim()); currentLine = "";
+          } else if (tag === 'div' || tag === 'p') {
+            if (currentLine.trim()) { lines.push(currentLine.trim()); currentLine = ""; }
+            node.childNodes.forEach(walk);
+            if (currentLine.trim()) { lines.push(currentLine.trim()); currentLine = ""; }
+          } else {
+            currentLine += node.outerHTML;
+          }
+        }
+      }
+      temp.childNodes.forEach(walk);
+      if (currentLine.trim()) lines.push(currentLine.trim());
+      return lines.filter(Boolean).join('<br>');
+    }
+
+    function computeAutomaticAltSpellings(targetData = entryData) {
+      const altSpellingsSet = new Set();
+      (targetData.terms || []).forEach(term => {
+        const rawHTML = term.headwordHTML || "";
+        if (!rawHTML.trim()) return;
+        const processedHTML = processHeadwordWithGlobalRules(rawHTML, targetData);
+        const formattedH3 = formatHeadwordAsBrSeparated(processedHTML);
+        const lines = formattedH3.split(/<br\s*\/?>/gi);
+        lines.forEach(line => {
+          if (!line.trim()) return;
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = line;
+          const variantSpans = Array.from(tempDiv.querySelectorAll('.lexical-variant'));
+          const originalText = tempDiv.textContent.trim();
+          if (variantSpans.length === 0) return;
+          
+          let combinations = [""];
+          Array.from(tempDiv.childNodes).forEach(child => {
+            let options = [];
+            if (child.nodeType === Node.ELEMENT_NODE && child.classList.contains('lexical-variant')) {
+              options = [child.textContent, ...parseVariantsString(child.getAttribute('data-variant') || "")];
+            } else {
+              options = [child.textContent];
+            }
+            const nextCombinations = [];
+            combinations.forEach(prefix => {
+              options.forEach(opt => nextCombinations.push(prefix + opt));
+            });
+            combinations = nextCombinations;
+          });
+          combinations.forEach(combo => {
+            const trimmedCombo = combo.trim();
+            if (trimmedCombo && trimmedCombo !== originalText) altSpellingsSet.add(trimmedCombo);
+          });
+        });
+      });
+      return Array.from(altSpellingsSet).join(', ');
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function sanitizeHTMLBlock(rawHtml) {
+      if (!rawHtml) return '';
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(`<div>${rawHtml}</div>`, 'text/html');
+      const root = doc.body.firstElementChild;
+
+      const allElements = root.querySelectorAll('*');
+      allElements.forEach(el => {
+        el.removeAttribute('style');
+        el.removeAttribute('class');
+        el.removeAttribute('width');
+        el.removeAttribute('height');
+        el.removeAttribute('id');
+        el.removeAttribute('dir');
+        el.removeAttribute('align');
+        el.removeAttribute('valign');
+        el.removeAttribute('cellspacing');
+        el.removeAttribute('cellpadding');
+        el.removeAttribute('border');
+        el.removeAttribute('color');
+        el.removeAttribute('face');
+        el.removeAttribute('size');
+      });
+
+      const spans = Array.from(root.querySelectorAll('span'));
+      spans.forEach(span => {
+        if (span.attributes.length === 0) {
+          const text = doc.createTextNode(span.innerHTML);
+          span.replaceWith(text);
+        }
+      });
+
+      const divs = Array.from(root.querySelectorAll('div'));
+      divs.forEach(div => {
+        if (div.querySelector('table, p, blockquote')) {
+          while (div.firstChild) div.parentNode.insertBefore(div.firstChild, div);
+          div.remove();
+        } else {
+          const p = doc.createElement('p');
+          p.innerHTML = div.innerHTML;
+          div.parentNode.replaceChild(p, div);
+        }
+      });
+
+      const isInline = (node) => {
+        if (node.nodeType === Node.TEXT_NODE) return true;
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase();
+          return ['sub', 'sup', 'b', 'i', 'u', 'strong', 'em', 'span', 'a', 'code', 'small', 'strike', 'br'].includes(tag);
+        }
+        return false;
+      };
+
+      const childNodes = Array.from(root.childNodes);
+      let currentP = null;
+
+      childNodes.forEach(node => {
+        if (isInline(node)) {
+          if (node.nodeType === Node.TEXT_NODE && !node.nodeValue.trim() && !currentP) {
+            node.remove();
+            return;
+          }
+          if (!currentP) {
+            currentP = doc.createElement('p');
+            root.insertBefore(currentP, node);
+          }
+          currentP.appendChild(node);
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'p') {
+            currentP = node;
+          } else if (tag === 'table' || tag === 'blockquote') {
+            currentP = null;
+          } else {
+            const p = doc.createElement('p');
+            p.innerHTML = node.innerHTML;
+            node.replaceWith(p);
+            currentP = p;
+          }
+        }
+      });
+
+      root.querySelectorAll('p').forEach(p => {
+        if (!p.textContent.trim() && !p.querySelector('table, img, br, sub, sup')) {
+          p.remove();
+        }
+      });
+
+      return root.innerHTML.trim();
+    }
+
+    /* ==========================================================================
+       4. HTML GENERATOR & RENDERER
+       ========================================================================== */
+
+    function generateEntryHTML() {
+      let html = '';
+      if (entryData.altEnglishTerms && entryData.altEnglishTerms.trim() !== '') {
+        html += `<p><em>${entryData.altEnglishTerms.trim()}</em></p>\n`;
+      }
+      html += '<div class="medical-terms">\n';
+
+      entryData.terms.forEach(term => {
+        html += '  <section class="medical-term">\n';
+        let processedHTML = processHeadwordWithGlobalRules(term.headwordHTML || "");
+        let formattedH3 = formatHeadwordAsBrSeparated(processedHTML);
+        html += `    <h3>${formattedH3}</h3>\n`;
+
+        const allLabels = [...(term.labels || []), ...(term.customLabels || [])];
+        if (allLabels.length > 0) {
+          html += '    <p>';
+          html += allLabels.map(lbl => `<span class="term-label">${lbl}</span>`).join(' ');
+          html += '</p>\n';
+        }
+
+        if (term.commentsHTML && term.commentsHTML.trim() !== '') {
+          const cleanComments = sanitizeHTMLBlock(term.commentsHTML);
+          html += cleanComments.split('\n').map(l => '    ' + l).join('\n') + '\n';
+        }
+        html += '  </section>\n';
+      });
+
+      html += '</div>\n';
+
+      const autoAltSpellings = computeAutomaticAltSpellings();
+      if (autoAltSpellings) html += `<p><em>Alternative spellings: ${autoAltSpellings}</em></p>\n`;
+
+      if (entryData.references && entryData.references.length > 0) {
+        const validRefs = entryData.references.filter(ref => 
+          (ref.authors && ref.authors.trim()) || 
+          (ref.title && ref.title.trim()) || 
+          (ref.pages && ref.pages.trim()) || 
+          (ref.quoteHTML && ref.quoteHTML.trim())
+        );
+
+        if (validRefs.length > 0) {
+          html += '<details>\n  <summary>References</summary>\n';
+
+          const sortedRefs = [...validRefs].sort((a, b) => {
+            const authA = (a.authors || "").toLowerCase();
+            const authB = (b.authors || "").toLowerCase();
+            if (authA !== authB) return authA.localeCompare(authB);
+
+            const titleA = (a.title || "").toLowerCase();
+            const titleB = (b.title || "").toLowerCase();
+            if (titleA !== titleB) return titleA.localeCompare(titleB);
+
+            const parsePage = (p) => {
+              const m = (p || "").match(/\d+/);
+              return m ? parseInt(m[0], 10) : 0;
+            };
+            return parsePage(a.pages) - parsePage(b.pages);
+          });
+
+          let prevAuthor = null;
+          let prevTitle = null;
+
+          sortedRefs.forEach(ref => {
+            let author = (ref.authors || "").trim();
+            let title = (ref.title || "").trim();
+            let pages = (ref.pages || "").trim();
+            let quote = sanitizeHTMLBlock((ref.quoteHTML || "").trim());
+
+            let formattedPages = "";
+            if (pages) {
+              const isSingle = /^\d+$/.test(pages);
+              formattedPages = `${isSingle ? 'p' : 'pp'} ${pages.replace(/(\d+)\s*-\s*(\d+)/g, '$1–$2')}`;
+            }
+
+            let citationParagraph = "";
+            if (prevAuthor && author.toLowerCase() === prevAuthor.toLowerCase()) {
+              if (prevTitle && title.toLowerCase() === prevTitle.toLowerCase()) {
+                citationParagraph = formattedPages ? `<p>ibid., ${formattedPages}.</p>` : `<p>ibid.</p>`;
+              } else {
+                let formattedTitle = ref.titleFormat === 'quotes' ? `‘${title}’` : `<em>${title}</em>`;
+                let parts = ["id.", formattedTitle];
+                if (formattedPages) parts.push(formattedPages);
+                citationParagraph = `<p>${parts.join(', ')}.</p>`;
+              }
+            } else {
+              let parts = [];
+              if (author) parts.push(author);
+              if (title) {
+                let formattedTitle = ref.titleFormat === 'quotes' ? `‘${title}’` : `<em>${title}</em>`;
+                parts.push(formattedTitle);
+              }
+              if (formattedPages) parts.push(formattedPages);
+              let fullStr = parts.join(', ');
+              if (fullStr && !fullStr.endsWith('.')) fullStr += '.';
+              citationParagraph = `<p>${fullStr}</p>`;
+            }
+
+            if (citationParagraph) html += `  ${citationParagraph}\n`;
+            if (quote) html += `  <blockquote>\n    ${quote}\n  </blockquote>\n`;
+
+            prevAuthor = author;
+            prevTitle = title;
+          });
+          html += '</details>\n';
+        }
+      }
+      return html;
+    }
+
+    function renderLivePreview() {
+      const generatedHTML = generateEntryHTML();
+      const codeEditor = document.getElementById('raw-html-editor');
+      if (document.activeElement !== codeEditor) codeEditor.value = generatedHTML;
+      document.getElementById('preview-post-title').textContent = entryData.postTitle || 'Entry Title';
+      
+      const liveOutput = document.getElementById('publii-live-output');
+      const existingDetails = liveOutput.querySelector('details');
+      const wasOpen = existingDetails ? existingDetails.open : true;
+      liveOutput.innerHTML = generatedHTML;
+      const newDetails = liveOutput.querySelector('details');
+      if (newDetails) newDetails.open = wasOpen;
+
+      autoSaveDraft();
+    }
+
+    function renderFormUI() {
+      document.getElementById('post-title').value = entryData.postTitle || "";
+      const altEl = document.getElementById('alt-english-terms');
+      if (altEl) { altEl.innerHTML = entryData.altEnglishTerms || ""; }
+      renderGlobalPronunciationRulesUI();
+      renderGlobalRulesUI();
+      renderTermsUI();
+      renderReferencesListUI();
+      renderLivePreview();
+    }
+
+    function onAltEnglishTermsInput() {
+      const altEl = document.getElementById('alt-english-terms');
+      if (altEl) {
+        entryData.altEnglishTerms = altEl.innerHTML;
+        renderLivePreview();
+      }
+    }
+
+    function formatAltEnglishText(cmd) {
+      const altEl = document.getElementById('alt-english-terms');
+      if (altEl) {
+        altEl.focus();
+        document.execCommand(cmd, false, null);
+        onAltEnglishTermsInput();
+      }
+    }
+
+    function renderGlobalPronunciationRulesUI() {
+      const container = document.getElementById('global-pron-rules-container');
+      if (!container) return;
+      container.innerHTML = '';
+      if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global pronunciation rules added yet.</p>`;
+        return;
+      }
+      entryData.globalPronunciationRules.forEach((rule, idx) => {
+        const row = document.createElement('div');
+        row.className = "flex items-start gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60";
+        const converted = convertQuasiIPA(rule.ipa || "");
+        row.innerHTML = `
+          <div class="flex-1 space-y-1">
+            <span class="text-[11px] text-slate-400 font-medium">Target Word:</span>
+            <input type="text" value="${escapeAttr(rule.target)}" oninput="updateGlobalPronRule(${idx}, 'target', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white">
+          </div>
+          <div class="flex-1 space-y-1">
+            <span class="text-[11px] text-slate-400 font-medium">Quasi-IPA:</span>
+            <input type="text" data-ipa-input="true" value="${escapeAttr(rule.ipa)}" oninput="updateGlobalPronRule(${idx}, 'ipa', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono">
+          </div>
+          <div class="flex-1 space-y-1">
+            <span class="text-[11px] text-slate-400 font-medium">Quấc ngữ Preview:</span>
+            <div class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono italic min-h-[28px] flex items-center">${escapeAttr(converted)}</div>
+          </div>
+          <button onclick="removeGlobalPronRule(${idx})" class="text-rose-400 hover:text-rose-300 text-base px-1.5 pt-4">&times;</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addGlobalPronunciationRule() {
+      if (!entryData.globalPronunciationRules) entryData.globalPronunciationRules = [];
+      entryData.globalPronunciationRules.push({ target: "", ipa: "" });
+      renderGlobalPronunciationRulesUI();
+      renderLivePreview();
+    }
+
+    function updateGlobalPronRule(idx, field, val) {
+      if (entryData.globalPronunciationRules[idx]) {
+        entryData.globalPronunciationRules[idx][field] = val;
+        savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa);
+        renderGlobalPronunciationRulesUI();
+        renderLivePreview();
+      }
+    }
+
+    function removeGlobalPronRule(idx) {
+      entryData.globalPronunciationRules.splice(idx, 1);
+      renderGlobalPronunciationRulesUI();
+      renderLivePreview();
+    }
+
+    function renderGlobalRulesUI() {
+      const container = document.getElementById('global-rules-container');
+      container.innerHTML = '';
+      if (!entryData.globalVariantRules || entryData.globalVariantRules.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global variant rules added yet.</p>`;
+        return;
+      }
+      entryData.globalVariantRules.forEach((rule, idx) => {
+        const row = document.createElement('div');
+        row.className = "flex items-start gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60";
+        row.innerHTML = `
+          <div class="flex-1 space-y-1">
+            <span class="text-[11px] text-slate-400 font-medium">Main Word:</span>
+            <input type="text" value="${escapeAttr(rule.find)}" oninput="updateGlobalRule(${idx}, 'find', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white">
+          </div>
+          <div class="flex-[2] space-y-1">
+            <span class="text-[11px] text-slate-400 font-medium">Variants:</span>
+            <textarea rows="1" oninput="updateGlobalRule(${idx}, 'variantsStr', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-amber-300 font-mono resize-none">${escapeAttr(rule.variantsStr)}</textarea>
+          </div>
+          <button onclick="removeGlobalRule(${idx})" class="text-rose-400 hover:text-rose-300 text-base px-1.5 pt-4">&times;</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addGlobalVariantRule() {
+      if (!entryData.globalVariantRules) entryData.globalVariantRules = [];
+      entryData.globalVariantRules.push({ find: "", variantsStr: "" });
+      renderGlobalRulesUI();
+      renderLivePreview();
+    }
+
+    function updateGlobalRule(idx, field, val) {
+      if (entryData.globalVariantRules[idx]) {
+        entryData.globalVariantRules[idx][field] = val;
+        saveVarRuleToDB(entryData.globalVariantRules[idx].find, entryData.globalVariantRules[idx].variantsStr);
+        renderLivePreview();
+      }
+    }
+
+    function removeGlobalRule(idx) {
+      entryData.globalVariantRules.splice(idx, 1);
+      renderGlobalRulesUI();
+      renderLivePreview();
+    }
+
+    /* Medical Terms UI Cards */
+    function renderTermsUI() {
+      const container = document.getElementById('terms-container');
+      container.innerHTML = '';
+      entryData.terms.forEach((term, index) => {
+        const card = document.createElement('div');
+        card.className = "term-card bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 space-y-3 relative group transition";
+        card.setAttribute('draggable', 'true');
+        card.setAttribute('data-term-index', index);
+        card.addEventListener('dragstart', (e) => { card.classList.add('dragging'); e.dataTransfer.setData('text/plain', index); });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+        card.addEventListener('dragover', (e) => e.preventDefault());
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+          if (!isNaN(fromIdx) && fromIdx !== index) reorderTerms(fromIdx, index);
+        });
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-slate-700/60">
+            <div class="flex items-center gap-2">
+              <span class="cursor-grab text-slate-500 hover:text-slate-300 text-sm font-bold select-none">⋮⋮</span>
+              <span class="text-xs font-bold text-slate-300">Medical Term #${index + 1}</span>
+              <div class="flex items-center gap-1 ml-2">
+                ${index > 0 ? `<button onclick="moveTerm(${index}, -1)" class="text-xs bg-slate-700/50 hover:bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded">↑</button>` : ''}
+                ${index < entryData.terms.length - 1 ? `<button onclick="moveTerm(${index}, 1)" class="text-xs bg-slate-700/50 hover:bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded">↓</button>` : ''}
+              </div>
+            </div>
+            ${entryData.terms.length > 1 ? `<button onclick="removeTerm('${term.id}')" class="text-xs text-rose-400 hover:text-rose-300 transition">Remove Term</button>` : ''}
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Vietnamese Headword</label>
+            <div id="hw-editor-${term.id}" contenteditable="true" onfocus="activeHeadwordEditorId = '${term.id}'" oninput="onHeadwordInput('${term.id}')" onclick="handleHeadwordSpanClick(event, '${term.id}')" class="headword-editor bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-rose-500 font-medium"></div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Term Labels</label>
+            <div class="flex flex-wrap items-center gap-1.5">
+              ${PRESET_LABELS.map(lbl => {
+                const active = (term.labels || []).includes(lbl);
+                return `<button onclick="togglePresetLabel('${term.id}', '${lbl}')" class="text-xs px-2.5 py-1 rounded-full border transition ${active ? 'bg-indigo-600 text-white border-indigo-500 font-semibold' : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'}">${lbl} ${active ? '✓' : ''}</button>`;
+              }).join('')}
+              ${(term.customLabels || []).map((lbl, cIdx) => `<span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-indigo-600 text-white border border-indigo-500 font-semibold">${lbl} <button onclick="removeCustomLabel('${term.id}', ${cIdx})" class="hover:text-rose-200 text-xs">&times;</button></span>`).join('')}
+              <div id="custom-lbl-wrapper-${term.id}" class="inline-block">
+                <button onclick="showCustomLabelInput('${term.id}')" class="text-xs px-2.5 py-1 rounded-full bg-slate-900 text-indigo-400 border border-indigo-500/40 hover:bg-indigo-600/20 transition font-medium">+ Custom</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-slate-300">Explanatory Comments</label>
+              <div class="flex gap-1 text-[11px]">
+                <button onclick="formatCommentText('${term.id}', 'bold')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded font-bold text-slate-300">B</button>
+                <button onclick="formatCommentText('${term.id}', 'italic')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded italic text-slate-300">I</button>
+                <button onclick="formatCommentText('${term.id}', 'underline')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded underline text-slate-300">U</button>
+                <button onclick="formatCommentText('${term.id}', 'superscript')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">x²</button>
+                <button onclick="formatCommentText('${term.id}', 'subscript')" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">x₂</button>
+              </div>
+            </div>
+            <div id="comment-editor-${term.id}" contenteditable="true" oninput="onCommentInput('${term.id}')" class="comment-editor bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-rose-500"></div>
+          </div>
+        `;
+        container.appendChild(card);
+        const hwEd = document.getElementById(`hw-editor-${term.id}`);
+        if (hwEd) hwEd.innerHTML = term.headwordHTML || "";
+        const cmEd = document.getElementById(`comment-editor-${term.id}`);
+        if (cmEd) cmEd.innerHTML = term.commentsHTML || "";
+      });
+    }
+
+    function moveTerm(fromIdx, dir) {
+      const toIdx = fromIdx + dir;
+      if (toIdx >= 0 && toIdx < entryData.terms.length) reorderTerms(fromIdx, toIdx);
+    }
+    function reorderTerms(fromIdx, toIdx) {
+      const movedTerm = entryData.terms.splice(fromIdx, 1)[0];
+      entryData.terms.splice(toIdx, 0, movedTerm);
+      renderFormUI();
+    }
+    function onHeadwordInput(id) {
+      const term = entryData.terms.find(t => t.id === id);
+      const hwEd = document.getElementById(`hw-editor-${id}`);
+      if (term && hwEd) { term.headwordHTML = hwEd.innerHTML; renderLivePreview(); }
+    }
+    function onCommentInput(id) {
+      const term = entryData.terms.find(t => t.id === id);
+      const cmEd = document.getElementById(`comment-editor-${id}`);
+      if (term && cmEd) { term.commentsHTML = cmEd.innerHTML; renderLivePreview(); }
+    }
+    function formatCommentText(termId, cmd) {
+      const cmEd = document.getElementById(`comment-editor-${termId}`);
+      if (cmEd) { cmEd.focus(); document.execCommand(cmd, false, null); onCommentInput(termId); }
+    }
+
+    /* Modal interactions for Headwords */
+    function handleHeadwordSpanClick(event, termId) {
+      const targetSpan = event.target.closest('.pronunciation, .lexical-variant');
+      if (!targetSpan) return;
+      activeAnnotationSpan = targetSpan;
+      activeAnnotationTermId = termId;
+      const isPron = targetSpan.classList.contains('pronunciation');
+      const currentVal = isPron ? targetSpan.getAttribute('data-pronunciation') : targetSpan.getAttribute('data-variant');
+      document.getElementById('annotation-modal-title').textContent = isPron ? "Edit Pronunciation Annotation" : "Edit Lexical Variant Annotation";
+      document.getElementById('annotation-target-text').value = targetSpan.textContent;
+      document.getElementById('annotation-value-label').textContent = isPron ? "Quấc ngữ Pronunciation" : "Variant(s)";
+      const valInput = document.getElementById('annotation-value-input');
+      valInput.value = currentVal || "";
+      if (isPron) valInput.setAttribute('data-ipa-input', 'true');
+      else valInput.removeAttribute('data-ipa-input');
+      document.getElementById('annotation-modal').classList.remove('hidden');
+    }
+
+    function closeAnnotationModal() { document.getElementById('annotation-modal').classList.add('hidden'); activeAnnotationSpan = null; activeAnnotationTermId = null; }
+    function saveAnnotationFromModal() {
+      if (!activeAnnotationSpan) return;
+      const val = document.getElementById('annotation-value-input').value.trim();
+      if (activeAnnotationSpan.classList.contains('pronunciation')) {
+        activeAnnotationSpan.setAttribute('data-pronunciation', convertQuasiIPA(val));
+      } else {
+        activeAnnotationSpan.setAttribute('data-variant', parseVariantsString(val).join(', '));
+      }
+      onHeadwordInput(activeAnnotationTermId);
+      closeAnnotationModal();
+      showToast("Updated Annotation!");
+    }
+    function removeAnnotationFromModal() {
+      if (!activeAnnotationSpan) return;
+      const textNode = document.createTextNode(activeAnnotationSpan.textContent);
+      activeAnnotationSpan.replaceWith(textNode);
+      onHeadwordInput(activeAnnotationTermId);
+      closeAnnotationModal();
+      showToast("Removed Annotation!");
+    }
+    
+    function openAddPronModal() {
+      if (!savedRange) return;
+      const text = savedRange.toString().trim();
+      if (!text) return;
+      document.getElementById('add-pron-target').value = text;
+      document.getElementById('add-pron-input').value = "";
+      document.getElementById('add-pron-preview').textContent = "";
+      document.getElementById('add-pron-modal').classList.remove('hidden');
+      document.getElementById('add-pron-input').focus();
+      document.getElementById('selection-toolbar').classList.add('hidden');
+    }
+    function closeAddPronModal() { document.getElementById('add-pron-modal').classList.add('hidden'); }
+    function updateAddPronPreview() {
+      const val = document.getElementById('add-pron-input').value;
+      document.getElementById('add-pron-preview').textContent = convertQuasiIPA(val);
+    }
+    function confirmAddPronunciation() {
+      const ipa = document.getElementById('add-pron-input').value.trim();
+      if (!savedRange || !ipa) { closeAddPronModal(); return; }
+      savePronRuleToDB(savedRange.toString(), ipa);
+      const span = document.createElement('span');
+      span.className = 'pronunciation';
+      span.setAttribute('data-pronunciation', convertQuasiIPA(ipa));
+      span.textContent = savedRange.toString().trim();
+      savedRange.deleteContents();
+      savedRange.insertNode(span);
+      onHeadwordInput(activeHeadwordEditorId);
+      closeAddPronModal();
+      savedRange = null;
+      showToast("Added Pronunciation!");
+    }
+
+    function openAddVarModal() {
+      if (!savedRange) return;
+      const text = savedRange.toString().trim();
+      if (!text) return;
+      document.getElementById('add-var-target').value = text;
+      document.getElementById('add-var-input').value = "";
+      document.getElementById('add-var-modal').classList.remove('hidden');
+      document.getElementById('add-var-input').focus();
+      document.getElementById('selection-toolbar').classList.add('hidden');
+    }
+    function closeAddVarModal() { document.getElementById('add-var-modal').classList.add('hidden'); }
+    function confirmAddVariant() {
+      const rawInput = document.getElementById('add-var-input').value.trim();
+      if (!savedRange || !rawInput) { closeAddVarModal(); return; }
+      saveVarRuleToDB(savedRange.toString(), rawInput);
+      const span = document.createElement('span');
+      span.className = 'lexical-variant';
+      span.setAttribute('data-variant', parseVariantsString(rawInput).join(', '));
+      span.textContent = savedRange.toString().trim();
+      savedRange.deleteContents();
+      savedRange.insertNode(span);
+      onHeadwordInput(activeHeadwordEditorId);
+      closeAddVarModal();
+      savedRange = null;
+      showToast("Added Lexical Variant!");
+    }
+
+    /* Labels */
+    function togglePresetLabel(termId, label) {
+      const term = entryData.terms.find(t => t.id === termId);
+      if (term) {
+        if (!term.labels) term.labels = [];
+        const idx = term.labels.indexOf(label);
+        if (idx > -1) term.labels.splice(idx, 1);
+        else term.labels.push(label);
+        renderFormUI();
+      }
+    }
+    function showCustomLabelInput(termId) {
+      const wrapper = document.getElementById(`custom-lbl-wrapper-${termId}`);
+      if (!wrapper) return;
+      wrapper.innerHTML = `<div class="inline-flex items-center gap-1"><input type="text" id="custom-lbl-input-${termId}" class="bg-slate-900 border border-indigo-500 text-xs px-2 py-0.5 rounded-lg text-white focus:outline-none w-24"><button onclick="saveCustomLabel('${termId}')" class="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-lg">Save</button></div>`;
+      const input = document.getElementById(`custom-lbl-input-${termId}`);
+      if (input) { input.focus(); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') saveCustomLabel(termId); }); }
+    }
+    function saveCustomLabel(termId) {
+      const input = document.getElementById(`custom-lbl-input-${termId}`);
+      if (!input) return;
+      const val = input.value.trim();
+      if (val) {
+        const term = entryData.terms.find(t => t.id === termId);
+        if (term) {
+          if (!term.customLabels) term.customLabels = [];
+          if (!term.customLabels.includes(val)) term.customLabels.push(val);
+        }
+      }
+      renderFormUI();
+    }
+    function removeCustomLabel(termId, idx) {
+      const term = entryData.terms.find(t => t.id === termId);
+      if (term && term.customLabels) { term.customLabels.splice(idx, 1); renderFormUI(); }
+    }
+    function addNewTerm() {
+      entryData.terms.push({ id: "term-" + Date.now(), headwordHTML: "", labels: [], customLabels: [], commentsHTML: "" });
+      renderFormUI();
+    }
+    function removeTerm(id) {
+      if (entryData.terms.length <= 1) return;
+      entryData.terms = entryData.terms.filter(t => t.id !== id);
+      renderFormUI();
+    }
+
+    /* ==========================================================================
+       6. REFERENCES BUILDER & RICH TEXT QUOTE EDITOR WITH TABLE BUILDER
+       ========================================================================== */
+
+    function addReferenceItem() {
+      if (!entryData.references) entryData.references = [];
+      entryData.references.push({ id: "ref-" + Date.now(), authors: "", title: "", titleFormat: "italics", pages: "", quoteHTML: "" });
+      renderReferencesListUI();
+      renderLivePreview();
+    }
+    function removeReferenceItem(idx) { entryData.references.splice(idx, 1); renderReferencesListUI(); renderLivePreview(); }
+    function updateReferenceField(idx, field, val) {
+      if (entryData.references && entryData.references[idx]) { entryData.references[idx][field] = val; renderLivePreview(); }
+    }
+    function onQuoteInput(idx) {
+      const qEd = document.getElementById(`quote-editor-${idx}`);
+      if (qEd && entryData.references && entryData.references[idx]) { entryData.references[idx].quoteHTML = qEd.innerHTML; renderLivePreview(); }
+    }
+    function formatQuoteText(idx, cmd) {
+      const qEd = document.getElementById(`quote-editor-${idx}`);
+      if (qEd) { qEd.focus(); document.execCommand(cmd, false, null); onQuoteInput(idx); }
+    }
+    function addTableRowToQuote(idx) {
+      const qEd = document.getElementById(`quote-editor-${idx}`);
+      if (!qEd) return;
+      const table = qEd.querySelector('table');
+      if (table) {
+        const tbody = table.querySelector('tbody') || table;
+        const lastRow = table.querySelector('tr:last-child');
+        const colsCount = lastRow ? lastRow.querySelectorAll('th, td').length : 3;
+        const newRow = document.createElement('tr');
+        for (let c = 0; c < colsCount; c++) newRow.appendChild(document.createElement('td'));
+        tbody.appendChild(newRow);
+        onQuoteInput(idx);
+      } else openTableModal(idx);
+    }
+    function addTableColToQuote(idx) {
+      const qEd = document.getElementById(`quote-editor-${idx}`);
+      if (!qEd) return;
+      const table = qEd.querySelector('table');
+      if (table) {
+        table.querySelectorAll('tr').forEach(row => {
+          row.appendChild(row.tagName.toLowerCase() === 'thead' || row.querySelector('th') ? document.createElement('th') : document.createElement('td'));
+        });
+        onQuoteInput(idx);
+      } else openTableModal(idx);
+    }
+
+    function renderReferencesListUI() {
+      const container = document.getElementById('references-list');
+      container.innerHTML = '';
+      if (!entryData.references || entryData.references.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-500 italic">No references added yet. Click "+ Add Reference" above.</p>`;
+        return;
+      }
+      entryData.references.forEach((ref, idx) => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-900/90 border border-slate-700/80 rounded-xl p-3.5 space-y-3";
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-slate-700/60">
+            <span class="text-xs font-semibold text-emerald-400">Reference #${idx + 1}</span>
+            <button onclick="removeReferenceItem(${idx})" class="text-xs text-rose-400 hover:text-rose-300">&times; Remove</button>
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs mb-1">1. Author Name(s)</label>
+            <input type="text" value="${escapeAttr(ref.authors)}" oninput="updateReferenceField(${idx}, 'authors', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white">
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs text-slate-400">2. Publication Title</label>
+              <div class="flex items-center gap-3 text-[11px] text-slate-300">
+                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="titleFormat-${idx}" value="italics" ${ref.titleFormat !== 'quotes' ? 'checked' : ''} onchange="updateReferenceField(${idx}, 'titleFormat', 'italics')" class="text-rose-600"><span>Italics</span></label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="titleFormat-${idx}" value="quotes" ${ref.titleFormat === 'quotes' ? 'checked' : ''} onchange="updateReferenceField(${idx}, 'titleFormat', 'quotes')" class="text-rose-600"><span>Quotes</span></label>
+              </div>
+            </div>
+            <input type="text" value="${escapeAttr(ref.title)}" oninput="updateReferenceField(${idx}, 'title', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs mb-1">3. Page Number(s)</label>
+            <input type="text" value="${escapeAttr(ref.pages)}" oninput="updateReferenceField(${idx}, 'pages', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white">
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center justify-between mb-1 gap-1">
+              <label class="block text-xs text-slate-400">Quote Material</label>
+              <div class="flex flex-wrap items-center gap-1 text-[11px]">
+                <button onclick="formatQuoteText(${idx}, 'bold')" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded font-bold text-slate-300">B</button>
+                <button onclick="formatQuoteText(${idx}, 'italic')" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded italic text-slate-300">I</button>
+                <button onclick="formatQuoteText(${idx}, 'underline')" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded underline text-slate-300">U</button>
+                <button onclick="formatQuoteText(${idx}, 'superscript')" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">x²</button>
+                <button onclick="formatQuoteText(${idx}, 'subscript')" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">x₂</button>
+                <span class="text-slate-600">|</span>
+                <button onclick="openTableModal(${idx})" class="px-2 py-0.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 rounded font-semibold">+ Table</button>
+                <button onclick="addTableRowToQuote(${idx})" class="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">+ Row</button>
+                <button onclick="addTableColToQuote(${idx})" class="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">+ Col</button>
+              </div>
+            </div>
+            <div id="quote-editor-${idx}" contenteditable="true" oninput="onQuoteInput(${idx})" class="quote-editor bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-rose-500"></div>
+          </div>
+        `;
+        container.appendChild(card);
+        const qEd = document.getElementById(`quote-editor-${idx}`);
+        if (qEd) {
+          qEd.innerHTML = ref.quoteHTML || "";
+          qEd.addEventListener('keyup', () => saveQuoteCursorLocation(idx));
+          qEd.addEventListener('mouseup', () => saveQuoteCursorLocation(idx));
+          qEd.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+              const sel = window.getSelection();
+              if (sel && sel.rangeCount > 0) {
+                const cell = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement.closest('td, th') : sel.anchorNode.closest('td, th');
+                if (cell) {
+                  e.preventDefault();
+                  const table = cell.closest('table');
+                  const allCells = Array.from(table.querySelectorAll('th, td'));
+                  const curIdx = allCells.indexOf(cell);
+                  if (e.shiftKey) { if (curIdx > 0) focusCell(allCells[curIdx - 1]); } 
+                  else {
+                    if (curIdx < allCells.length - 1) focusCell(allCells[curIdx + 1]);
+                    else { addTableRowToQuote(idx); const updatedCells = Array.from(table.querySelectorAll('th, td')); focusCell(updatedCells[updatedCells.length - 1]); }
+                  }
+                }
+              }
+            }
+          });
+          qEd.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text/html') || (e.clipboardData || window.clipboardData).getData('text/plain');
+            document.execCommand('insertHTML', false, sanitizeHTMLBlock(text));
+            onQuoteInput(idx);
+          });
+        }
+      });
+    }
+
+    function saveQuoteCursorLocation(idx) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) { savedQuoteRange = sel.getRangeAt(0).cloneRange(); savedQuoteEditorIdx = idx; }
+    }
+    function focusCell(cell) {
+      cell.focus();
+      const range = document.createRange(); range.selectNodeContents(cell);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    }
+    function openTableModal(refIdx) {
+      activeQuoteRefIdx = refIdx;
+      saveQuoteCursorLocation(refIdx);
+      document.getElementById('table-rows-input').value = "";
+      document.getElementById('table-cols-input').value = "";
+      document.getElementById('table-modal').classList.remove('hidden');
+    }
+    function closeTableModal() { document.getElementById('table-modal').classList.add('hidden'); activeQuoteRefIdx = null; }
+    function confirmInsertTable() {
+      if (activeQuoteRefIdx === null) return;
+      const rows = parseInt(document.getElementById('table-rows-input').value, 10) || 2;
+      const cols = parseInt(document.getElementById('table-cols-input').value, 10) || 3;
+      const hasHeader = document.getElementById('table-header-check').checked;
+      let tableHTML = '<table>';
+      if (hasHeader) {
+        tableHTML += '<thead><tr>';
+        for (let c = 0; c < cols; c++) tableHTML += '<th></th>';
+        tableHTML += '</tr></thead>';
+      }
+      tableHTML += '<tbody>';
+      const bodyRows = hasHeader ? Math.max(1, rows - 1) : rows;
+      for (let r = 0; r < bodyRows; r++) {
+        tableHTML += '<tr>';
+        for (let c = 0; c < cols; c++) tableHTML += '<td></td>';
+        tableHTML += '</tr>';
+      }
+      tableHTML += '</tbody></table>';
+
+      const qEd = document.getElementById(`quote-editor-${activeQuoteRefIdx}`);
+      if (qEd) {
+        qEd.focus();
+        if (savedQuoteRange && savedQuoteEditorIdx === activeQuoteRefIdx) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(savedQuoteRange);
+        }
+        document.execCommand('insertHTML', false, tableHTML);
+        onQuoteInput(activeQuoteRefIdx);
+      }
+      closeTableModal();
+      showToast("Inserted Table!");
+    }
+
+    /* ==========================================================================
+       7. QUASI-IPA FLOATING PALETTE, SELECTION TOOLBAR & UTILITIES
+       ========================================================================== */
+
+    function initIPAPalette() {
+      const container = document.getElementById('ipa-buttons-container');
+      container.innerHTML = '';
+      IPA_SYMBOLS.forEach(sym => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = "px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold transition active:scale-95 shadow-sm";
+        btn.textContent = sym;
+        btn.onmousedown = (e) => { e.preventDefault(); insertIPASymbol(sym); };
+        container.appendChild(btn);
+      });
+    }
+
+    function insertIPASymbol(sym) {
+      if (!activeIPAInput) return;
+      const start = activeIPAInput.selectionStart || 0;
+      const end = activeIPAInput.selectionEnd || 0;
+      const val = activeIPAInput.value;
+      activeIPAInput.value = val.substring(0, start) + sym + val.substring(end);
+      activeIPAInput.selectionStart = activeIPAInput.selectionEnd = start + sym.length;
+      activeIPAInput.dispatchEvent(new Event('input', { bubbles: true }));
+      activeIPAInput.focus();
+    }
+
+    document.addEventListener('focusin', function(e) {
+      if (e.target && e.target.getAttribute('data-ipa-input') === 'true') {
+        activeIPAInput = e.target;
+        positionIPAToolbar(e.target);
+        document.getElementById('ipa-toolbar').classList.remove('hidden');
+      }
+    });
+
+    document.addEventListener('focusout', function(e) {
+      setTimeout(() => {
+        const ipaToolbar = document.getElementById('ipa-toolbar');
+        if (!ipaToolbar.contains(document.activeElement) && (!activeIPAInput || document.activeElement !== activeIPAInput)) {
+          ipaToolbar.classList.add('hidden');
+        }
+      }, 150);
+    });
+
+    function positionIPAToolbar(targetInput) {
+      const toolbar = document.getElementById('ipa-toolbar');
+      const rect = targetInput.getBoundingClientRect();
+      const toolbarHeight = 110;
+      let top = rect.bottom + 6;
+      let left = rect.left;
+      if (top + toolbarHeight > window.innerHeight - 10) top = rect.top - toolbarHeight - 6;
+      if (left < 10) left = 10;
+      toolbar.style.top = `${top}px`;
+      toolbar.style.left = `${left}px`;
+    }
+
+    function autoGrowTextarea(el) {
+      if (!el || el.tagName !== 'TEXTAREA') return;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+
+    document.addEventListener('input', (e) => { if (e.target && e.target.tagName === 'TEXTAREA') autoGrowTextarea(e.target); });
+
+    function trimSelectionTrailingSpace() {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed) return;
+      try {
+        const range = selection.getRangeAt(0);
+        if (range.toString().endsWith(' ') && range.endOffset > 0) {
+          range.setEnd(range.endContainer, range.endOffset - 1);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      } catch (e) {}
+    }
+    document.addEventListener('mouseup', trimSelectionTrailingSpace);
+    document.addEventListener('selectionchange', handleTextSelection);
+
+    function handleTextSelection() {
+      const selection = window.getSelection();
+      const toolbar = document.getElementById('selection-toolbar');
+      if (!selection || selection.isCollapsed || !selection.toString().trim()) { toolbar.classList.add('hidden'); return; }
+      
+      const anchorNode = selection.anchorNode;
+      const editorElement = anchorNode.nodeType === 3 ? anchorNode.parentElement.closest('.headword-editor') : anchorNode.closest('.headword-editor');
+      if (!editorElement) { toolbar.classList.add('hidden'); return; }
+
+      activeHeadwordEditorId = editorElement.id.replace('hw-editor-', '');
+      savedRange = selection.getRangeAt(0).cloneRange();
+      
+      const rect = savedRange.getBoundingClientRect();
+      let top = rect.top - 44 - 8;
+      let left = rect.left + (rect.width / 2) - 130;
+      if (top < 10) top = rect.bottom + 8;
+      if (left < 10) left = 10;
+      toolbar.style.top = `${top}px`;
+      toolbar.style.left = `${left}px`;
+      toolbar.classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       8. IMPORT / EXPORT, PARSING, & RULES ENGINE
+       ========================================================================== */
+
+    function updateStateFromForm() {
+      entryData.postTitle = document.getElementById('post-title').value;
+      entryData.altEnglishTerms = document.getElementById('alt-english-terms').value;
+      renderLivePreview();
+    }
+
+    function handleManualCodeEdit() {
+      document.getElementById('publii-live-output').innerHTML = document.getElementById('raw-html-editor').value;
+    }
+
+    function parseCodeBackToForm() {
+      parseHTMLToEntryData(document.getElementById('raw-html-editor').value);
+      switchTab('form');
+      showToast("Parsed Code back into Form!");
+    }
+
+    function runImportHTML() {
+      const val = document.getElementById('import-html-input').value;
+      if (!val.trim()) return;
+      parseHTMLToEntryData(val);
+      switchTab('form');
+      showToast("Imported successfully!");
+    }
+
+    function parseHTMLToEntryData(htmlString) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, 'text/html');
+
+      let parsedTitle = doc.querySelector('h1') ? doc.querySelector('h1').textContent.trim() : "";
+      let altEnglishTerms = "";
+      const firstP = doc.querySelector('p');
+      if (firstP && firstP.querySelector('em') && !doc.querySelector('.medical-terms')?.contains(firstP) && !firstP.textContent.includes('Alternative spellings:')) {
+        altEnglishTerms = firstP.textContent.replace(/;/g, '\n').trim();
+      }
+
+      const terms = [];
+      doc.querySelectorAll('.medical-term').forEach((termEl, idx) => {
+        const h3 = termEl.querySelector('h3');
+        let headwordHTML = h3 ? h3.innerHTML.trim() : "";
+
+        if(db) {
+           termEl.querySelectorAll('.pronunciation').forEach(span => savePronRuleToDB(span.textContent, span.getAttribute('data-pronunciation')));
+           termEl.querySelectorAll('.lexical-variant').forEach(span => saveVarRuleToDB(span.textContent, span.getAttribute('data-variant')));
+        }
+
+        const labels = [];
+        termEl.querySelectorAll('.term-label').forEach(s => labels.push(s.textContent.trim()));
+
+        let commentsHTML = "";
+        termEl.querySelectorAll('p').forEach(p => {
+          if (!p.querySelector('.term-label')) commentsHTML += p.outerHTML + "\n";
+        });
+
+        terms.push({ id: "term-" + idx + "-" + Date.now(), headwordHTML, labels, customLabels: [], commentsHTML });
+      });
+
+      let references = [];
+      const details = doc.querySelector('details');
+      if (details) {
+        const paragraphs = details.querySelectorAll('p');
+        const blockquotes = details.querySelectorAll('blockquote');
+        let bqIdx = 0;
+
+        paragraphs.forEach((p, i) => {
+          if (p.closest('blockquote')) return;
+          
+          let text = p.textContent.trim();
+          let htmlStr = p.innerHTML.trim();
+          let quoteHTML = blockquotes[bqIdx] ? blockquotes[bqIdx].innerHTML.trim() : "";
+          bqIdx++;
+
+          let author = "", title = "", titleFormat = "italics", pages = "";
+
+          if (text.startsWith('ibid.')) {
+            if (references.length > 0) {
+              author = references[references.length - 1].authors;
+              title = references[references.length - 1].title;
+              titleFormat = references[references.length - 1].titleFormat;
+            }
+            const pageMatch = text.match(/pp?\.?\s*([\d–\-]+)/);
+            if (pageMatch) pages = pageMatch[1];
+          } else if (text.startsWith('id.')) {
+            if (references.length > 0) author = references[references.length - 1].authors;
+            const emNode = p.querySelector('em');
+            if (emNode) { title = emNode.textContent; titleFormat = 'italics'; } 
+            else {
+              const quoteMatch = text.match(/[‘']([^’']+)['’]/);
+              if (quoteMatch) { title = quoteMatch[1]; titleFormat = 'quotes'; }
+            }
+            const pageMatch = text.match(/pp?\.?\s*([\d–\-]+)/);
+            if (pageMatch) pages = pageMatch[1];
+          } else {
+            const emNode = p.querySelector('em');
+            if (emNode) {
+              title = emNode.textContent;
+              titleFormat = 'italics';
+              author = htmlStr.split('<em>')[0].replace(/,\s*$/, '').trim();
+            } else {
+              const quoteMatch = htmlStr.match(/[‘']([^’']+)['’]/);
+              if (quoteMatch) {
+                title = quoteMatch[1];
+                titleFormat = 'quotes';
+                author = htmlStr.split(quoteMatch[0])[0].replace(/,\s*$/, '').trim();
+              } else {
+                const parts = text.split(',');
+                author = parts[0] ? parts[0].trim() : "";
+                title = parts[1] ? parts[1].trim() : "";
+              }
+            }
+            const pageMatch = text.match(/pp?\.?\s*([\d–\-]+)/);
+            if (pageMatch) pages = pageMatch[1];
+          }
+          references.push({ id: "ref-" + i, authors: author, title, titleFormat, pages, quoteHTML });
+        });
+      }
+
+      entryData = {
+        postTitle: parsedTitle,
+        altEnglishTerms,
+        globalVariantRules: entryData.globalVariantRules || [],
+        globalPronunciationRules: entryData.globalPronunciationRules || [],
+        terms: terms.length > 0 ? terms : [{ id: "t1", headwordHTML: "", labels: [], customLabels: [], commentsHTML: "" }],
+        references
+      };
+      renderFormUI();
+    }
+
+    /* ==========================================================================
+       9. MASTER RULES DB & MODALS
+       ========================================================================== */
+       
+    function openRulesManager() {
+      document.getElementById('rules-manager-modal').classList.remove('hidden');
+      switchRulesTab('pron');
+    }
+    function closeRulesManager() { document.getElementById('rules-manager-modal').classList.add('hidden'); }
+
+    function switchRulesTab(type) {
+      if(type === 'pron') {
+        document.getElementById('tab-rule-pron').className = "flex-1 py-3 text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 bg-slate-800/50 transition";
+        document.getElementById('tab-rule-var').className = "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition";
+      } else {
+        document.getElementById('tab-rule-var').className = "flex-1 py-3 text-sm font-semibold text-amber-400 border-b-2 border-amber-500 bg-slate-800/50 transition";
+        document.getElementById('tab-rule-pron').className = "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition";
+      }
+      loadRulesForManager(type);
+    }
+
+    function loadRulesForManager(type, query = '') {
+      if(!db) return;
+      const storeName = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const req = store.getAll();
+      req.onsuccess = () => {
+        let rules = req.result.sort((a,b) => b.createdAt - a.createdAt);
+        if(query) rules = rules.filter(r => JSON.stringify(r).toLowerCase().includes(query.toLowerCase()));
+        
+        const container = document.getElementById('rules-manager-list');
+        container.innerHTML = '';
+        if(rules.length === 0) container.innerHTML = `<p class="text-slate-500 text-sm">No rules found.</p>`;
+        
+        rules.forEach(r => {
+          const div = document.createElement('div');
+          div.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+          if(type === 'pron') {
+            div.innerHTML = `
+              <div><strong class="text-white text-sm">${escapeAttr(r.target)}</strong> <span class="text-slate-500 mx-2">&rarr;</span> <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs ml-2">(${escapeAttr(r.quốcNgữ)})</span></div>
+              <button onclick="deleteMasterRule('${storeName}', '${r.id}')" class="text-rose-400 hover:text-rose-300 text-sm">&times; Delete</button>
+            `;
+          } else {
+            div.innerHTML = `
+              <div><strong class="text-white text-sm">${escapeAttr(r.find)}</strong> <span class="text-slate-500 mx-2">&rarr;</span> <span class="text-amber-300 font-mono text-xs">${escapeAttr(r.variantsStr)}</span></div>
+              <button onclick="deleteMasterRule('${storeName}', '${r.id}')" class="text-rose-400 hover:text-rose-300 text-sm">&times; Delete</button>
+            `;
+          }
+          container.appendChild(div);
+        });
+      };
+    }
+
+    function filterRulesManager() {
+      const isPron = document.getElementById('tab-rule-pron').classList.contains('text-indigo-400');
+      loadRulesForManager(isPron ? 'pron' : 'var', document.getElementById('rules-search').value);
+    }
+
+    function deleteMasterRule(storeName, id) {
+      if(!db) return;
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).delete(id);
+      tx.oncomplete = () => {
+        syncRulesToDirectory();
+        filterRulesManager();
+      };
+    }
+
+    function promptDeleteRule(type, ruleId, ruleName) {
+      const modal = document.getElementById('confirm-delete-rule-modal');
+      document.getElementById('confirm-delete-rule-text').textContent = `Are you sure you want to delete "${ruleName}" from the ${type === 'pron' ? 'Pronunciation' : 'Variant'} rules database?`;
+      const btn = document.getElementById('confirm-delete-rule-btn');
+      btn.onclick = () => {
+        const storeName = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+        deleteMasterRule(storeName, ruleId);
+        closeConfirmDeleteRuleModal();
+        if (!document.getElementById('rule-selector-modal').classList.contains('hidden')) {
+          filterRuleSelector();
+        }
+        showToast("Deleted Rule!");
+      };
+      modal.classList.remove('hidden');
+    }
+
+    function closeConfirmDeleteRuleModal() {
+      document.getElementById('confirm-delete-rule-modal').classList.add('hidden');
+    }
+
+    /* Suggest / Browse Modals */
+    function openRuleSuggest(type, explicitTarget = null) {
+      activeRuleSelectorType = type;
+      activeRuleSelectorTargetInput = explicitTarget;
+      document.getElementById('rule-selector-title').textContent = "Suggested Rules";
+      document.getElementById('rule-selector-search-container').classList.add('hidden');
+      document.getElementById('rule-selector-modal').classList.remove('hidden');
+      
+      let allText = entryData.terms.map(t => {
+        const temp = document.createElement('div');
+        temp.innerHTML = t.headwordHTML || "";
+        return temp.textContent || "";
+      }).join(' ').toLowerCase();
+      if(explicitTarget) allText = explicitTarget.toLowerCase();
+
+      if(!db) return;
+      const storeName = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      const req = db.transaction(storeName, 'readonly').objectStore(storeName).getAll();
+      req.onsuccess = () => {
+        const rules = req.result.filter(r => allText.includes((type === 'pron' ? r.target : r.find).toLowerCase()));
+        renderRuleSelectorList(rules, type);
+      };
+    }
+
+    function openRuleBrowse(type) {
+      activeRuleSelectorType = type;
+      document.getElementById('rule-selector-title').textContent = "Browse Rules";
+      document.getElementById('rule-selector-search-container').classList.remove('hidden');
+      document.getElementById('rule-selector-search').value = "";
+      document.getElementById('rule-selector-modal').classList.remove('hidden');
+      
+      if(!db) return;
+      const storeName = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      const req = db.transaction(storeName, 'readonly').objectStore(storeName).getAll();
+      req.onsuccess = () => renderRuleSelectorList(req.result, type);
+    }
+
+    function filterRuleSelector() {
+      if(!db) return;
+      const query = document.getElementById('rule-selector-search').value.toLowerCase();
+      const type = activeRuleSelectorType;
+      const storeName = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      const req = db.transaction(storeName, 'readonly').objectStore(storeName).getAll();
+      req.onsuccess = () => {
+        const rules = req.result.filter(r => JSON.stringify(r).toLowerCase().includes(query));
+        renderRuleSelectorList(rules, type);
+      };
+    }
+
+    function closeRuleSelector() { document.getElementById('rule-selector-modal').classList.add('hidden'); }
+
+    function renderRuleSelectorList(rules, type) {
+      const container = document.getElementById('rule-selector-list');
+      container.innerHTML = '';
+      const isBrowseMode = !document.getElementById('rule-selector-search-container').classList.contains('hidden');
+      
+      if(rules.length === 0) { container.innerHTML = `<p class="text-slate-500 text-sm">No rules match.</p>`; return; }
+      rules.forEach(r => {
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2 transition";
+        div.onclick = () => selectRuleFromSelector(r, type);
+        
+        let labelHTML = "";
+        let ruleTitle = "";
+        if(type === 'pron') {
+          ruleTitle = r.target;
+          labelHTML = `<div><strong class="text-white text-sm">${escapeAttr(r.target)}</strong> <span class="text-slate-500 mx-2">&rarr;</span> <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs ml-2">(${escapeAttr(r.quốcNgữ)})</span></div>`;
+        } else {
+          ruleTitle = r.find;
+          const formattedVars = parseVariantsString(r.variantsStr).join(', ');
+          labelHTML = `<div><strong class="text-white text-sm">${escapeAttr(r.find)}</strong> <span class="text-slate-500 mx-2">&rarr;</span> <span class="text-amber-300 font-mono text-xs">${escapeAttr(formattedVars)}</span></div>`;
+        }
+
+        if(isBrowseMode) {
+          div.innerHTML = `
+            ${labelHTML}
+            <button onclick="event.stopPropagation(); promptDeleteRule('${type}', '${r.id}', '${escapeAttr(ruleTitle)}')" title="Delete Rule" class="text-slate-500 hover:text-rose-400 p-1 rounded transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+          `;
+        } else {
+          div.innerHTML = labelHTML;
+        }
+
+        container.appendChild(div);
+      });
+    }
+
+    function selectRuleFromSelector(rule, type) {
+      if(activeRuleSelectorTargetInput !== null) {
+        if(type === 'pron') {
+          document.getElementById('add-pron-input').value = rule.ipa;
+          updateAddPronPreview();
+        } else {
+          document.getElementById('add-var-input').value = rule.variantsStr;
+        }
+      } else {
+        if(type === 'pron') {
+          if (!entryData.globalPronunciationRules) entryData.globalPronunciationRules = [];
+          entryData.globalPronunciationRules.push({ target: rule.target, ipa: rule.ipa });
+        } else {
+          if (!entryData.globalVariantRules) entryData.globalVariantRules = [];
+          entryData.globalVariantRules.push({ find: rule.find, variantsStr: rule.variantsStr });
+        }
+        renderFormUI();
+      }
+      closeRuleSelector();
+      showToast("Rule applied!");
+    }
+
+    /* Entries Library Modal */
+    function openEntriesLibrary() {
+      document.getElementById('entries-library-modal').classList.remove('hidden');
+      if (dirHandle) loadEntriesFromFolder();
+      else document.getElementById('library-entries-list').innerHTML = `<div class="text-center py-10 text-slate-500 text-sm">Please click 'Select Folder' in the header first.</div>`;
+    }
+    function closeEntriesLibrary() { document.getElementById('entries-library-modal').classList.add('hidden'); }
+    
+    let libraryEntriesCache = [];
+    async function loadEntriesFromFolder() {
+      if (!dirHandle) return;
+      if (!(await verifyPermission(dirHandle))) return;
+      
+      const list = document.getElementById('library-entries-list');
+      list.innerHTML = `<p class="text-slate-400 text-xs">Loading files...</p>`;
+      libraryEntriesCache = [];
+
+      try {
+        for await (const entry of dirHandle.values()) {
+          if (entry.kind === 'file' && entry.name.endsWith('.json')) {
+            // Hide rule database files and hidden files
+            if (entry.name.startsWith('_') || entry.name === '_pronunciation_rules.json' || entry.name === '_variant_rules.json') {
+              continue;
+            }
+            const file = await entry.getFile();
+            const text = await file.text();
+            try {
+              const data = JSON.parse(text);
+              const enTitle = data.postTitle || "";
+              const altEn = data.altEnglishTerms || "";
+              const vnTerms = (data.terms || []).map(t => {
+                const temp = document.createElement('div');
+                temp.innerHTML = t.headwordHTML || "";
+                return temp.textContent || "";
+              }).join(' ');
+              const altVn = computeAutomaticAltSpellings(data);
+              libraryEntriesCache.push({ name: entry.name, handle: entry, data, searchStr: `${enTitle} ${altEn} ${vnTerms} ${altVn}`.toLowerCase() });
+            } catch(e) {}
+          }
+        }
+        filterLibraryEntries();
+      } catch (e) {
+        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading folder.</p>`;
+      }
+    }
+
+    function filterLibraryEntries() {
+      const q = document.getElementById('library-search').value.toLowerCase();
+      const list = document.getElementById('library-entries-list');
+      list.innerHTML = '';
+      const filtered = libraryEntriesCache.filter(e => e.searchStr.includes(q));
+      
+      if(filtered.length === 0) { list.innerHTML = `<p class="text-slate-500 text-sm">No entries found.</p>`; return; }
+      
+      filtered.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+        div.innerHTML = `
+          <div><strong class="text-indigo-300 text-sm">${escapeAttr(entry.data.postTitle || "Untitled")}</strong> <span class="text-slate-500 text-xs block">${entry.name}</span></div>
+          <div class="flex gap-2">
+            <button onclick="loadEntryFromLibrary('${entry.name}')" class="bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 px-3 py-1 text-xs rounded transition">Open</button>
+            <button onclick="deleteEntryFromLibrary('${entry.name}')" class="bg-rose-600/30 hover:bg-rose-600/50 text-rose-300 px-3 py-1 text-xs rounded transition">Delete</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function loadEntryFromLibrary(name) {
+      const item = libraryEntriesCache.find(e => e.name === name);
+      if(item) {
+        entryData = item.data;
+        renderFormUI();
+        closeEntriesLibrary();
+        showToast("Entry Loaded!");
+      }
+    }
+
+    async function deleteEntryFromLibrary(name) {
+      if(confirm(`Are you sure you want to delete ${name} from your disk?`)) {
+        if(dirHandle && (await verifyPermission(dirHandle))) {
+          await dirHandle.removeEntry(name);
+          loadEntriesFromFolder();
+          showToast("Entry Deleted!");
+        }
+      }
+    }
+
+    /* Application Startup & UI Interactions */
+    function switchTab(tab) {
+      currentTab = tab;
+      ['form', 'code', 'import'].forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        if (t === tab) { btn.className = "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-rose-600 text-white shadow-sm"; content.classList.remove('hidden'); } 
+        else { btn.className = "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 flex items-center gap-1.5 transition"; content.classList.add('hidden'); }
+      });
+    }
+
+    function togglePreviewTheme() {
+      isDarkPreview = !isDarkPreview;
+      const frame = document.getElementById('publii-live-output');
+      const container = document.getElementById('preview-viewport-container');
+      const btnText = document.getElementById('theme-btn-text');
+      if (isDarkPreview) { frame.classList.add('dark-theme-preview'); container.classList.add('dark-theme-preview'); btnText.textContent = "Dark Theme"; } 
+      else { frame.classList.remove('dark-theme-preview'); container.classList.remove('dark-theme-preview'); btnText.textContent = "Light Theme"; }
+    }
+
+    function copyHTMLForPublii() {
+      const html = generateEntryHTML();
+      navigator.clipboard.writeText(html).then(() => showToast("Copied Entry HTML!"))
+      .catch(() => {
+        const ta = document.createElement('textarea'); ta.value = html;
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        showToast("Copied Entry HTML!");
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0'); toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => { toast.classList.remove('translate-y-0', 'opacity-100'); toast.classList.add('translate-y-20', 'opacity-0'); }, 2500);
+    }
+
+    function escapeAttr(str) { return str ? String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; }
+
+    function searchUMLS(customTerm) {
+      const query = customTerm || document.getElementById('post-title').value.trim();
+      if (!query) { showToast("Enter an English headword to search UMLS"); return; }
+      window.open(`https://uts.nlm.nih.gov/uts/umls/searchResults?searchString=${encodeURIComponent(query)}`, '_blank', 'noopener,noreferrer');
+      showToast(`Searching UMLS for "${query}"...`);
+    }
+
+    window.onload = async function() {
+      initIPAPalette();
+      await initDB();
+      await loadConfig();
+      await loadDraft();
+      
+      if(dirHandle) document.getElementById('library-folder-status').textContent = `Connected: ${dirHandle.name}`;
+      
+      renderFormUI();
+    };
+  </script>
+
+</body>
+</html>
