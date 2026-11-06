@@ -12,9 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Brygada+1918:ital,wght@0,400..700;1,400..700&amp;family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   
-  <!-- Google Drive API Scripts -->
+  <!-- Google Drive API Script (GIS) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js" async defer></script>
 
   <script>
     tailwind.config = {
@@ -306,12 +305,32 @@
       
       <!-- Google Drive Auth Button -->
       <button id="drive-auth-btn" onclick="handleDriveAuthClick()" class="text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium">
-        <svg class="w-4 h-4" viewBox="0 0 87.3 78">
-          <path d="M58.2 78h29.1L58.2 27.5H29.1z" fill="#0f9d58"/>
-          <path d="M29.1 78L0 27.5h29.1l29.1 50.5z" fill="#4285f4"/>
-          <path d="M58.2 0H0l29.1 50.5h58.2z" fill="#f4b400"/>
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
+          <mask id="drive-logo-mask" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
+            <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+          </mask>
+          <g mask="url(#drive-logo-mask)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
+            <path fill="url(#drive-logo-b)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
+            <path fill="url(#drive-logo-c)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
+            <path fill="url(#drive-logo-d)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+          </g>
+          <defs>
+            <linearGradient id="drive-logo-b" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
+              <stop offset=".09" stop-color="#ffe921"/>
+              <stop offset="1" stop-color="#fec700"/>
+            </linearGradient>
+            <linearGradient id="drive-logo-c" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
+              <stop offset=".15" stop-color="#a9a8ff"/>
+              <stop offset=".33" stop-color="#6d97ff"/>
+              <stop offset=".48" stop-color="#3186ff"/>
+            </linearGradient>
+            <linearGradient id="drive-logo-d" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
+              <stop offset=".55" stop-color="#0ebc5f"/>
+              <stop offset=".85" stop-color="#78c9ff"/>
+            </linearGradient>
+          </defs>
         </svg>
-        Connect Drive
+        <span>Connect Drive</span>
       </button>
 
       <div class="w-px h-6 bg-slate-700 mx-1"></div>
@@ -437,14 +456,14 @@
 
   <script>
     /* ==========================================================================
-       0. GOOGLE DRIVE API INTEGRATION & AUTHENTICATION
+       0. GOOGLE DRIVE API INTEGRATION & AUTHENTICATION (PURE REST)
        ========================================================================== */
     const CLIENT_ID = '588068745367-pspl34cbq8mb4uu6kqp7ei21c8ah5upd.apps.googleusercontent.com';
-    const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file';
     const FOLDER_NAME = 'Danh Từ Y Khoa Anh–việt';
 
     let tokenClient;
+    let accessToken = null;
     let driveFolderId = null;
     let isDriveConnected = false;
     let hasUnsavedChanges = false;
@@ -457,39 +476,85 @@
     function markDirty() { hasUnsavedChanges = true; }
     function markClean() { hasUnsavedChanges = false; }
 
-    function gapiLoaded() { gapi.load('client', initializeGapiClient); }
-    async function initializeGapiClient() {
-      await gapi.client.init({ discoveryDocs: [DISCOVERY_DOC] });
-      // Attempt silent auth if previously authorized
-    }
     function gisLoaded() {
+      if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+        setTimeout(gisLoaded, 100);
+        return;
+      }
       tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID, scope: SCOPES,
+        client_id: CLIENT_ID,
+        scope: SCOPES,
         callback: async (resp) => {
-          if (resp.error) throw resp;
-          gapi.client.setToken(resp); // CRITICAL: Set the authorized token so GAPI can make Drive requests
+          if (resp.error) {
+            console.error("Auth error:", resp);
+            showToast("Google Auth Error: " + resp.error);
+            return;
+          }
+          accessToken = resp.access_token;
           isDriveConnected = true;
           
           const btn = document.getElementById('drive-auth-btn');
-          btn.innerHTML = 'Drive Connected ✓';
+          btn.innerHTML = `
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
+              <mask id="drive-logo-mask-conn" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
+                <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+              </mask>
+              <g mask="url(#drive-logo-mask-conn)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
+                <path fill="url(#drive-logo-b-conn)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
+                <path fill="url(#drive-logo-c-conn)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
+                <path fill="url(#drive-logo-d-conn)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+              </g>
+              <defs>
+                <linearGradient id="drive-logo-b-conn" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
+                  <stop offset=".09" stop-color="#ffe921"/>
+                  <stop offset="1" stop-color="#fec700"/>
+                </linearGradient>
+                <linearGradient id="drive-logo-c-conn" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
+                  <stop offset=".15" stop-color="#a9a8ff"/>
+                  <stop offset=".33" stop-color="#6d97ff"/>
+                  <stop offset=".48" stop-color="#3186ff"/>
+                </linearGradient>
+                <linearGradient id="drive-logo-d-conn" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
+                  <stop offset=".55" stop-color="#0ebc5f"/>
+                  <stop offset=".85" stop-color="#78c9ff"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>Drive Connected ✓</span>
+          `;
           btn.className = 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-emerald-500 font-medium';
           
           showToast("Google Drive Connected!");
           try {
             await getOrCreateAppFolder();
             await loadRulesFromDrive();
+            if (!document.getElementById('entries-library-modal').classList.contains('hidden')) {
+              await loadEntriesFromDrive();
+            }
           } catch (e) {
             console.error("Drive setup error:", e);
-            showToast("Error reading Drive folder.");
+            showToast("Error initializing Drive folder.");
           }
         }
       });
     }
 
+    // Direct REST API fetch wrapper
+    async function driveFetch(url, options = {}) {
+      if (!accessToken) throw new Error("Not authenticated");
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = `Bearer ${accessToken}`;
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Drive API Error ${res.status}: ${errText}`);
+      }
+      return res;
+    }
+
     // Bind initialization hooks to window
     window.onload = async function() {
-      if (typeof gapi !== 'undefined') gapiLoaded();
-      if (typeof google !== 'undefined') gisLoaded();
+      gisLoaded();
       initIPAPalette();
       await initDB();
       await loadDraft();
@@ -498,86 +563,95 @@
 
     function handleDriveAuthClick() {
       if (!tokenClient) {
-        showToast("Google Auth is loading, please wait...");
-        return;
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+          gisLoaded();
+        } else {
+          showToast("Google Auth library loading, please retry...");
+          return;
+        }
       }
-      if (gapi.client.getToken() === null) tokenClient.requestAccessToken({prompt: 'consent'});
-      else tokenClient.requestAccessToken({prompt: ''});
+      tokenClient.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
     }
 
     async function getOrCreateAppFolder() {
-      if (!isDriveConnected) return;
+      if (!accessToken) return;
       try {
-        const res = await gapi.client.drive.files.list({
-          q: `mimeType='application/vnd.google-apps.folder' and name='${FOLDER_NAME}' and trashed=false`,
-          fields: 'files(id, name)'
-        });
-        if (res.result.files.length > 0) {
-          driveFolderId = res.result.files[0].id;
+        const q = encodeURIComponent(`mimeType='application/vnd.google-apps.folder' and name='${FOLDER_NAME}' and trashed=false`);
+        const res = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+        const data = await res.json();
+        if (data.files && data.files.length > 0) {
+          driveFolderId = data.files[0].id;
         } else {
-          const createRes = await gapi.client.drive.files.create({
-            resource: { name: FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' },
-            fields: 'id'
+          const createRes = await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
           });
-          driveFolderId = createRes.result.id;
+          const createData = await createRes.json();
+          driveFolderId = createData.id;
         }
-        document.getElementById('library-folder-status').textContent = `Connected: ${FOLDER_NAME}`;
+        const statusEl = document.getElementById('library-folder-status');
+        if (statusEl) statusEl.textContent = `Connected: ${FOLDER_NAME}`;
       } catch (e) { console.error("Error creating/finding folder", e); }
     }
 
     async function uploadJsonToDrive(fileName, content) {
-      if (!isDriveConnected || !driveFolderId) return;
+      if (!accessToken || !driveFolderId) return;
       try {
-        const search = await gapi.client.drive.files.list({
-          q: `name='${fileName}' and '${driveFolderId}' in parents and trashed=false`,
-          fields: 'files(id)'
-        });
-        const existingFileId = search.result.files.length > 0 ? search.result.files[0].id : null;
+        const q = encodeURIComponent(`name='${fileName}' and '${driveFolderId}' in parents and trashed=false`);
+        const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`);
+        const searchData = await searchRes.json();
+        const existingFileId = searchData.files && searchData.files.length > 0 ? searchData.files[0].id : null;
         
         const fileMetadata = { name: fileName, parents: existingFileId ? [] : [driveFolderId] };
         const boundary = '-------314159265358979323846';
         const delimiter = "\r\n--" + boundary + "\r\n";
         const close_delim = "\r\n--" + boundary + "--";
         const multipartRequestBody =
-          delimiter + 'Content-Type: application/json\r\n\r\n' + JSON.stringify(fileMetadata) +
-          delimiter + 'Content-Type: application/json\r\n\r\n' + content + close_delim;
+          delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(fileMetadata) +
+          delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + content + close_delim;
 
-        await gapi.client.request({
-            'path': existingFileId ? `/upload/drive/v3/files/${existingFileId}` : '/upload/drive/v3/files',
-            'method': existingFileId ? 'PATCH' : 'POST',
-            'params': {'uploadType': 'multipart'},
-            'headers': { 'Content-Type': 'multipart/related; boundary="' + boundary + '"' },
-            'body': multipartRequestBody
+        const url = existingFileId
+          ? `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=multipart`
+          : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+
+        await driveFetch(url, {
+          method: existingFileId ? 'PATCH' : 'POST',
+          headers: { 'Content-Type': `multipart/related; boundary="${boundary}"` },
+          body: multipartRequestBody
         });
       } catch (e) { console.error("Upload failed", e); }
     }
 
     async function readJsonFromDrive(fileName) {
-      if (!isDriveConnected || !driveFolderId) return null;
+      if (!accessToken || !driveFolderId) return null;
       try {
-        const search = await gapi.client.drive.files.list({
-          q: `name='${fileName}' and '${driveFolderId}' in parents and trashed=false`,
-          fields: 'files(id)'
-        });
-        if (search.result.files.length > 0) {
-          const fileId = search.result.files[0].id;
-          const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
-          return res.result;
+        const q = encodeURIComponent(`name='${fileName}' and '${driveFolderId}' in parents and trashed=false`);
+        const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`);
+        const searchData = await searchRes.json();
+        if (searchData.files && searchData.files.length > 0) {
+          const fileId = searchData.files[0].id;
+          const getRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
+          return await getRes.json();
         }
       } catch (e) { console.error("Read failed", e); }
       return null;
     }
 
     async function syncRulesToDrive() {
-      if (!isDriveConnected) return;
-      const tP = db.transaction('pronunciation_rules', 'readonly');
-      tP.objectStore('pronunciation_rules').getAll().onsuccess = async (e) => await uploadJsonToDrive('_pronunciation_rules.json', JSON.stringify(e.target.result, null, 2));
-      const tV = db.transaction('variant_rules', 'readonly');
-      tV.objectStore('variant_rules').getAll().onsuccess = async (e) => await uploadJsonToDrive('_variant_rules.json', JSON.stringify(e.target.result, null, 2));
+      if (!isDriveConnected || !driveFolderId || !db) return;
+      const getStoreData = (storeName) => new Promise((resolve) => {
+        const tx = db.transaction(storeName, 'readonly');
+        tx.objectStore(storeName).getAll().onsuccess = (e) => resolve(e.target.result);
+      });
+      const pRules = await getStoreData('pronunciation_rules');
+      await uploadJsonToDrive('_pronunciation_rules.json', JSON.stringify(pRules, null, 2));
+      const vRules = await getStoreData('variant_rules');
+      await uploadJsonToDrive('_variant_rules.json', JSON.stringify(vRules, null, 2));
     }
 
     async function loadRulesFromDrive() {
-      if (!isDriveConnected) return;
+      if (!isDriveConnected || !driveFolderId) return;
       const pRules = await readJsonFromDrive('_pronunciation_rules.json');
       if (pRules && Array.isArray(pRules)) {
         const tx = db.transaction('pronunciation_rules', 'readwrite');
@@ -608,23 +682,32 @@
       libraryEntriesCache = [];
 
       try {
-        const search = await gapi.client.drive.files.list({
-          q: `'${driveFolderId}' in parents and mimeType='application/json' and trashed=false`,
-          fields: 'files(id, name)'
-        });
+        const q = encodeURIComponent(`'${driveFolderId}' in parents and mimeType='application/json' and trashed=false`);
+        const listRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+        const data = await listRes.json();
         
-        for (const file of search.result.files) {
+        if (!data.files || data.files.length === 0) {
+          list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Drive folder yet.</p>`;
+          return;
+        }
+
+        for (const file of data.files) {
           if (file.name.startsWith('_')) continue; // Skip rule files
           const content = await readJsonFromDrive(file.name);
           if (content) {
             const enTitle = content.postTitle || "";
             const altEn = content.altEnglishTerms || "";
-            const vnTerms = (content.terms || []).map(t => document.createElement('div').innerHTML = t.headwordHTML || "").join(' ');
+            const vnTerms = (content.terms || []).map(t => {
+              const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
+            }).join(' ');
             libraryEntriesCache.push({ name: file.name, fileId: file.id, data: content, searchStr: `${enTitle} ${altEn} ${vnTerms}`.toLowerCase() });
           }
         }
         filterLibraryEntries();
-      } catch (e) { list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Drive folder.</p>`; }
+      } catch (e) { 
+        console.error(e);
+        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Drive folder: ${e.message}</p>`; 
+      }
     }
 
     /* ==========================================================================
@@ -1208,8 +1291,13 @@
     }
     async function deleteEntryFromDrive(fileId, name) {
       if(confirm(`Delete ${name} from Google Drive?`)){
-        await gapi.client.drive.files.delete({fileId: fileId});
-        loadEntriesFromDrive(); showToast("Deleted!");
+        try {
+          await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, { method: 'DELETE' });
+          await loadEntriesFromDrive();
+          showToast("Deleted!");
+        } catch(e) {
+          showToast("Delete failed");
+        }
       }
     }
   </script>
