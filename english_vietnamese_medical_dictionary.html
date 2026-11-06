@@ -585,14 +585,53 @@
     let hasUnsavedChanges = false;
     let draggedTermIndex = null;
 
-    // Guard against closing tab when unsaved
-    window.addEventListener('beforeunload', (e) => {
-      if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = ''; }
-    });
-
     function markDirty() { hasUnsavedChanges = true; }
     function markClean() { hasUnsavedChanges = false; }
+    
 
+
+// Helper to check if entry has any content
+function isEntryEmpty(data = entryData) {
+  if (!data) return true;
+
+  // Helper to extract clean plain text from HTML strings
+  const getText = (html) => {
+    if (!html) return '';
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    return (temp.textContent || temp.innerText || '').trim();
+  };
+
+  const hasTitle = Boolean(data.postTitle && data.postTitle.trim());
+  const hasAlt = Boolean(getText(data.altEnglishTerms));
+  const hasGlobalPron = Boolean(data.globalPronunciationRules && data.globalPronunciationRules.length > 0);
+  const hasGlobalVar = Boolean(data.globalVariantRules && data.globalVariantRules.length > 0);
+
+  const hasTerms = (data.terms || []).some(t => {
+    const hwText = getText(t.headwordHTML);
+    const commText = getText(t.commentsHTML);
+    const hasLabels = (t.labels && t.labels.length > 0) || (t.customLabels && t.customLabels.length > 0);
+    return hwText || commText || hasLabels;
+  });
+
+  const hasRefs = (data.references || []).some(r => {
+    return (r.authors && r.authors.trim()) || 
+           (r.title && r.title.trim()) || 
+           (r.pages && r.pages.trim()) || 
+           getText(r.quoteHTML);
+  });
+
+  return !(hasTitle || hasAlt || hasGlobalPron || hasGlobalVar || hasTerms || hasRefs);
+}
+
+    // Guard against closing tab when unsaved (only if entry has actual content)
+window.addEventListener('beforeunload', (e) => {
+  if (hasUnsavedChanges && !isEntryEmpty()) { 
+    e.preventDefault(); 
+    e.returnValue = ''; 
+  }
+});
+    
     function hideInitialOverlay() { const el = document.getElementById('initial-login-overlay'); if (el) el.classList.add('hidden'); }
     function showInitialOverlay() { const el = document.getElementById('initial-login-overlay'); if (el) el.classList.remove('hidden'); }
 
