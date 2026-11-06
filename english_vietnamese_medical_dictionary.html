@@ -450,12 +450,13 @@
       Lexical Variant</button>
   </div>
   <div id="ipa-toolbar"
-    class="fixed z-50 bg-slate-800/95 border border-indigo-500/40 shadow-2xl rounded-xl p-2 flex flex-wrap items-center gap-1 backdrop-blur-md hidden max-w-sm sm:max-w-md">
-    <div
-      class="w-full text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1 flex items-center justify-between border-b border-slate-700/60 pb-1">
-      <span>Quasi-IPA Symbols &amp; Diacritics</span><span class="text-slate-500 font-normal">Click to insert</span>
-    </div>
-    <div id="ipa-buttons-container" class="flex flex-wrap gap-1"></div>
+    class="fixed z-[100] bg-slate-800/95 border border-indigo-500/40 shadow-2xl rounded-xl p-2 flex flex-wrap items-center gap-1 backdrop-blur-md hidden max-w-sm sm:max-w-md">
+  </div>
+  <div
+    class="w-full text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1 flex items-center justify-between border-b border-slate-700/60 pb-1">
+    <span>Quasi-IPA Symbols &amp; Diacritics</span><span class="text-slate-500 font-normal">Click to insert</span>
+  </div>
+  <div id="ipa-buttons-container" class="flex flex-wrap gap-1"></div>
   </div>
 
   <!-- Modals -->
@@ -633,9 +634,9 @@
         <div id="add-rule-form-pron" class="space-y-2">
           <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Add New Pronunciation Rule</div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input type="text" id="mgr-new-pron-target" placeholder="Target Word (e.g. mình)"
+            <input type="text" id="mgr-new-pron-target" placeholder="Vietnamese"
               class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-indigo-500">
-            <input type="text" id="mgr-new-pron-ipa" data-ipa-input="true" placeholder="Quasi-IPA (e.g. ᵶɪŋ)"
+            <input type="text" id="mgr-new-pron-ipa" data-ipa-input="true" placeholder="Pronunciation"
               oninput="updateMgrPronPreview()"
               class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-indigo-300 font-mono outline-none focus:border-indigo-500">
             <div id="mgr-pron-preview"
@@ -652,9 +653,9 @@
         <div id="add-rule-form-var" class="space-y-2 hidden">
           <div class="text-xs font-bold text-amber-400 uppercase tracking-wider">Add New Lexical Variant Rule</div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <input type="text" id="mgr-new-var-find" placeholder="Main Word (e.g. bào)"
+            <input type="text" id="mgr-new-var-find" placeholder="Main form"
               class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-amber-500">
-            <input type="text" id="mgr-new-var-variants" placeholder="Variants (e.g. bào, vỏ)"
+            <input type="text" id="mgr-new-var-variants" placeholder="Variants"
               class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-amber-300 font-mono outline-none focus:border-amber-500">
           </div>
           <div class="flex justify-end">
@@ -832,7 +833,8 @@
         class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">Save
         JSON</button>
       <button onclick="attemptResetToBlankState()"
-        class="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5">Clear</button>
+        class="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5">+
+        New</button>
       <button onclick="copyHTMLForPublii()"
         class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg active:scale-95">Copy
         HTML</button>
@@ -2236,17 +2238,82 @@
     }
 
     function loadRulesForManager(type, q = '') {
-      if (!db) return; const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+      if (!db) return;
+      const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+
       db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
-        let rs = e.target.result.sort((a, b) => b.createdAt - a.createdAt); if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
-        const c = document.getElementById('rules-manager-list'); c.innerHTML = '';
-        if (rs.length === 0) c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
+        let rs = e.target.result.sort((a, b) => b.createdAt - a.createdAt);
+        if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
+
+        const c = document.getElementById('rules-manager-list');
+        c.innerHTML = '';
+
+        // Add New Rule Form at the top of the modal list
+        const formDiv = document.createElement('div');
+        if (type === 'pron') {
+          formDiv.className = "bg-slate-900/90 border border-indigo-500/40 p-3 rounded-xl mb-4 space-y-2";
+          formDiv.innerHTML = `
+        <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Add New Pronunciation Rule</h4>
+        <div class="flex gap-2">
+          <input type="text" id="new-manager-target" placeholder="Target word (e.g. mình)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none">
+          <input type="text" id="new-manager-ipa" data-ipa-input="true" placeholder="Quasi-IPA (e.g. z)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-indigo-300 font-mono outline-none">
+          <button onclick="addRuleFromManager('pron')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-4 py-1.5 rounded-lg font-semibold shrink-0">Add Rule</button>
+        </div>
+      `;
+        } else {
+          formDiv.className = "bg-slate-900/90 border border-amber-500/40 p-3 rounded-xl mb-4 space-y-2";
+          formDiv.innerHTML = `
+        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Add New Variant Rule</h4>
+        <div class="flex gap-2">
+          <input type="text" id="new-manager-find" placeholder="Main word (e.g. mình)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none">
+          <input type="text" id="new-manager-variants" placeholder="Variants (e.g. thân mình, mình mẩy)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-amber-300 font-mono outline-none">
+          <button onclick="addRuleFromManager('var')" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-1.5 rounded-lg font-semibold shrink-0">Add Rule</button>
+        </div>
+      `;
+        }
+        c.appendChild(formDiv);
+
+        if (rs.length === 0) {
+          const emptyMsg = document.createElement('p');
+          emptyMsg.className = "text-slate-500 text-sm";
+          emptyMsg.textContent = "No rules stored.";
+          c.appendChild(emptyMsg);
+          return;
+        }
+
         rs.forEach(r => {
-          const d = document.createElement('div'); d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-          d.innerHTML = type === 'pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>`;
+          const d = document.createElement('div');
+          d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+          d.innerHTML = type === 'pron'
+            ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`
+            : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
           c.appendChild(d);
         });
       };
+    }
+
+    function addRuleFromManager(type) {
+      if (type === 'pron') {
+        const target = document.getElementById('new-manager-target')?.value.trim();
+        const ipa = document.getElementById('new-manager-ipa')?.value.trim();
+        if (!target || !ipa) {
+          showToast("Please enter both target word and Quasi-IPA.");
+          return;
+        }
+        savePronRuleToDB(target, ipa);
+        showToast("Pronunciation rule saved!");
+        loadRulesForManager('pron');
+      } else {
+        const find = document.getElementById('new-manager-find')?.value.trim();
+        const variants = document.getElementById('new-manager-variants')?.value.trim();
+        if (!find || !variants) {
+          showToast("Please enter both main word and variants.");
+          return;
+        }
+        saveVarRuleToDB(find, variants);
+        showToast("Variant rule saved!");
+        loadRulesForManager('var');
+      }
     }
     function filterRulesManager() {loadRulesForManager(document.getElementById('tab-rule-pron').classList.contains('text-indigo-400') ? 'pron' : 'var', document.getElementById('rules-search').value);}
     function promptDeleteRule(type, id) {
@@ -2549,21 +2616,106 @@
     }
 
     function runImportHTML() {
-      const rawInput = document.getElementById('import-html-input').value;
-      if (!rawInput.trim()) {
-        showToast("Please paste HTML first.");
+      const inputEl = document.getElementById('import-html-input');
+      const rawHTML = inputEl ? inputEl.value : '';
+
+      if (!rawHTML.trim()) {
+        showToast("Please paste HTML content first.");
         return;
       }
-      const parsedData = parseHTMLToEntryData(rawInput);
-      if (parsedData) {
-        entryData = parsedData;
-        renderFormUI();
-        switchTab('form');
-        showToast("HTML Imported Successfully!");
-        document.getElementById('import-html-input').value = '';
-      } else {
-        showToast("Failed to parse HTML.");
+
+      const doc = new DOMParser().parseFromString(rawHTML, 'text/html');
+
+      // 1. Extract embedded Pronunciation & Variant rules and save them to the Master Database
+      const pronSpans = doc.querySelectorAll('.pronunciation');
+      pronSpans.forEach(span => {
+        const target = span.textContent.trim();
+        const pronVal = span.getAttribute('data-pronunciation');
+        if (target && pronVal) {
+          savePronRuleToDB(target, pronVal);
+        }
+      });
+
+      const varSpans = doc.querySelectorAll('.lexical-variant');
+      varSpans.forEach(span => {
+        const target = span.textContent.trim();
+        const varVal = span.getAttribute('data-variant');
+        if (target && varVal) {
+          saveVarRuleToDB(target, varVal);
+        }
+      });
+
+      // 2. Extract English Headword / Title
+      const h1Title = doc.querySelector('h1, .preview-post-title');
+      if (h1Title) {
+        entryData.postTitle = h1Title.textContent.trim();
       }
+
+      // Extract Alt English terms
+      const firstP = doc.querySelector('p:has(em), p em');
+      if (firstP) {
+        entryData.altEnglishTerms = firstP.innerHTML;
+      }
+
+      // 3. Extract Terms & Vietnamese Headwords
+      const termSections = doc.querySelectorAll('.medical-term');
+      if (termSections.length > 0) {
+        entryData.terms = [];
+        termSections.forEach((sec, idx) => {
+          const h3 = sec.querySelector('h3');
+          const headwordHTML = h3 ? h3.innerHTML : '';
+
+          const labels = [];
+          const customLabels = [];
+          sec.querySelectorAll('.term-label').forEach(lbl => {
+            const txt = lbl.textContent.trim();
+            if (PRESET_LABELS.includes(txt)) {
+              labels.push(txt);
+            } else {
+              customLabels.push(txt);
+            }
+          });
+
+          const commentNodes = Array.from(sec.children).filter(child => child.tagName !== 'H3' && !child.querySelector('.term-label'));
+          const commentsHTML = commentNodes.map(node => node.outerHTML).join('\n');
+
+          entryData.terms.push({
+            id: 'term-' + Date.now() + '-' + idx,
+            headwordHTML,
+            labels,
+            customLabels,
+            commentsHTML
+          });
+        });
+      }
+
+      // 4. Extract References
+      const details = doc.querySelector('details');
+      if (details) {
+        entryData.references = [];
+        const paragraphs = details.querySelectorAll('p');
+        const blockquotes = details.querySelectorAll('blockquote');
+
+        paragraphs.forEach((p, idx) => {
+          const text = p.textContent.trim();
+          if (!text || text.startsWith('ibid')) return;
+
+          const quoteHTML = blockquotes[idx] ? blockquotes[idx].innerHTML : '';
+          entryData.references.push({
+            id: 'ref-' + Date.now() + '-' + idx,
+            authors: text,
+            title: '',
+            titleFormat: 'italics',
+            pages: '',
+            quoteHTML
+          });
+        });
+      }
+
+      // 5. Update UI, notify user, and clear import textarea
+      renderFormUI();
+      showToast("HTML & Embedded Rules Imported Successfully!");
+      if (inputEl) inputEl.value = '';
     }
 
     function parseCodeBackToForm() {
