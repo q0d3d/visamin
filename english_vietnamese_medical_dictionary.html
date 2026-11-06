@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>English–Vietnamese Medical Dictionary</title>
+  <title>English–Vietnamese Medical Dictionary Studio</title>
   
   <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'&gt;&lt;defs&gt;&lt;linearGradient id='g' x1='0%' y1='100%' x2='100%' y2='0%'&gt;&lt;stop offset='0%' stop-color='%23f43f5e'/&gt;&lt;stop offset='100%' stop-color='%234f46e5'/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;rect width='24' height='24' rx='6' fill='url(%23g)'/&gt;&lt;path fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'/&gt;&lt;/svg&gt;">
 
@@ -299,7 +299,34 @@
         <button id="tab-rule-pron" onclick="switchRulesTab('pron')" class="flex-1 py-3 text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 bg-slate-800/50 transition">Pronunciation</button>
         <button id="tab-rule-var" onclick="switchRulesTab('var')" class="flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent transition">Lexical Variant</button>
       </div>
-      <div class="p-4 border-b border-slate-700"><input type="text" id="rules-search" oninput="filterRulesManager()" placeholder="Search rules..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white outline-none"></div>
+
+      <!-- Add New Rule Section -->
+      <div class="p-4 bg-slate-900/80 border-b border-slate-700 space-y-3">
+        <div id="add-rule-form-pron" class="space-y-2">
+          <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Add New Pronunciation Rule</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input type="text" id="mgr-new-pron-target" placeholder="Target Word (e.g. mình)" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-indigo-500">
+            <input type="text" id="mgr-new-pron-ipa" data-ipa-input="true" placeholder="Quasi-IPA (e.g. ᵶɪŋ)" oninput="updateMgrPronPreview()" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-indigo-300 font-mono outline-none focus:border-indigo-500">
+            <div id="mgr-pron-preview" class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-indigo-300 font-mono italic flex items-center">Preview: —</div>
+          </div>
+          <div class="flex justify-end">
+            <button onclick="addMgrPronRule()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow">+ Add Pronunciation Rule</button>
+          </div>
+        </div>
+
+        <div id="add-rule-form-var" class="space-y-2 hidden">
+          <div class="text-xs font-bold text-amber-400 uppercase tracking-wider">Add New Lexical Variant Rule</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="text" id="mgr-new-var-find" placeholder="Main Word (e.g. bào)" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-amber-500">
+            <input type="text" id="mgr-new-var-variants" placeholder="Variants (e.g. bào, vỏ)" class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-amber-300 font-mono outline-none focus:border-amber-500">
+          </div>
+          <div class="flex justify-end">
+            <button onclick="addMgrVarRule()" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow">+ Add Variant Rule</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 border-b border-slate-700"><input type="text" id="rules-search" oninput="filterRulesManager()" placeholder="Search existing rules..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white outline-none focus:border-indigo-500"></div>
       <div class="flex-1 overflow-y-auto p-4" id="rules-manager-list"></div>
     </div>
   </div>
@@ -519,8 +546,8 @@
         <div id="tab-content-import" class="space-y-4 hidden">
           <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 space-y-3">
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Paste HTML</h3>
-            <textarea id="import-html-input" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none"></textarea>
-            <button onclick="runImportHTML()" class="w-full bg-indigo-600 text-white font-medium py-2 rounded-lg text-xs">Parse &amp; Populate Form</button>
+            <textarea id="import-html-input" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none" placeholder="Paste entry HTML here..."></textarea>
+            <button onclick="runImportHTML()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse &amp; Populate Form</button>
           </div>
         </div>
       </div>
@@ -548,7 +575,7 @@
        ========================================================================== */
     const CLIENT_ID = '588068745367-pspl34cbq8mb4uu6kqp7ei21c8ah5upd.apps.googleusercontent.com';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-    const FOLDER_NAME = 'Danh Từ Y Khoa Anh–việt';
+    const FOLDER_NAME = 'Danh Từ Y Khoa Anh–Việt';
     const REDIRECT_URI = window.location.origin + window.location.pathname;
 
     let accessToken = localStorage.getItem('gdrive_access_token') || null;
@@ -556,6 +583,7 @@
     let driveFolderId = null;
     let isDriveConnected = false;
     let hasUnsavedChanges = false;
+    let draggedTermIndex = null;
 
     // Guard against closing tab when unsaved
     window.addEventListener('beforeunload', (e) => {
@@ -937,7 +965,6 @@
           vRules.forEach(r => tx.objectStore('variant_rules').put(r));
         }
         
-        // Force an upward sync to ensure any local rules created before connecting are backed up to Drive
         await syncRulesToDrive();
       } catch (e) {
         console.error("Failed to sync rules from drive", e);
@@ -972,7 +999,7 @@
         }
 
         for (const file of data.files) {
-          if (file.name.startsWith('_')) continue; // Skip rule files
+          if (file.name.startsWith('_')) continue;
           const content = await readJsonFromDrive(file.name);
           if (content) {
             const enTitle = content.postTitle || "";
@@ -1051,7 +1078,7 @@
         try {
           const tx = db.transaction('active_draft', 'readwrite');
           tx.objectStore('active_draft').put({ id: 'current_draft', data: entryData, updatedAt: Date.now() });
-          markDirty(); // Any typing marks the file as dirty
+          markDirty();
         } catch (e) { console.error("Auto-save error:", e); }
       }, 300);
     }
@@ -1156,33 +1183,65 @@
 
     function parseVariantsString(str) { return (str||"").split(/[\n,]+/).map(v => v.trim()).filter(Boolean); }
 
-    function formatHeadwordAsBrSeparated(rawHTML) {
+    /* Requirement 7: Headword Sanitization: Only line breaks (<br>) and italics (<i>/<em>) allowed */
+    function sanitizeHeadwordHTML(rawHTML) {
       if (!rawHTML) return "";
-      const temp = document.createElement('div');
-      temp.innerHTML = rawHTML;
-      const lines = [];
-      let currentLine = "";
-      function walk(node) {
-        if (node.nodeType === Node.TEXT_NODE) {
-          const pts = node.nodeValue.split(/\r?\n/);
-          pts.forEach((p, i) => { if(i>0){ lines.push(currentLine.trim()); currentLine = ""; } currentLine += p; });
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          const tag = node.tagName.toLowerCase();
-          if (tag === 'br') { lines.push(currentLine.trim()); currentLine = ""; }
-          else if (tag === 'div' || tag === 'p') { if(currentLine.trim()){lines.push(currentLine.trim()); currentLine="";} node.childNodes.forEach(walk); if(currentLine.trim()){lines.push(currentLine.trim()); currentLine="";} }
-          else currentLine += node.outerHTML;
+      const doc = new DOMParser().parseFromString(`<div>${rawHTML}</div>`, 'text/html');
+      const container = doc.body.firstElementChild;
+
+      // Replace block level wrappers (h1-h6, div, p) with line breaks
+      const blocks = container.querySelectorAll('h1, h2, h3, h4, h5, h6, p, div');
+      blocks.forEach(b => {
+        b.insertAdjacentHTML('afterend', '<br>');
+        while (b.firstChild) {
+          b.parentNode.insertBefore(b.firstChild, b);
         }
-      }
-      temp.childNodes.forEach(walk);
-      if (currentLine.trim()) lines.push(currentLine.trim());
-      return lines.filter(Boolean).join('<br>');
+        b.remove();
+      });
+
+      // Filter element nodes
+      const allElements = Array.from(container.querySelectorAll('*'));
+      allElements.forEach(el => {
+        const tagName = el.tagName.toLowerCase();
+
+        if (tagName === 'br') {
+          Array.from(el.attributes).forEach(attr => el.removeAttribute(attr.name));
+        } else if (tagName === 'i' || tagName === 'em') {
+          const newI = doc.createElement('i');
+          newI.innerHTML = el.innerHTML;
+          el.replaceWith(newI);
+        } else if (tagName === 'span' && el.classList.contains('pronunciation')) {
+          const pron = el.getAttribute('data-pronunciation') || '';
+          Array.from(el.attributes).forEach(attr => el.removeAttribute(attr.name));
+          el.setAttribute('class', 'pronunciation');
+          if (pron) el.setAttribute('data-pronunciation', pron);
+        } else if (tagName === 'span' && el.classList.contains('lexical-variant')) {
+          const variant = el.getAttribute('data-variant') || '';
+          Array.from(el.attributes).forEach(attr => el.removeAttribute(attr.name));
+          el.setAttribute('class', 'lexical-variant');
+          if (variant) el.setAttribute('data-variant', variant);
+        } else {
+          // Disallowed elements (h3, b, strong, u, styled spans, Tailwind variables) -> unwrap child nodes
+          while (el.firstChild) {
+            el.parentNode.insertBefore(el.firstChild, el);
+          }
+          el.remove();
+        }
+      });
+
+      let clean = container.innerHTML;
+      clean = clean.replace(/(\s*<br\s*\/?>\s*)+/gi, '<br>');
+      clean = clean.replace(/^(<br\s*\/?>)+|(<br\s*\/?>)+$/gi, '');
+      return clean.trim();
+    }
+
+    function formatHeadwordAsBrSeparated(rawHTML) {
+      return sanitizeHeadwordHTML(rawHTML);
     }
 
     function formatAltEnglishOutput(rawHTML) {
       if (!rawHTML) return "";
       const temp = document.createElement('div');
-      // Convert block elements (div, p) into <br> tags to normalize line breaks, 
-      // then split by <br> or newline characters (\n)
       temp.innerHTML = rawHTML.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '').replace(/<p[^>]*>/gi, '<br>').replace(/<\/p>/gi, '');
       const lines = temp.innerHTML.split(/<br\s*\/?>|\n/gi);
       return lines.map(l => l.trim()).filter(Boolean).join('; ');
@@ -1351,20 +1410,47 @@
     function updateGlobalRule(idx, field, val) { entryData.globalVariantRules[idx][field] = val; saveVarRuleToDB(entryData.globalVariantRules[idx].find, entryData.globalVariantRules[idx].variantsStr); renderLivePreview(); }
     function removeGlobalRule(idx) { entryData.globalVariantRules.splice(idx,1); renderGlobalRulesUI(); renderLivePreview(); }
 
+    /* Requirement 1: Drag/Reorder Terms & Requirement 5: Custom Labels */
     function renderTermsUI() {
       const c = document.getElementById('terms-container'); c.innerHTML = '';
       entryData.terms.forEach((t, i) => {
-        const div = document.createElement('div'); div.className = "term-card bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 space-y-3";
+        const div = document.createElement('div');
+        div.className = "term-card bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 space-y-3 transition";
+        div.setAttribute('draggable', 'true');
+        div.setAttribute('data-term-index', i);
+        div.ondragstart = (e) => handleTermDragStart(e, i);
+        div.ondragover = (e) => handleTermDragOver(e, i);
+        div.ondragleave = (e) => handleTermDragLeave(e, i);
+        div.ondrop = (e) => handleTermDrop(e, i);
+        div.ondragend = (e) => handleTermDragEnd(e);
+
         div.innerHTML = `
-          <div class="flex justify-between pb-2 border-b border-slate-700/60">
-            <span class="text-xs font-bold text-slate-300">Term #${i+1}</span>
-            ${entryData.terms.length > 1 ? `<button onclick="removeTerm('${t.id}')" class="text-xs text-rose-400">Remove</button>` : ''}
+          <div class="flex justify-between items-center pb-2 border-b border-slate-700/60">
+            <div class="flex items-center gap-2 cursor-grab active:cursor-grabbing text-xs font-bold text-slate-300 select-none">
+              <span class="text-slate-500 font-normal">⋮⋮</span>
+              <span>Term #${i+1}</span>
+            </div>
+            ${entryData.terms.length > 1 ? `<button onclick="removeTerm('${t.id}')" class="text-xs text-rose-400 hover:text-rose-300">Remove</button>` : ''}
           </div>
-          <div><label class="block text-xs font-semibold text-slate-300 mb-1">Vietnamese Headword</label><div id="hw-editor-${t.id}" contenteditable="true" onfocus="activeHeadwordEditorId='${t.id}'" oninput="onHeadwordInput('${t.id}')" onclick="handleHeadwordSpanClick(event, '${t.id}')" class="headword-editor bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:border-rose-500"></div></div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Vietnamese Headword</label>
+            <div id="hw-editor-${t.id}" contenteditable="true" onfocus="activeHeadwordEditorId='${t.id}'" oninput="onHeadwordInput('${t.id}')" onpaste="handleHeadwordPaste(event, '${t.id}')" onclick="handleHeadwordSpanClick(event, '${t.id}')" class="headword-editor bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:border-rose-500"></div>
+          </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Labels</label>
-            <div class="flex flex-wrap gap-1.5">
+            <div class="flex flex-wrap items-center gap-1.5">
               ${PRESET_LABELS.map(l => `<button onclick="togglePresetLabel('${t.id}','${l}')" class="text-xs px-2.5 py-1 rounded-full border transition ${(t.labels||[]).includes(l)?'bg-indigo-600 text-white border-indigo-500':'bg-slate-900 text-slate-400 border-slate-700'}">${l}</button>`).join('')}
+              ${(t.customLabels || []).map((cl, cIdx) => `
+                <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-indigo-900/60 text-indigo-200 border border-indigo-500/60">
+                  <span>${escapeAttr(cl)}</span>
+                  <button onclick="removeCustomLabel('${t.id}', ${cIdx})" class="text-indigo-400 hover:text-white font-bold text-xs ml-0.5">&times;</button>
+                </span>
+              `).join('')}
+              <div id="custom-lbl-wrapper-${t.id}" class="inline-block">
+                <button onclick="showCustomLabelInput('${t.id}')" class="text-xs px-2.5 py-1 rounded-full bg-slate-900 text-indigo-400 border border-indigo-500/40 hover:bg-indigo-600/20 transition font-medium">
+                  + Custom
+                </button>
+              </div>
             </div>
           </div>
           <div>
@@ -1377,7 +1463,117 @@
         document.getElementById(`comment-editor-${t.id}`).innerHTML = t.commentsHTML || "";
       });
     }
-    function onHeadwordInput(id) { const t = entryData.terms.find(x => x.id === id); const el = document.getElementById(`hw-editor-${id}`); if(t && el){ t.headwordHTML = el.innerHTML; renderLivePreview(); } }
+
+    /* Drag & Drop Reordering Handlers */
+    function handleTermDragStart(e, idx) {
+      draggedTermIndex = idx;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', idx);
+      e.currentTarget.classList.add('opacity-40', 'border-indigo-500', 'border-dashed');
+    }
+
+    function handleTermDragOver(e, idx) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const card = e.currentTarget;
+      if (idx !== draggedTermIndex) {
+        card.classList.add('border-indigo-400', 'bg-indigo-950/20');
+      }
+    }
+
+    function handleTermDragLeave(e, idx) {
+      const card = e.currentTarget;
+      card.classList.remove('border-indigo-400', 'bg-indigo-950/20');
+    }
+
+    function handleTermDrop(e, idx) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = e.currentTarget;
+      card.classList.remove('border-indigo-400', 'bg-indigo-950/20');
+      
+      if (draggedTermIndex !== null && draggedTermIndex !== idx) {
+        const movedItem = entryData.terms.splice(draggedTermIndex, 1)[0];
+        entryData.terms.splice(idx, 0, movedItem);
+        renderFormUI();
+        renderLivePreview();
+        showToast("Terms reordered");
+      }
+    }
+
+    function handleTermDragEnd(e) {
+      draggedTermIndex = null;
+      document.querySelectorAll('.term-card').forEach(card => {
+        card.classList.remove('opacity-40', 'border-indigo-500', 'border-indigo-400', 'bg-indigo-950/20', 'border-dashed');
+      });
+    }
+
+    /* Custom Label Input Handling */
+    function showCustomLabelInput(id) {
+      const wrapper = document.getElementById(`custom-lbl-wrapper-${id}`);
+      if (!wrapper) return;
+      wrapper.innerHTML = `
+        <div class="inline-flex items-center gap-1">
+          <input type="text" id="custom-lbl-input-${id}" onkeydown="if(event.key==='Enter') saveCustomLabel('${id}')" class="bg-slate-900 border border-indigo-500 text-xs px-2 py-0.5 rounded-lg text-white focus:outline-none w-28">
+          <button onclick="saveCustomLabel('${id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-lg font-semibold">Save</button>
+          <button onclick="cancelCustomLabel('${id}')" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs px-1.5 py-0.5 rounded-lg">✕</button>
+        </div>
+      `;
+      const inp = document.getElementById(`custom-lbl-input-${id}`);
+      if (inp) inp.focus();
+    }
+
+    function cancelCustomLabel(id) {
+      const wrapper = document.getElementById(`custom-lbl-wrapper-${id}`);
+      if (!wrapper) return;
+      wrapper.innerHTML = `
+        <button onclick="showCustomLabelInput('${id}')" class="text-xs px-2.5 py-1 rounded-full bg-slate-900 text-indigo-400 border border-indigo-500/40 hover:bg-indigo-600/20 transition font-medium">
+          + Custom
+        </button>
+      `;
+    }
+
+    function saveCustomLabel(id) {
+      const inp = document.getElementById(`custom-lbl-input-${id}`);
+      const val = inp ? inp.value.trim() : '';
+      if (!val) {
+        cancelCustomLabel(id);
+        return;
+      }
+      const t = entryData.terms.find(x => x.id === id);
+      if (t) {
+        t.customLabels = t.customLabels || [];
+        if (!t.customLabels.includes(val)) {
+          t.customLabels.push(val);
+        }
+        renderFormUI();
+      }
+    }
+
+    function removeCustomLabel(id, index) {
+      const t = entryData.terms.find(x => x.id === id);
+      if (t && t.customLabels) {
+        t.customLabels.splice(index, 1);
+        renderFormUI();
+      }
+    }
+
+    function handleHeadwordPaste(e, id) {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
+      onHeadwordInput(id);
+    }
+
+    function onHeadwordInput(id) { 
+      const t = entryData.terms.find(x => x.id === id); 
+      const el = document.getElementById(`hw-editor-${id}`); 
+      if(t && el){ 
+        t.headwordHTML = sanitizeHeadwordHTML(el.innerHTML); 
+        renderLivePreview(); 
+      } 
+    }
+    
     function onCommentInput(id) { const t = entryData.terms.find(x => x.id === id); const el = document.getElementById(`comment-editor-${id}`); if(t && el){ t.commentsHTML = el.innerHTML; renderLivePreview(); } }
     function formatCommentText(id, cmd) { const el = document.getElementById(`comment-editor-${id}`); if(el){ el.focus(); document.execCommand(cmd, false, null); onCommentInput(id); } }
     function togglePresetLabel(id, lbl) { const t = entryData.terms.find(x => x.id === id); if(t){ t.labels = t.labels || []; if(t.labels.includes(lbl)) t.labels = t.labels.filter(x => x!==lbl); else t.labels.push(lbl); renderFormUI(); } }
@@ -1523,19 +1719,56 @@
       }
     }
 
-    /* Rule Modals */
+    /* Master Rule Database Managers (Requirement 3) */
     function openRulesManager() { document.getElementById('rules-manager-modal').classList.remove('hidden'); switchRulesTab('pron'); }
     function closeRulesManager() { document.getElementById('rules-manager-modal').classList.add('hidden'); }
-    function switchRulesTab(t) { ['pron','var'].forEach(x=>{ document.getElementById(`tab-rule-${x}`).className = x===t ? `flex-1 py-3 text-sm font-semibold ${t==='pron'?'text-indigo-400 border-indigo-500':'text-amber-400 border-amber-500'} border-b-2 bg-slate-800/50` : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent"; }); loadRulesForManager(t); }
+    
+    function switchRulesTab(t) {
+      ['pron','var'].forEach(x=>{ 
+        document.getElementById(`tab-rule-${x}`).className = x===t ? `flex-1 py-3 text-sm font-semibold ${t==='pron'?'text-indigo-400 border-indigo-500':'text-amber-400 border-amber-500'} border-b-2 bg-slate-800/50` : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent"; 
+      }); 
+      document.getElementById('add-rule-form-pron').classList.toggle('hidden', t !== 'pron');
+      document.getElementById('add-rule-form-var').classList.toggle('hidden', t !== 'var');
+      loadRulesForManager(t); 
+    }
+
+    function updateMgrPronPreview() {
+      const ipa = document.getElementById('mgr-new-pron-ipa').value;
+      document.getElementById('mgr-pron-preview').textContent = 'Preview: ' + (convertQuasiIPA(ipa) || '—');
+    }
+
+    function addMgrPronRule() {
+      const target = document.getElementById('mgr-new-pron-target').value.trim();
+      const ipa = document.getElementById('mgr-new-pron-ipa').value.trim();
+      if(!target || !ipa) { showToast("Please enter target word and IPA."); return; }
+      savePronRuleToDB(target, ipa);
+      document.getElementById('mgr-new-pron-target').value = '';
+      document.getElementById('mgr-new-pron-ipa').value = '';
+      document.getElementById('mgr-pron-preview').textContent = 'Preview: —';
+      filterRulesManager();
+      showToast("Pronunciation rule saved!");
+    }
+
+    function addMgrVarRule() {
+      const find = document.getElementById('mgr-new-var-find').value.trim();
+      const vars = document.getElementById('mgr-new-var-variants').value.trim();
+      if(!find || !vars) { showToast("Please enter main word and variants."); return; }
+      saveVarRuleToDB(find, vars);
+      document.getElementById('mgr-new-var-find').value = '';
+      document.getElementById('mgr-new-var-variants').value = '';
+      filterRulesManager();
+      showToast("Variant rule saved!");
+    }
+
     function loadRulesForManager(type, q='') {
       if(!db) return; const sN = type==='pron'?'pronunciation_rules':'variant_rules';
       db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
         let rs = e.target.result.sort((a,b)=>b.createdAt-a.createdAt); if(q) rs = rs.filter(r=>JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
         const c = document.getElementById('rules-manager-list'); c.innerHTML='';
-        if(rs.length===0) c.innerHTML=`<p class="text-slate-500 text-sm">No rules.</p>`;
+        if(rs.length===0) c.innerHTML=`<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
         rs.forEach(r => {
           const d = document.createElement('div'); d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-          d.innerHTML = type==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
+          d.innerHTML = type==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold">&times; Delete</button>`;
           c.appendChild(d);
         });
       };
@@ -1552,25 +1785,129 @@
     }
     function closeConfirmDeleteRuleModal() { document.getElementById('confirm-delete-rule-modal').classList.add('hidden'); }
 
-    function openRuleSuggest(t, tgt=null) { activeRuleSelectorType=t; activeRuleSelectorTargetInput=tgt; document.getElementById('rule-selector-title').textContent="Suggested Rules"; document.getElementById('rule-selector-search-container').classList.add('hidden'); document.getElementById('rule-selector-modal').classList.remove('hidden'); const txt = tgt ? tgt.toLowerCase() : entryData.terms.map(x=>x.headwordHTML||"").join(' ').toLowerCase(); if(!db) return; const sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>{ renderRuleSelectorList(e.target.result.filter(r=>txt.includes((t==='pron'?r.target:r.find).toLowerCase())), t); }; }
-    function openRuleBrowse(t) { activeRuleSelectorType=t; document.getElementById('rule-selector-title').textContent="Browse Rules"; document.getElementById('rule-selector-search-container').classList.remove('hidden'); document.getElementById('rule-selector-search').value=""; document.getElementById('rule-selector-modal').classList.remove('hidden'); if(!db) return; const sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result, t); }
-    function filterRuleSelector() { const q = document.getElementById('rule-selector-search').value.toLowerCase(); const t=activeRuleSelectorType, sN=t==='pron'?'pronunciation_rules':'variant_rules'; db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result.filter(r=>JSON.stringify(r).toLowerCase().includes(q)), t); }
-    function renderRuleSelectorList(rs, t) { const c=document.getElementById('rule-selector-list'); c.innerHTML=''; if(rs.length===0){ c.innerHTML=`<p class="text-slate-500 text-sm">No rules match.</p>`; return; } rs.forEach(r => { const d = document.createElement('div'); d.className="bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2"; d.onclick=()=>selectRuleFromSelector(r,t); d.innerHTML = t==='pron' ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span></div>` : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div>`; c.appendChild(d); }); }
-    function selectRuleFromSelector(r, t) { 
-      if(activeRuleSelectorTargetInput!==null){ 
-        if(t==='pron'){ 
-          document.getElementById('add-pron-input').value=r.ipa; 
+    /* Rule Suggestion with Reverse Matches (Requirement 4) */
+    function openRuleSuggest(t, tgt=null) { 
+      activeRuleSelectorType=t; 
+      activeRuleSelectorTargetInput=tgt; 
+      document.getElementById('rule-selector-title').textContent="Suggested Rules"; 
+      document.getElementById('rule-selector-search-container').classList.add('hidden'); 
+      document.getElementById('rule-selector-modal').classList.remove('hidden'); 
+      const txt = tgt ? tgt.toLowerCase() : entryData.terms.map(x=>x.headwordHTML||"").join(' ').toLowerCase(); 
+      if(!db) return; 
+      const sN=t==='pron'?'pronunciation_rules':'variant_rules'; 
+      db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>{ 
+        renderRuleSelectorList(e.target.result, t, txt); 
+      }; 
+    }
+
+    function openRuleBrowse(t) { 
+      activeRuleSelectorType=t; 
+      activeRuleSelectorTargetInput=null;
+      document.getElementById('rule-selector-title').textContent="Browse Rules"; 
+      document.getElementById('rule-selector-search-container').classList.remove('hidden'); 
+      document.getElementById('rule-selector-search').value=""; 
+      document.getElementById('rule-selector-modal').classList.remove('hidden'); 
+      if(!db) return; 
+      const sN=t==='pron'?'pronunciation_rules':'variant_rules'; 
+      db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>renderRuleSelectorList(e.target.result, t, ""); 
+    }
+
+    function filterRuleSelector() { 
+      const q = document.getElementById('rule-selector-search').value.toLowerCase(); 
+      const t=activeRuleSelectorType, sN=t==='pron'?'pronunciation_rules':'variant_rules'; 
+      db.transaction(sN,'readonly').objectStore(sN).getAll().onsuccess=(e)=>{
+        const filtered = e.target.result.filter(r=>JSON.stringify(r).toLowerCase().includes(q));
+        renderRuleSelectorList(filtered, t, "");
+      }; 
+    }
+
+    function renderRuleSelectorList(rs, t, targetText = "") { 
+      const c=document.getElementById('rule-selector-list'); 
+      c.innerHTML=''; 
+      if(!rs || rs.length===0){ 
+        c.innerHTML=`<p class="text-slate-500 text-sm">No matching rules found.</p>`; 
+        return; 
+      }
+
+      if (t === 'var' && targetText) {
+        const tgtLow = targetText.toLowerCase();
+        const directMatches = [];
+        const reverseMatches = [];
+
+        rs.forEach(r => {
+          const findLow = r.find.toLowerCase();
+          const varsArr = parseVariantsString(r.variantsStr).map(v => v.toLowerCase());
+          
+          const isDirect = tgtLow.includes(findLow);
+          const isReverse = varsArr.some(v => tgtLow.includes(v) && v !== findLow);
+
+          if (isDirect) directMatches.push(r);
+          else if (isReverse) reverseMatches.push(r);
+        });
+
+        if (directMatches.length === 0 && reverseMatches.length === 0) {
+          c.innerHTML = `<p class="text-slate-500 text-sm">No direct or reverse variant matches found.</p>`;
+          return;
+        }
+
+        if (directMatches.length > 0) {
+          const h = document.createElement('div');
+          h.className = "text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 mt-1";
+          h.textContent = "Direct Matches (Main Word Found)";
+          c.appendChild(h);
+          directMatches.forEach(r => appendRuleItem(c, r, t, false));
+        }
+
+        if (reverseMatches.length > 0) {
+          const h = document.createElement('div');
+          h.className = "text-xs font-bold text-sky-400 uppercase tracking-wider mb-2 mt-3 pt-2 border-t border-slate-700";
+          h.textContent = "Reverse Matches (Variant Found in Text)";
+          c.appendChild(h);
+          reverseMatches.forEach(r => appendRuleItem(c, r, t, true));
+        }
+      } else {
+        rs.forEach(r => appendRuleItem(c, r, t, false));
+      }
+    }
+
+    function appendRuleItem(container, r, t, isReverse = false) {
+      const d = document.createElement('div'); 
+      d.className = "bg-slate-900 border border-slate-700 hover:border-indigo-500 cursor-pointer p-3 rounded-lg mb-2 transition flex justify-between items-center"; 
+      d.onclick = () => selectRuleFromSelector(r, t, isReverse); 
+      if (t === 'pron') {
+        d.innerHTML = `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-400 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div>`;
+      } else {
+        if (isReverse) {
+          d.innerHTML = `<div><span class="text-[10px] bg-sky-600/30 text-sky-300 px-1.5 py-0.5 rounded font-mono mr-1.5 uppercase font-semibold">Reverse Match</span><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div>`;
+        } else {
+          d.innerHTML = `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div>`;
+        }
+      }
+      container.appendChild(d);
+    }
+
+    function selectRuleFromSelector(r, t, isReverse = false) { 
+      if(activeRuleSelectorTargetInput !== null){ 
+        if(t === 'pron'){ 
+          document.getElementById('add-pron-input').value = r.ipa; 
           updateAddPronPreview(); 
         } else {
-          document.getElementById('add-var-input').value = parseVariantsString(r.variantsStr).join(', ');
+          if (isReverse) {
+            const allVariants = parseVariantsString(r.variantsStr);
+            const filtered = allVariants.filter(v => v.toLowerCase() !== activeRuleSelectorTargetInput.toLowerCase());
+            filtered.unshift(r.find);
+            document.getElementById('add-var-input').value = filtered.join(', ');
+          } else {
+            document.getElementById('add-var-input').value = parseVariantsString(r.variantsStr).join(', ');
+          }
         }
       } else { 
         if(t==='pron'){ 
-          entryData.globalPronunciationRules=entryData.globalPronunciationRules||[]; 
-          entryData.globalPronunciationRules.push({target:r.target, ipa:r.ipa}); 
+          entryData.globalPronunciationRules = entryData.globalPronunciationRules || []; 
+          entryData.globalPronunciationRules.push({target: r.target, ipa: r.ipa}); 
         } else { 
-          entryData.globalVariantRules=entryData.globalVariantRules||[]; 
-          entryData.globalVariantRules.push({find:r.find, variantsStr: parseVariantsString(r.variantsStr).join(', ')}); 
+          entryData.globalVariantRules = entryData.globalVariantRules || []; 
+          entryData.globalVariantRules.push({find: r.find, variantsStr: parseVariantsString(r.variantsStr).join(', ')}); 
         } 
         renderFormUI(); 
       } 
@@ -1606,6 +1943,167 @@
         } catch(e) {
           showToast("Delete failed");
         }
+      }
+    }
+
+    /* HTML Import Engine (Requirement 6) */
+    function parseHTMLToEntryData(rawHtml) {
+      if (!rawHtml || !rawHtml.trim()) return null;
+      const doc = new DOMParser().parseFromString(rawHtml, 'text/html');
+
+      const newEntry = getBlankEntry();
+
+      // Extract alt english terms from leading <p><em>...</em></p>
+      const firstP = doc.querySelector('p:first-child');
+      if (firstP && firstP.querySelector('em') && !firstP.closest('.medical-term')) {
+        newEntry.altEnglishTerms = firstP.querySelector('em').innerHTML;
+      }
+
+      // Parse terms
+      const termSections = doc.querySelectorAll('.medical-term');
+      if (termSections.length > 0) {
+        newEntry.terms = [];
+        termSections.forEach((sec, idx) => {
+          const h3 = sec.querySelector('h3');
+          const headwordHTML = h3 ? sanitizeHeadwordHTML(h3.innerHTML) : "";
+
+          const labelP = sec.querySelector('p:has(.term-label)');
+          const labels = [];
+          const customLabels = [];
+
+          if (labelP) {
+            labelP.querySelectorAll('.term-label').forEach(lblEl => {
+              const lblText = lblEl.textContent.trim();
+              if (PRESET_LABELS.includes(lblText)) {
+                labels.push(lblText);
+              } else if (lblText) {
+                customLabels.push(lblText);
+              }
+            });
+          }
+
+          let commentsHTML = "";
+          sec.childNodes.forEach(child => {
+            if (child.nodeType === Node.ELEMENT_NODE) {
+              const tag = child.tagName.toLowerCase();
+              if (tag !== 'h3' && !child.querySelector('.term-label')) {
+                commentsHTML += child.outerHTML + "\n";
+              }
+            }
+          });
+
+          newEntry.terms.push({
+            id: `term-${Date.now()}-${idx}`,
+            headwordHTML: headwordHTML,
+            labels: labels,
+            customLabels: customLabels,
+            commentsHTML: sanitizeHTMLBlock(commentsHTML)
+          });
+        });
+      } else {
+        const h3s = doc.querySelectorAll('h3');
+        if (h3s.length > 0) {
+          newEntry.terms = [];
+          h3s.forEach((h3, idx) => {
+            newEntry.terms.push({
+              id: `term-${Date.now()}-${idx}`,
+              headwordHTML: sanitizeHeadwordHTML(h3.innerHTML),
+              labels: [],
+              customLabels: [],
+              commentsHTML: ""
+            });
+          });
+        }
+      }
+
+      // Parse references
+      const details = doc.querySelector('details');
+      if (details) {
+        newEntry.references = [];
+        const refPs = details.querySelectorAll('p');
+
+        refPs.forEach((p, idx) => {
+          const text = p.textContent.trim();
+          if (!text) return;
+
+          const isIbid = /^ibid\./i.test(text) || /^id\./i.test(text);
+          let author = "";
+          let title = "";
+          let titleFormat = "italics";
+          let pages = "";
+
+          const em = p.querySelector('em');
+          const quoteMatch = text.match(/‘([^’]+)’|'([^']+)'/);
+
+          if (em) {
+            title = em.textContent.trim();
+            titleFormat = "italics";
+          } else if (quoteMatch) {
+            title = quoteMatch[1] || quoteMatch[2];
+            titleFormat = "quotes";
+          }
+
+          const pageMatch = text.match(/p{1,2}\.?\s*([\d\s–-]+)/i);
+          if (pageMatch) {
+            pages = pageMatch[1].trim();
+          }
+
+          const parts = text.split(',');
+          if (parts.length > 0 && !isIbid) {
+            author = parts[0].trim();
+          }
+
+          let quoteHTML = "";
+          const nextSibling = p.nextElementSibling;
+          if (nextSibling && nextSibling.tagName.toLowerCase() === 'blockquote') {
+            quoteHTML = sanitizeHTMLBlock(nextSibling.innerHTML);
+          }
+
+          newEntry.references.push({
+            id: `ref-${Date.now()}-${idx}`,
+            authors: author,
+            title: title,
+            titleFormat: titleFormat,
+            pages: pages,
+            quoteHTML: quoteHTML
+          });
+        });
+      }
+
+      return newEntry;
+    }
+
+    function runImportHTML() {
+      const rawInput = document.getElementById('import-html-input').value;
+      if (!rawInput.trim()) {
+        showToast("Please paste HTML first.");
+        return;
+      }
+      const parsedData = parseHTMLToEntryData(rawInput);
+      if (parsedData) {
+        entryData = parsedData;
+        renderFormUI();
+        switchTab('form');
+        showToast("HTML Imported Successfully!");
+      } else {
+        showToast("Failed to parse HTML.");
+      }
+    }
+
+    function parseCodeBackToForm() {
+      const rawInput = document.getElementById('raw-html-editor').value;
+      if (!rawInput.trim()) {
+        showToast("No code to parse.");
+        return;
+      }
+      const parsedData = parseHTMLToEntryData(rawInput);
+      if (parsedData) {
+        entryData = parsedData;
+        renderFormUI();
+        switchTab('form');
+        showToast("Code Parsed to Form!");
+      } else {
+        showToast("Failed to parse HTML code.");
       }
     }
   </script>
