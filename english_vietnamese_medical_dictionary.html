@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Brygada+1918:ital,wght@0,400..700;1,400..700&amp;family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   
   <!-- Google Drive API Script (GIS) -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 
   <script>
     tailwind.config = {
@@ -289,6 +289,53 @@
     </div>
   </div>
 
+  <!-- 9: Google Drive Auth Error / Troubleshooting Modal -->
+  <div id="drive-auth-error-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <h3 class="text-base font-bold text-rose-400 flex items-center gap-2">
+          <span>⚠️</span> Drive Connection Troubleshooting
+        </h3>
+        <button onclick="closeDriveAuthErrorModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300">
+        <div class="bg-rose-950/40 border border-rose-800/60 rounded-lg p-3">
+          <p class="font-semibold text-rose-300 mb-1">Error Details:</p>
+          <p id="drive-error-msg" class="font-mono text-[11px] text-rose-200 break-all"></p>
+        </div>
+
+        <div class="space-y-2">
+          <p class="font-semibold text-white">To fix this in your Google Cloud Console:</p>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-300 leading-relaxed pl-1">
+            <li>Open <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="text-indigo-400 underline font-semibold">Google Cloud Console Credentials</a>.</li>
+            <li>Click your Web Application Client ID.</li>
+            <li>Under <strong>Authorized JavaScript origins</strong>, ensure this exact URL is added:
+              <div class="mt-1 flex items-center gap-1.5">
+                <input type="text" id="drive-current-origin" readonly class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-indigo-300 font-mono text-[11px]">
+                <button onclick="copyCurrentOrigin()" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded font-medium shrink-0">Copy</button>
+              </div>
+            </li>
+            <li>Under <strong>OAuth consent screen</strong> &rarr; <strong>Test users</strong>, make sure your Google email address is added.</li>
+          </ol>
+        </div>
+
+        <div class="border-t border-slate-700/80 pt-3 space-y-2">
+          <p class="font-semibold text-slate-200">Option 2: Paste Access Token Manually</p>
+          <p class="text-slate-400 text-[11px]">If pop-up authorization is blocked by browser restrictions, paste a valid Access Token here:</p>
+          <div class="flex gap-2">
+            <input type="text" id="manual-access-token-input" placeholder="ya29.a0A..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono outline-none focus:border-indigo-500">
+            <button onclick="applyManualAccessToken()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-semibold text-xs shrink-0">Use Token</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeDriveAuthErrorModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Header Navigation -->
   <header class="bg-slate-800/90 border-b border-slate-700/80 sticky top-0 z-40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 backdrop-blur shadow-md">
     <div class="flex items-center gap-3">
@@ -462,8 +509,9 @@
     const SCOPES = 'https://www.googleapis.com/auth/drive.file';
     const FOLDER_NAME = 'Danh Từ Y Khoa Anh–việt';
 
-    let tokenClient;
-    let accessToken = null;
+    let tokenClient = null;
+    let accessToken = localStorage.getItem('gdrive_access_token') || null;
+    let tokenExpiry = localStorage.getItem('gdrive_token_expiry') || 0;
     let driveFolderId = null;
     let isDriveConnected = false;
     let hasUnsavedChanges = false;
@@ -478,65 +526,251 @@
 
     function gisLoaded() {
       if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
-        setTimeout(gisLoaded, 100);
+        setTimeout(gisLoaded, 150);
         return;
       }
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: async (resp) => {
-          if (resp.error) {
-            console.error("Auth error:", resp);
-            showToast("Google Auth Error: " + resp.error);
-            return;
+      try {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: async (resp) => {
+            resetDriveButtonLoading();
+            if (resp.error) {
+              console.error("Auth error object:", resp);
+              showDriveAuthErrorModal(resp.error, resp.error_description || resp.details || "Authorization prompt failed or was cancelled.");
+              return;
+            }
+            if (!resp.access_token) {
+              showDriveAuthErrorModal("no_token", "Google authorization succeeded but returned no access token.");
+              return;
+            }
+
+            accessToken = resp.access_token;
+            const expiresIn = (resp.expires_in || 3600) * 1000;
+            tokenExpiry = Date.now() + expiresIn - 60000;
+            localStorage.setItem('gdrive_access_token', accessToken);
+            localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
+
+            setDriveConnectedUI(true);
+            showToast("Google Drive Connected!");
+            try {
+              await getOrCreateAppFolder();
+              await loadRulesFromDrive();
+              if (!document.getElementById('entries-library-modal').classList.contains('hidden')) {
+                await loadEntriesFromDrive();
+              }
+            } catch (e) {
+              console.error("Drive setup error:", e);
+              showToast("Error initializing Drive folder.");
+            }
+          },
+          error_callback: (err) => {
+            resetDriveButtonLoading();
+            console.error("Token client error_callback:", err);
+            showDriveAuthErrorModal(err.type || "popup_error", err.message || "Failed to complete Google Sign In.");
           }
-          accessToken = resp.access_token;
-          isDriveConnected = true;
-          
-          const btn = document.getElementById('drive-auth-btn');
-          btn.innerHTML = `
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
-              <mask id="drive-logo-mask-conn" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
-                <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
-              </mask>
-              <g mask="url(#drive-logo-mask-conn)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
-                <path fill="url(#drive-logo-b-conn)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
-                <path fill="url(#drive-logo-c-conn)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
-                <path fill="url(#drive-logo-d-conn)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
-              </g>
-              <defs>
-                <linearGradient id="drive-logo-b-conn" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
-                  <stop offset=".09" stop-color="#ffe921"/>
-                  <stop offset="1" stop-color="#fec700"/>
-                </linearGradient>
-                <linearGradient id="drive-logo-c-conn" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
-                  <stop offset=".15" stop-color="#a9a8ff"/>
-                  <stop offset=".33" stop-color="#6d97ff"/>
-                  <stop offset=".48" stop-color="#3186ff"/>
-                </linearGradient>
-                <linearGradient id="drive-logo-d-conn" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
-                  <stop offset=".55" stop-color="#0ebc5f"/>
-                  <stop offset=".85" stop-color="#78c9ff"/>
-                </linearGradient>
-              </defs>
-            </svg>
-            <span>Drive Connected ✓</span>
-          `;
-          btn.className = 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-emerald-500 font-medium';
-          
-          showToast("Google Drive Connected!");
-          try {
+        });
+      } catch(e) {
+        console.error("Error initializing GIS tokenClient:", e);
+      }
+    }
+
+    async function checkSavedDriveToken() {
+      if (accessToken && Date.now() < parseInt(tokenExpiry, 10)) {
+        try {
+          const res = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+          });
+          if (res.ok) {
+            setDriveConnectedUI(true);
             await getOrCreateAppFolder();
             await loadRulesFromDrive();
-            if (!document.getElementById('entries-library-modal').classList.contains('hidden')) {
-              await loadEntriesFromDrive();
-            }
-          } catch (e) {
-            console.error("Drive setup error:", e);
-            showToast("Error initializing Drive folder.");
+            return true;
           }
+        } catch(e) { console.warn("Saved Drive token validation failed:", e); }
+      }
+      clearSavedDriveToken();
+      return false;
+    }
+
+    function clearSavedDriveToken() {
+      accessToken = null;
+      tokenExpiry = 0;
+      isDriveConnected = false;
+      localStorage.removeItem('gdrive_access_token');
+      localStorage.removeItem('gdrive_token_expiry');
+      setDriveDisconnectedUI();
+    }
+
+    function setDriveConnectedUI(connected) {
+      isDriveConnected = connected;
+      const btn = document.getElementById('drive-auth-btn');
+      if (!btn) return;
+      if (connected) {
+        btn.innerHTML = `
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
+            <mask id="drive-logo-mask-conn" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
+              <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+            </mask>
+            <g mask="url(#drive-logo-mask-conn)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
+              <path fill="url(#drive-logo-b-conn)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
+              <path fill="url(#drive-logo-c-conn)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
+              <path fill="url(#drive-logo-d-conn)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+            </g>
+            <defs>
+              <linearGradient id="drive-logo-b-conn" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
+                <stop offset=".09" stop-color="#ffe921"/>
+                <stop offset="1" stop-color="#fec700"/>
+              </linearGradient>
+              <linearGradient id="drive-logo-c-conn" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
+                <stop offset=".15" stop-color="#a9a8ff"/>
+                <stop offset=".33" stop-color="#6d97ff"/>
+                <stop offset=".48" stop-color="#3186ff"/>
+              </linearGradient>
+              <linearGradient id="drive-logo-d-conn" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
+                <stop offset=".55" stop-color="#0ebc5f"/>
+                <stop offset=".85" stop-color="#78c9ff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Drive Connected ✓</span>
+        `;
+        btn.className = 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-emerald-500 font-medium';
+      } else {
+        setDriveDisconnectedUI();
+      }
+    }
+
+    function setDriveDisconnectedUI() {
+      isDriveConnected = false;
+      const btn = document.getElementById('drive-auth-btn');
+      if (!btn) return;
+      btn.innerHTML = `
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
+          <mask id="drive-logo-mask" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
+            <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
+          </mask>
+          <g mask="url(#drive-logo-mask)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
+            <path fill="url(#drive-logo-b)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
+            <path fill="url(#drive-logo-c)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
+            <path fill="url(#drive-logo-d)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
+          </g>
+          <defs>
+            <linearGradient id="drive-logo-b" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
+              <stop offset=".09" stop-color="#ffe921"/>
+              <stop offset="1" stop-color="#fec700"/>
+            </linearGradient>
+            <linearGradient id="drive-logo-c" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
+              <stop offset=".15" stop-color="#a9a8ff"/>
+              <stop offset=".33" stop-color="#6d97ff"/>
+              <stop offset=".48" stop-color="#3186ff"/>
+            </linearGradient>
+            <linearGradient id="drive-logo-d" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
+              <stop offset=".55" stop-color="#0ebc5f"/>
+              <stop offset=".85" stop-color="#78c9ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Connect Drive</span>
+      `;
+      btn.className = 'text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium';
+    }
+
+    function resetDriveButtonLoading() {
+      if (isDriveConnected) setDriveConnectedUI(true);
+      else setDriveDisconnectedUI();
+    }
+
+    function handleDriveAuthClick() {
+      if (isDriveConnected) {
+        if (confirm("Google Drive is currently connected. Click OK to re-authorize or switch account, or Cancel to keep existing connection.")) {
+          clearSavedDriveToken();
+        } else {
+          return;
         }
-      });
+      }
+
+      if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+        showToast("Google Identity library loading... initializing.");
+        gisLoaded();
+        return;
+      }
+
+      if (!tokenClient) {
+        gisLoaded();
+      }
+
+      if (!tokenClient) {
+        showDriveAuthErrorModal("client_initializing", "Google OAuth client is initializing. Please click 'Connect Drive' again in a moment.");
+        return;
+      }
+
+      const btn = document.getElementById('drive-auth-btn');
+      if (btn) {
+        btn.innerHTML = `<span class="animate-spin text-indigo-600 font-bold">↻</span> <span>Connecting...</span>`;
+      }
+
+      try {
+        tokenClient.requestAccessToken({ prompt: 'select_account' });
+      } catch (e) {
+        resetDriveButtonLoading();
+        console.error("Error requesting access token:", e);
+        showDriveAuthErrorModal("request_error", e.message || "Failed to open Google login popup.");
+      }
+    }
+
+    function showDriveAuthErrorModal(errCode, errDetail) {
+      const modal = document.getElementById('drive-auth-error-modal');
+      const msgEl = document.getElementById('drive-error-msg');
+      const originEl = document.getElementById('drive-current-origin');
+      
+      if (msgEl) msgEl.textContent = `[${errCode}] ${errDetail || ''}`;
+      if (originEl) originEl.value = window.location.origin;
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeDriveAuthErrorModal() {
+      const modal = document.getElementById('drive-auth-error-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyCurrentOrigin() {
+      const originEl = document.getElementById('drive-current-origin');
+      if (originEl) {
+        navigator.clipboard.writeText(originEl.value).then(() => showToast("Origin copied!")).catch(() => {
+          originEl.select(); document.execCommand('copy'); showToast("Origin copied!");
+        });
+      }
+    }
+
+    async function applyManualAccessToken() {
+      const tokenInp = document.getElementById('manual-access-token-input');
+      const token = tokenInp ? tokenInp.value.trim() : '';
+      if (!token) { showToast("Please paste an access token."); return; }
+
+      accessToken = token;
+      tokenExpiry = Date.now() + 3600 * 1000;
+      localStorage.setItem('gdrive_access_token', accessToken);
+      localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
+
+      try {
+        const res = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        if (res.ok) {
+          setDriveConnectedUI(true);
+          closeDriveAuthErrorModal();
+          showToast("Google Drive Connected with Manual Token!");
+          await getOrCreateAppFolder();
+          await loadRulesFromDrive();
+        } else {
+          showToast("Token invalid or expired.");
+          clearSavedDriveToken();
+        }
+      } catch (e) {
+        showToast("Token validation failed: " + e.message);
+        clearSavedDriveToken();
+      }
     }
 
     // Direct REST API fetch wrapper
@@ -547,6 +781,10 @@
       const res = await fetch(url, options);
       if (!res.ok) {
         const errText = await res.text();
+        if (res.status === 401) {
+          clearSavedDriveToken();
+          showToast("Drive session expired. Please click 'Connect Drive' again.");
+        }
         throw new Error(`Drive API Error ${res.status}: ${errText}`);
       }
       return res;
@@ -558,6 +796,7 @@
       initIPAPalette();
       await initDB();
       await loadDraft();
+      await checkSavedDriveToken();
       renderFormUI();
     };
 
