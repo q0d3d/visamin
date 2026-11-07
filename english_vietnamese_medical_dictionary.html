@@ -1528,7 +1528,14 @@
       showToast(`Saved to ${fileName}`);
       markClean();
     }
-
+    function removeDiacritics(str) {
+      if (!str) return "";
+      return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
+    }
     let libraryEntriesCache = [];
     async function loadEntriesFromDrive() {
       if (!isDriveConnected || !driveFolderId) return;
@@ -1555,7 +1562,15 @@
             const vnTerms = (content.terms || []).map(t => {
               const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
             }).join(' ');
-            libraryEntriesCache.push({name: file.name, fileId: file.id, data: content, searchStr: `${enTitle} ${altEn} ${vnTerms}`.toLowerCase()});
+            const altVn = computeAutomaticAltSpellings(content);
+            const fullSearchText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.toLowerCase();
+
+            libraryEntriesCache.push({
+              name: file.name,
+              fileId: file.id,
+              data: content,
+              searchStr: removeDiacritics(fullSearchText)
+            });
           }
         }
         filterLibraryEntries();
@@ -2939,10 +2954,19 @@
     }
     function closeEntriesLibrary() {document.getElementById('entries-library-modal').classList.add('hidden');}
     function filterLibraryEntries() {
-      const q = document.getElementById('library-search').value.toLowerCase(), c = document.getElementById('library-entries-list'); c.innerHTML = '';
-      const f = libraryEntriesCache.filter(e => e.searchStr.includes(q)); if (f.length === 0) {c.innerHTML = `<p class="text-slate-500 text-sm">No entries found.</p>`; return;}
+      const rawQuery = document.getElementById('library-search').value.toLowerCase();
+      const normalizedQuery = removeDiacritics(rawQuery);
+      const c = document.getElementById('library-entries-list');
+      c.innerHTML = '';
+
+      const f = libraryEntriesCache.filter(e => e.searchStr.includes(normalizedQuery));
+      if (f.length === 0) {
+        c.innerHTML = `<p class="text-slate-500 text-sm">No entries found.</p>`;
+        return;
+      }
       f.forEach(e => {
-        const d = document.createElement('div'); d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+        const d = document.createElement('div');
+        d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
         d.innerHTML = `<div><strong class="text-indigo-300">${escapeAttr(e.data.postTitle || "Untitled")}</strong><span class="text-slate-500 text-xs block">${e.name}</span></div><div><button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2">Open</button><button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded">Delete</button></div>`;
         c.appendChild(d);
       });
