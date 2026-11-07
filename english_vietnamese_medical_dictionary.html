@@ -1043,12 +1043,13 @@
         <div id="tab-content-import" class="space-y-4 hidden">
           <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 space-y-3">
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Paste HTML</h3>
+            <input type="text" id="import-headword-input" placeholder="English headword"
+                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-medium">
             <textarea id="import-html-input" rows="12"
               class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none"
-              placeholder="Paste entry HTML here..."></textarea>
+              placeholder="Entry HTML"></textarea>
             <button onclick="runImportHTML()"
-              class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse
-              &amp; populate form</button>
+              class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse entry</button>
           </div>
         </div>
       </div>
@@ -3136,10 +3137,17 @@
         }
       });
 
-      // 2. Extract English Headword / Title
-      const h1Title = doc.querySelector('h1, .preview-post-title');
-      if (h1Title) {
-        entryData.postTitle = h1Title.textContent.replace(/[\r\n\t]+/g, ' ').trim();
+      // 2. Extract English Headword / Title (prioritize the manual input box)
+      const importHwInput = document.getElementById('import-headword-input');
+      const manualHeadword = importHwInput ? importHwInput.value.trim() : '';
+
+      if (manualHeadword) {
+        entryData.postTitle = manualHeadword;
+      } else {
+        const h1Title = doc.querySelector('h1, .preview-post-title');
+        if (h1Title) {
+          entryData.postTitle = h1Title.textContent.replace(/[\r\n\t]+/g, ' ').trim();
+        }
       }
 
       // Extract Alt English terms (clean surrounding line breaks and tabs)
@@ -3219,6 +3227,7 @@
       renderFormUI();
       switchTab('form');
       showToast("HTML Imported & Cleaned Successfully!");
+      if (importHwInput) importHwInput.value = '';
       if (inputEl) inputEl.value = '';
     }
 
