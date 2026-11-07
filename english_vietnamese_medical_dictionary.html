@@ -1927,7 +1927,7 @@
       let rawOnset = base.slice(0, nIndex);
       let rawCoda = base.slice(nIndex + nLen);
 
-      // Parse Onset & Medial Glide
+      // Parse Onset & Medial Glide (Iterative multi-character cluster parser)
       let ipaOnset = "";
       let hasMedialW = false;
 
@@ -1943,69 +1943,82 @@
           }
         }
 
-        if (rawOnset === "ngh") ipaOnset = "ŋ";
-        else if (rawOnset === "ng") ipaOnset = "ŋ";
-        else if (rawOnset === "gh") ipaOnset = "ɣ";
-        else if (rawOnset === "gi") ipaOnset = "ʝ";
-        else if (rawOnset === "g") ipaOnset = (['e', 'ê', 'i', 'y', 'ɪ'].includes(foundNucleus.qn)) ? "ʝ" : "ɣ";
-        else if (rawOnset === "th") ipaOnset = "tʰ";
-        else if (rawOnset === "ch") ipaOnset = "c";
-        else if (rawOnset === "kh") ipaOnset = "x";
-        else if (rawOnset === "nh") ipaOnset = "ɲ";
-        else if (rawOnset === "ph") ipaOnset = "f";
-        else if (rawOnset === "tr") ipaOnset = "ʈ";
-        else if (rawOnset === "đ") ipaOnset = "d";
-        else if (rawOnset === "d") ipaOnset = "z";
-        else if (rawOnset === "z") ipaOnset = "ᵶ";
-        else if (rawOnset === "r") ipaOnset = "ɹ";
-        else if (rawOnset === "ʀ" || rawOnset === "ꭨ") ipaOnset = "ꭨ";
-        else if (rawOnset === "s") ipaOnset = "ʂ";
-        else if (rawOnset === "x") ipaOnset = "s";
-        else if (rawOnset === "c") ipaOnset = "k";
-        else if (rawOnset === "k") ipaOnset = "k";
-        else if (rawOnset === "b") ipaOnset = "b";
-        else if (rawOnset === "h") ipaOnset = "h";
-        else if (rawOnset === "l") ipaOnset = "l";
-        else if (rawOnset === "m") ipaOnset = "m";
-        else if (rawOnset === "n") ipaOnset = "n";
-        else if (rawOnset === "t") ipaOnset = "t";
-        else if (rawOnset === "v") ipaOnset = "v";
-        else if (rawOnset === "ⱴ") ipaOnset = "ⱴ";
-        else if (rawOnset === "ᴊ") ipaOnset = "d͡ʒ";
-        else if (rawOnset === "ʏ") ipaOnset = "j";
-        else if (rawOnset === "p") ipaOnset = "p";
-        else if (rawOnset === "j") ipaOnset = "ʒ";
-        else ipaOnset = rawOnset;
+        let tempOnset = rawOnset;
+        while (tempOnset.length > 0) {
+          if (tempOnset.startsWith("ngh")) {ipaOnset += "ŋ"; tempOnset = tempOnset.slice(3);}
+          else if (tempOnset.startsWith("ng")) {ipaOnset += "ŋ"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("gh")) {ipaOnset += "ɣ"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("gi")) {ipaOnset += "ʝ"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("g")) {
+            ipaOnset += (['e', 'ê', 'i', 'y', 'ɪ'].includes(foundNucleus.qn)) ? "ʝ" : "ɣ";
+            tempOnset = tempOnset.slice(1);
+          }
+          else if (tempOnset.startsWith("th")) {ipaOnset += "tʰ"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("ch")) {ipaOnset += "c"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("kh")) {ipaOnset += "x"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("nh")) {ipaOnset += "ɲ"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("ph")) {ipaOnset += "f"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("tr")) {ipaOnset += "ʈ"; tempOnset = tempOnset.slice(2);}
+          else if (tempOnset.startsWith("đ")) {ipaOnset += "d"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("d")) {ipaOnset += "z"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("z")) {ipaOnset += "ᵶ"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("r")) {ipaOnset += "ɹ"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("ʀ") || tempOnset.startsWith("ꭨ")) {ipaOnset += "ꭨ"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("s")) {ipaOnset += "ʂ"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("x")) {ipaOnset += "s"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("c")) {ipaOnset += "k"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("k")) {ipaOnset += "k"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("b")) {ipaOnset += "b"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("h")) {ipaOnset += "h"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("l")) {ipaOnset += "l"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("m")) {ipaOnset += "m"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("n")) {ipaOnset += "n"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("t")) {ipaOnset += "t"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("v")) {ipaOnset += "v"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("ⱴ")) {ipaOnset += "ⱴ"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("ᴊ")) {ipaOnset += "d͡ʒ"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("ʏ")) {ipaOnset += "j"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("p")) {ipaOnset += "p"; tempOnset = tempOnset.slice(1);}
+          else if (tempOnset.startsWith("j")) {ipaOnset += "ʒ"; tempOnset = tempOnset.slice(1);}
+          else {ipaOnset += tempOnset[0]; tempOnset = tempOnset.slice(1);}
+        }
       }
 
-      // Determine Coda & Nucleus Refinements
+      // Determine Coda & Nucleus Refinements (Iterative multi-character coda parser)
       let ipaCoda = "";
       let finalIpaNucleus = foundNucleus.ipa;
+      let tempCoda = rawCoda;
 
-      if (rawCoda === "ch") ipaCoda = "c";
-      else if (rawCoda === "ng") ipaCoda = "ŋ";
-      else if (rawCoda === "nh") ipaCoda = "ɲ";
-      else if (rawCoda === "c") ipaCoda = "k";
-      else if (rawCoda === "m") ipaCoda = "m";
-      else if (rawCoda === "n") ipaCoda = "n";
-      else if (rawCoda === "p") ipaCoda = "p";
-      else if (rawCoda === "t") ipaCoda = "t";
-      else if (rawCoda === "ɴ") ipaCoda = "ᵰ";
-      else if (rawCoda === "ᴛ" || rawCoda === "ᵵ") ipaCoda = "ᵵ";
-      else if (rawCoda === "y") {
-        ipaCoda = "j";
-        if (foundNucleus.qn === "a") finalIpaNucleus = "ă"; // ay -> /ăj/
-      } else if (rawCoda === "i") {
-        ipaCoda = "j"; // ai -> /aj/
-      } else if (rawCoda === "o") {
-        ipaCoda = "w"; // ao -> /aw/, eo -> /ɛw/
-      } else if (rawCoda === "u") {
-        ipaCoda = "w";
-        if (foundNucleus.qn === "a") finalIpaNucleus = "ă"; // au -> /ăw/
-      } else if (rawCoda === "f") ipaCoda = "f";
-      else if (rawCoda === "s") ipaCoda = "s";
-      else if (rawCoda === "z") ipaCoda = "ᵶ";
-      else ipaCoda = rawCoda;
+      while (tempCoda.length > 0) {
+        if (tempCoda.startsWith("ch")) {ipaCoda += "c"; tempCoda = tempCoda.slice(2);}
+        else if (tempCoda.startsWith("ng")) {ipaCoda += "ŋ"; tempCoda = tempCoda.slice(2);}
+        else if (tempCoda.startsWith("nh")) {ipaCoda += "ɲ"; tempCoda = tempCoda.slice(2);}
+        else if (tempCoda.startsWith("c")) {ipaCoda += "k"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("m")) {ipaCoda += "m"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("n")) {ipaCoda += "n"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("p")) {ipaCoda += "p"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("t")) {ipaCoda += "t"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("ɴ")) {ipaCoda += "ᵰ"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("ᴛ") || tempCoda.startsWith("ᵵ")) {ipaCoda += "ᵵ"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("y")) {
+          ipaCoda += "j";
+          if (foundNucleus.qn === "a") finalIpaNucleus = "ă";
+          tempCoda = tempCoda.slice(1);
+        } else if (tempCoda.startsWith("i")) {
+          ipaCoda += "j";
+          tempCoda = tempCoda.slice(1);
+        } else if (tempCoda.startsWith("o")) {
+          ipaCoda += "w";
+          tempCoda = tempCoda.slice(1);
+        } else if (tempCoda.startsWith("u")) {
+          ipaCoda += "w";
+          if (foundNucleus.qn === "a") finalIpaNucleus = "ă";
+          tempCoda = tempCoda.slice(1);
+        } else if (tempCoda.startsWith("f")) {ipaCoda += "f"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("s")) {ipaCoda += "s"; tempCoda = tempCoda.slice(1);}
+        else if (tempCoda.startsWith("z")) {ipaCoda += "ᵶ"; tempCoda = tempCoda.slice(1);}
+        else {ipaCoda += tempCoda[0]; tempCoda = tempCoda.slice(1);}
+      }
 
       let ipaNucleusWithTone = finalIpaNucleus + toneMark;
       return (ipaOnset + (hasMedialW ? "w" : "") + ipaNucleusWithTone + ipaCoda).normalize('NFC');
