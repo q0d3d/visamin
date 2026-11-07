@@ -439,7 +439,7 @@
     </div>
   </div>
 
- <!-- Floating Toolbars -->
+  <!-- Floating Toolbars -->
   <div id="selection-toolbar"
     class="fixed z-50 bg-slate-800 border border-slate-700 shadow-2xl rounded-xl p-1.5 flex items-center gap-1.5 backdrop-blur-md hidden">
     <button onmousedown="event.preventDefault(); openAddPronModal();"
@@ -449,7 +449,7 @@
       class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow">+
       Lexical Variant</button>
   </div>
-  
+
   <div id="ipa-toolbar"
     class="fixed z-[100] bg-slate-800/95 border border-indigo-500/40 shadow-2xl rounded-xl p-2 flex flex-col gap-1 backdrop-blur-md hidden max-w-sm sm:max-w-md">
     <div
@@ -457,35 +457,64 @@
       <span>Quasi-IPA Symbols &amp; Diacritics</span><span class="text-slate-500 font-normal">Click to insert</span>
     </div>
     <div id="ipa-buttons-container" class="flex flex-wrap gap-1">
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵶ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ꭨ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ⱴ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʷ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʰ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">d͡ʒ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʃ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʒ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɛ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ə</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɔ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɨ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵼ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ꬿ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵰ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵵ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɲ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ŋ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɣ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʝ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɹ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʂ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʈ</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̆</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">́</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̀</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̉</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̃</button>
-      <button class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̣</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵶ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ꭨ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ⱴ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʷ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʰ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">d͡ʒ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʃ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʒ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɛ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ə</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɔ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɨ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵼ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ꬿ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵰ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ᵵ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɲ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ŋ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɣ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʝ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ɹ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʂ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">ʈ</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̆</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">́</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̀</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̉</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̃</button>
+      <button
+        class="px-2 py-1 bg-slate-900 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-slate-700/80 rounded font-mono text-xs font-semibold shadow-sm">̣</button>
     </div>
   </div>
 
@@ -1652,26 +1681,23 @@
       syl = syl.trim().replace(/^\/+|\/+$/g, '');
       if (!syl) return "";
 
-      // 1. Extract tone combining diacritics (̀  ́  ̉  ̃  ̣)
+      // 1. Extract tone combining diacritics
       let toneMarks = "";
       let baseSyl = syl.replace(/[\u0300\u0301\u0309\u0303\u0323]/g, (match) => {
         toneMarks += match;
         return "";
       });
 
-      // 2. Locate Nucleus (Ordered from multi-character to single-character)
+      // 2. Locate Nucleus
       const NUCLEUS_REGEX = /(iə|uə|ɨə|ă|a\u0306|ə̆|ə\u0306|a|ɛ|e|i|ᵼ|ɔ|ꬿ|o|ə|u|ɨ)/;
       const nucleusMatch = baseSyl.match(NUCLEUS_REGEX);
 
-      if (!nucleusMatch) {
-        return syl; // Fallback for non-matching input
-      }
+      if (!nucleusMatch) return syl;
 
       let nucleusBaseRaw = nucleusMatch[1];
       const nucleusIndex = nucleusMatch.index;
       const nucleusLength = nucleusMatch[0].length;
 
-      // Standardize composed/decomposed nucleus variants
       let nucleusBase = nucleusBaseRaw;
       if (nucleusBaseRaw === "a\u0306") nucleusBase = "ă";
       if (nucleusBaseRaw === "ə\u0306") nucleusBase = "ə̆";
@@ -1695,11 +1721,7 @@
       let convertedOnset = "";
 
       if (initialConsonant === "k") {
-        if (hasMedialW) {
-          convertedOnset = "qu";
-        } else {
-          convertedOnset = isFrontVowelK_GH_NGH ? "k" : "c";
-        }
+        convertedOnset = hasMedialW ? "qu" : (isFrontVowelK_GH_NGH ? "k" : "c");
       } else if (initialConsonant === "ɣ") {
         convertedOnset = isFrontVowelK_GH_NGH ? "gh" : "g";
       } else if (initialConsonant === "ŋ") {
@@ -1708,43 +1730,35 @@
         convertedOnset = isFrontVowelGI ? "g" : "gi";
       } else {
         const ONSET_MAP = {
-          "b": "b",
-          "c": "ch",
-          "z": "d",
-          "ᵶ": "z",
-          "d": "đ",
-          "h": "h",
-          "x": "kh",
-          "l": "l",
-          "m": "m",
-          "n": "n",
-          "ɲ": "nh",
-          "f": "ph",
-          "ɹ": "r",
-          "ꭨ": "ʀ",
-          "ʂ": "s",
-          "t": "t",
-          "tʰ": "th",
-          "ʈ": "tr",
-          "v": "v",
-          "ⱴ": "ⱴ",
-          "s": "x",
-          "ʷ": "w",
-          "d͡ʒ": "ᴊ",
-          "j": "ʏ",
-          "p": "p",
-          "ʒ": "j"
+          "d͡ʒ": "ᴊ", "tʰ": "th", // Multi-char symbols first
+          "b": "b", "c": "ch", "z": "d", "ᵶ": "z", "d": "đ", "h": "h",
+          "x": "kh", "l": "l", "m": "m", "n": "n", "ɲ": "nh", "f": "ph",
+          "ɹ": "r", "ꭨ": "ʀ", "ʂ": "s", "t": "t", "ʈ": "tr", "v": "v",
+          "ⱴ": "ⱴ", "s": "x", "ʷ": "w", "j": "ʏ", "p": "p", "ʒ": "j"
         };
-        convertedOnset = ONSET_MAP[initialConsonant] || initialConsonant;
+
+        // Loop through the onset cluster and map each symbol safely
+        let tempOnset = initialConsonant;
+        while (tempOnset.length > 0) {
+          let matched = false;
+          for (let len = 3; len > 0; len--) {
+            let chunk = tempOnset.substring(0, len);
+            if (ONSET_MAP[chunk]) {
+              convertedOnset += ONSET_MAP[chunk];
+              tempOnset = tempOnset.substring(len);
+              matched = true;
+              break;
+            }
+          }
+          if (!matched) {
+            convertedOnset += tempOnset[0];
+            tempOnset = tempOnset.substring(1);
+          }
+        }
       }
 
-      // Convert medial /w/ when not preceded by /k/
       if (hasMedialW && initialConsonant !== "k") {
-        if (['ə̆', 'i', 'ə', 'ᵼ'].includes(nucleusBase)) {
-          convertedOnset += "u";
-        } else {
-          convertedOnset += "o";
-        }
+        convertedOnset += (['ə̆', 'i', 'ə', 'ᵼ'].includes(nucleusBase)) ? "u" : "o";
       }
 
       // 4. Convert Coda
@@ -1756,84 +1770,46 @@
           convertedCoda = (nucleusBase === "a" || nucleusBase === "ɛ") ? "o" : "u";
         } else {
           const CODA_MAP = {
-            "k": "c",
-            "c": "ch",
-            "m": "m",
-            "n": "n",
-            "ᵰ": "ɴ",
-            "ŋ": "ng",
-            "ɲ": "nh",
-            "p": "p",
-            "t": "t",
-            "ᵵ": "ᴛ",
-            "f": "f",
-            "s": "s",
-            "ᵶ": "z"
+            "k": "c", "c": "ch", "m": "m", "n": "n", "ᵰ": "ɴ",
+            "ŋ": "ng", "ɲ": "nh", "p": "p", "t": "t", "ᵵ": "ᴛ",
+            "f": "f", "s": "s", "ᵶ": "z"
           };
-          convertedCoda = CODA_MAP[rawCoda] || rawCoda;
+
+          let tempCoda = rawCoda;
+          while (tempCoda.length > 0) {
+            if (CODA_MAP[tempCoda[0]]) {
+              convertedCoda += CODA_MAP[tempCoda[0]];
+            } else {
+              convertedCoda += tempCoda[0];
+            }
+            tempCoda = tempCoda.substring(1);
+          }
         }
       }
 
       // 5. Convert Nucleus & Position Tone Marks
       let convertedNucleus = "";
-
       switch (nucleusBase) {
-        case "a":
-          convertedNucleus = "a" + toneMarks;
-          break;
-        case "ă":
-          const vĂ = (rawCoda === "w" || rawCoda === "j") ? "a" : "ă";
-          convertedNucleus = vĂ + toneMarks;
-          break;
-        case "ə̆":
-          convertedNucleus = "â" + toneMarks;
-          break;
-        case "ɛ":
-          convertedNucleus = "e" + toneMarks;
-          break;
-        case "e":
-          convertedNucleus = "ê" + toneMarks;
-          break;
-        case "i":
-          const vI = hasMedialW ? "y" : "i";
-          convertedNucleus = vI + toneMarks;
-          break;
-        case "ᵼ":
-          convertedNucleus = "ɪ" + toneMarks;
-          break;
-        case "iə":
-          convertedNucleus = hasCoda ? ("i" + "ê" + toneMarks) : ("i" + toneMarks + "a");
-          break;
-        case "ɔ":
-          convertedNucleus = "o" + toneMarks;
-          break;
-        case "ꬿ":
-          convertedNucleus = "o" + "o" + toneMarks;
-          break;
-        case "o":
-          convertedNucleus = "ô" + toneMarks;
-          break;
-        case "ə":
-          convertedNucleus = "ơ" + toneMarks;
-          break;
-        case "u":
-          convertedNucleus = "u" + toneMarks;
-          break;
-        case "uə":
-          convertedNucleus = hasCoda ? ("u" + "ô" + toneMarks) : ("u" + toneMarks + "a");
-          break;
-        case "ɨ":
-          convertedNucleus = "ư" + toneMarks;
-          break;
-        case "ɨə":
-          convertedNucleus = hasCoda ? ("ư" + "ơ" + toneMarks) : ("ư" + toneMarks + "a");
-          break;
-        default:
-          convertedNucleus = nucleusBase + toneMarks;
-          break;
+        case "a": convertedNucleus = "a" + toneMarks; break;
+        case "ă": convertedNucleus = ((rawCoda === "w" || rawCoda === "j") ? "a" : "ă") + toneMarks; break;
+        case "ə̆": convertedNucleus = "â" + toneMarks; break;
+        case "ɛ": convertedNucleus = "e" + toneMarks; break;
+        case "e": convertedNucleus = "ê" + toneMarks; break;
+        case "i": convertedNucleus = (hasMedialW ? "y" : "i") + toneMarks; break;
+        case "ᵼ": convertedNucleus = "ɪ" + toneMarks; break;
+        case "iə": convertedNucleus = hasCoda ? ("iê" + toneMarks) : ("i" + toneMarks + "a"); break;
+        case "ɔ": convertedNucleus = "o" + toneMarks; break;
+        case "ꬿ": convertedNucleus = "oo" + toneMarks; break;
+        case "o": convertedNucleus = "ô" + toneMarks; break;
+        case "ə": convertedNucleus = "ơ" + toneMarks; break;
+        case "u": convertedNucleus = "u" + toneMarks; break;
+        case "uə": convertedNucleus = hasCoda ? ("uô" + toneMarks) : ("u" + toneMarks + "a"); break;
+        case "ɨ": convertedNucleus = "ư" + toneMarks; break;
+        case "ɨə": convertedNucleus = hasCoda ? ("ươ" + toneMarks) : ("ư" + toneMarks + "a"); break;
+        default: convertedNucleus = nucleusBase + toneMarks; break;
       }
 
-      // 6. Assemble and Normalize (NFC combines base vowels and tone diacritics)
+      // 6. Assemble and Normalize
       return (convertedOnset + convertedNucleus + convertedCoda).normalize('NFC');
     }
 
@@ -2068,23 +2044,46 @@
     function formatAltEnglishText(cmd) {const e = document.getElementById('alt-english-terms'); if (e) {e.focus(); document.execCommand(cmd, false, null); onAltEnglishTermsInput();} }
 
     function renderGlobalPronunciationRulesUI() {
-      const c = document.getElementById('global-pron-rules-container'); if (!c) return; c.innerHTML = '';
-      if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global rules.</p>`; return;}
-      entryData.globalPronunciationRules.forEach((r, idx) => {
-        const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
-        div.innerHTML = `
-          <div class="flex-1"><span class="text-[11px] text-slate-400 block">Target:</span><input value="${escapeAttr(r.target)}" oninput="updateGlobalPronRule(${idx}, 'target', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"></div>
-          <div class="flex-1"><span class="text-[11px] text-slate-400 block">IPA:</span><input value="${escapeAttr(r.ipa)}" oninput="updateGlobalPronRule(${idx}, 'ipa', this.value)" data-ipa-input="true" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono"></div>
-          <div class="flex-1"><span class="text-[11px] text-slate-400 block">Quấc ngữ:</span><div class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono italic h-[28px] overflow-hidden">${escapeAttr(convertQuasiIPA(r.ipa))}</div></div>
-          <button onclick="removeGlobalPronRule(${idx})" class="text-rose-400 mt-4">&times;</button>
-        `;
-        c.appendChild(div);
-      });
+  const c = document.getElementById('global-pron-rules-container'); if (!c) return; c.innerHTML = '';
+  if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global rules.</p>`; return;}
+  entryData.globalPronunciationRules.forEach((r, idx) => {
+    const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
+    div.innerHTML = `
+      <div class="flex-1"><span class="text-[11px] text-slate-400 block">Target:</span><input value="${escapeAttr(r.target)}" oninput="updateGlobalPronRule(${idx}, 'target', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"></div>
+      <div class="flex-1"><span class="text-[11px] text-slate-400 block">IPA:</span><input value="${escapeAttr(r.ipa)}" oninput="updateGlobalPronRule(${idx}, 'ipa', this.value)" data-ipa-input="true" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono"></div>
+      <div class="flex-1"><span class="text-[11px] text-slate-400 block">Quấc ngữ:</span><div id="quac-ngu-preview-${idx}" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono italic h-[28px] overflow-hidden">${escapeAttr(convertQuasiIPA(r.ipa))}</div></div>
+      <button onclick="removeGlobalPronRule(${idx})" class="text-rose-400 mt-4">&times;</button>
+    `;
+    c.appendChild(div);
+  });
+}
+    function addGlobalPronunciationRule() {
+      if (!entryData.globalPronunciationRules) entryData.globalPronunciationRules = [];
+      entryData.globalPronunciationRules.push({target: "", ipa: ""});
+      renderGlobalPronunciationRulesUI();
+      renderLivePreview();
     }
-    function addGlobalPronunciationRule() {if (!entryData.globalPronunciationRules) entryData.globalPronunciationRules = []; entryData.globalPronunciationRules.push({target: "", ipa: ""}); renderGlobalPronunciationRulesUI(); renderLivePreview();}
-    function updateGlobalPronRule(idx, field, val) {entryData.globalPronunciationRules[idx][field] = val; savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa); renderGlobalPronunciationRulesUI(); renderLivePreview();}
-    function removeGlobalPronRule(idx) {entryData.globalPronunciationRules.splice(idx, 1); renderGlobalPronunciationRulesUI(); renderLivePreview();}
 
+    function updateGlobalPronRule(idx, field, val) {
+  entryData.globalPronunciationRules[idx][field] = val;
+  savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa);
+  
+  // Targeted DOM update: strictly update the preview box for this row when IPA changes
+  if (field === 'ipa') {
+    const previewBox = document.getElementById(`quac-ngu-preview-${idx}`);
+    if (previewBox) {
+      previewBox.textContent = convertQuasiIPA(val);
+    }
+  }
+  
+  renderLivePreview();
+}
+
+    function removeGlobalPronRule(idx) {
+      entryData.globalPronunciationRules.splice(idx, 1);
+      renderGlobalPronunciationRulesUI();
+      renderLivePreview();
+    }
     function renderGlobalRulesUI() {
       const c = document.getElementById('global-rules-container'); c.innerHTML = '';
       if (!entryData.globalVariantRules || entryData.globalVariantRules.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global variants.</p>`; return;}
@@ -2393,58 +2392,58 @@
     }
     // Enhanced IPA Toolbar Focus & Positioning Handler
     // 1. The helper function that calculates the toolbar position
-function updateToolbarPosition() {
-  const tb = document.getElementById('ipa-toolbar');
-  // Stop if there is no active input, no toolbar, or if the toolbar is hidden
-  if (!activeIPAInput || !tb || tb.classList.contains('hidden')) return;
+    function updateToolbarPosition() {
+      const tb = document.getElementById('ipa-toolbar');
+      // Stop if there is no active input, no toolbar, or if the toolbar is hidden
+      if (!activeIPAInput || !tb || tb.classList.contains('hidden')) return;
 
-  const rect = activeIPAInput.getBoundingClientRect();
+      const rect = activeIPAInput.getBoundingClientRect();
 
-  // Only calculate position if input is actively rendered/visible
-  if (rect.width > 0 && rect.height > 0) {
-    let top = rect.bottom + 6;
-    
-    // Position above the input if it would overflow the bottom of the screen
-    if (top > window.innerHeight - 130) {
-      top = Math.max(10, rect.top - 120);
+      // Only calculate position if input is actively rendered/visible
+      if (rect.width > 0 && rect.height > 0) {
+        let top = rect.bottom + 6;
+
+        // Position above the input if it would overflow the bottom of the screen
+        if (top > window.innerHeight - 130) {
+          top = Math.max(10, rect.top - 120);
+        }
+
+        let left = Math.max(10, rect.left);
+
+        // Keep inside viewport if near the right edge
+        if (left + 350 > window.innerWidth) {
+          left = Math.max(10, window.innerWidth - 360);
+        }
+
+        tb.style.top = `${top}px`;
+        tb.style.left = `${left}px`;
+      }
     }
 
-    let left = Math.max(10, rect.left);
-    
-    // Keep inside viewport if near the right edge
-    if (left + 350 > window.innerWidth) {
-      left = Math.max(10, window.innerWidth - 360);
-    }
+    // 2. Your updated focusin listener
+    document.addEventListener('focusin', (e) => {
+      const tb = document.getElementById('ipa-toolbar');
+      if (!tb) return;
 
-    tb.style.top = `${top}px`;
-    tb.style.left = `${left}px`;
-  }
-}
+      const isIPAInput = e.target && e.target.getAttribute('data-ipa-input') === 'true';
 
-// 2. Your updated focusin listener
-document.addEventListener('focusin', (e) => {
-  const tb = document.getElementById('ipa-toolbar');
-  if (!tb) return;
+      if (isIPAInput) {
+        activeIPAInput = e.target; // Using your existing variable, no "let" needed
+        tb.classList.remove('hidden');
+        updateToolbarPosition(); // Calculate position immediately on focus
+      } else {
+        // Hide immediately if focus moves to any non-IPA element outside the toolbar
+        if (!tb.contains(e.target)) {
+          tb.classList.add('hidden');
+          activeIPAInput = null; // Clear the active input when hiding
+        }
+      }
+    });
 
-  const isIPAInput = e.target && e.target.getAttribute('data-ipa-input') === 'true';
-
-  if (isIPAInput) {
-    activeIPAInput = e.target; // Using your existing variable, no "let" needed
-    tb.classList.remove('hidden');
-    updateToolbarPosition(); // Calculate position immediately on focus
-  } else {
-    // Hide immediately if focus moves to any non-IPA element outside the toolbar
-    if (!tb.contains(e.target)) {
-      tb.classList.add('hidden');
-      activeIPAInput = null; // Clear the active input when hiding
-    }
-  }
-});
-
-// 3. Listeners to update position on scroll and resize
-// The 'true' argument ensures it catches scrolls from inside your modals
-window.addEventListener('scroll', updateToolbarPosition, true);
-window.addEventListener('resize', updateToolbarPosition);
+    // 3. Listeners to update position on scroll and resize
+    // The 'true' argument ensures it catches scrolls from inside your modals
+    window.addEventListener('scroll', updateToolbarPosition, true);
+    window.addEventListener('resize', updateToolbarPosition);
 
     document.addEventListener('focusout', () => {
       const tb = document.getElementById('ipa-toolbar');
@@ -2739,7 +2738,16 @@ window.addEventListener('resize', updateToolbarPosition);
     function closeRuleSelector() {document.getElementById('rule-selector-modal').classList.add('hidden');}
 
     /* Library Modals */
-    function openEntriesLibrary() {document.getElementById('entries-library-modal').classList.remove('hidden'); if (isDriveConnected) loadEntriesFromDrive();}
+    async function openEntriesLibrary() {
+      document.getElementById('entries-library-modal').classList.remove('hidden');
+
+      // Check if your existing cache has items
+      if (typeof libraryEntriesCache !== 'undefined' && libraryEntriesCache.length > 0) {
+        filterLibraryEntries(); // This automatically renders your list
+      } else {
+        await loadEntriesFromDrive();
+      }
+    }
     function closeEntriesLibrary() {document.getElementById('entries-library-modal').classList.add('hidden');}
     function filterLibraryEntries() {
       const q = document.getElementById('library-search').value.toLowerCase(), c = document.getElementById('library-entries-list'); c.innerHTML = '';
