@@ -454,7 +454,7 @@
     class="fixed z-[100] bg-slate-800/95 border border-indigo-500/40 shadow-2xl rounded-xl p-2 flex flex-col gap-1 backdrop-blur-md hidden max-w-sm sm:max-w-md">
     <div
       class="w-full text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1 flex items-center justify-between border-b border-slate-700/60 pb-1">
-      <span>Quasi-IPA Symbols &amp; Diacritics</span><span class="text-slate-500 font-normal">Click to insert</span>
+      <span>Modified IPA symbols=</span><span class="text-slate-500 font-normal">Click to insert</span>
     </div>
     <div id="ipa-buttons-container" class="flex flex-wrap gap-1">
       <button
@@ -524,7 +524,7 @@
     class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-sm font-bold text-white">Add Pronunciation</h3>
+        <h3 class="text-sm font-bold text-white">Add pronunciation</h3>
         <button onclick="closeAddPronModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
       </div>
       <div class="space-y-3 text-xs">
@@ -534,7 +534,7 @@
         </div>
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="block text-slate-300 font-semibold">Quasi-IPA</label>
+            <label class="block text-slate-300 font-semibold">Modified IPA</label>
             <div class="flex gap-1">
               <button onclick="openRuleSuggest('pron', document.getElementById('add-pron-target').value)"
                 class="text-[10px] bg-indigo-600/30 text-indigo-300 px-2 rounded hover:bg-indigo-600/50">Suggest</button>
@@ -545,7 +545,7 @@
           <input type="text" id="add-pron-input" data-ipa-input="true" oninput="updateAddPronPreview()"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-indigo-500">
         </div>
-        <div><label class="block text-slate-400 mb-1">Converts to Quấc ngữ:</label>
+        <div><label class="block text-slate-400 mb-1">Converts to quấc ngữ:</label>
           <div id="add-pron-preview"
             class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-indigo-300 font-mono italic min-h-[34px] flex items-center">
           </div>
@@ -564,7 +564,7 @@
     class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-sm font-bold text-white">Add Lexical Variant</h3>
+        <h3 class="text-sm font-bold text-white">Add lexical variant</h3>
         <button onclick="closeAddVarModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
       </div>
       <div class="space-y-3 text-xs">
@@ -579,7 +579,7 @@
               <button onclick="openRuleSuggest('var', document.getElementById('add-var-target').value)"
                 class="text-[10px] bg-amber-600/30 text-amber-300 px-2 rounded hover:bg-amber-600/50">Suggest</button>
               <button onclick="openRuleBrowse('var')"
-                class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse DB</button>
+                class="text-[10px] bg-slate-700 text-slate-300 px-2 rounded hover:bg-slate-600">Browse library</button>
             </div>
           </div>
           <textarea id="add-var-input" rows="2"
@@ -599,22 +599,22 @@
     class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 id="annotation-modal-title" class="text-sm font-bold text-white">Edit Annotation</h3>
+        <h3 id="annotation-modal-title" class="text-sm font-bold text-white">Edit annotation</h3>
         <button onclick="closeAnnotationModal()" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
       </div>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block text-slate-400 mb-1">Selected Text</label>
+          <label class="block text-slate-400 mb-1">Selected text</label>
           <input type="text" id="annotation-target-text" readonly
             class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 cursor-not-allowed">
         </div>
         <div>
-          <label id="annotation-value-label" class="block text-slate-300 font-semibold mb-1">Quasi-IPA</label>
+          <label id="annotation-value-label" class="block text-slate-300 font-semibold mb-1">Modified IPA</label>
           <input type="text" id="annotation-value-input" oninput="updateAnnotationPreview()"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-indigo-500">
         </div>
         <div id="annotation-preview-container">
-          <label class="block text-slate-400 mb-1">Converts to Quấc ngữ:</label>
+          <label class="block text-slate-400 mb-1">Converts to quấc ngữ:</label>
           <div id="annotation-preview"
             class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-indigo-300 font-mono italic min-h-[34px] flex items-center">
           </div>
@@ -639,7 +639,7 @@
     class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-sm font-bold text-white">Insert Table</h3><button onclick="closeTableModal()"
+        <h3 class="text-sm font-bold text-white">Insert table</h3><button onclick="closeTableModal()"
           class="text-slate-400 hover:text-white text-lg font-bold">×</button>
       </div>
       <div class="space-y-3 text-xs">
@@ -651,7 +651,7 @@
         </div>
         <div class="flex items-center gap-2 pt-1"><input type="checkbox" id="table-header-check" checked
             class="w-4 h-4 bg-slate-900 border-slate-700"><label for="table-header-check" class="text-slate-300">Include
-            Header Row</label></div>
+            header row</label></div>
       </div>
       <div class="flex justify-end gap-2 pt-2"><button onclick="closeTableModal()"
           class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button><button
@@ -666,7 +666,7 @@
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-3xl w-full h-[80vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <div>
-          <h3 class="text-base font-bold text-white">Entries Library (Google Drive)</h3>
+          <h3 class="text-base font-bold text-white">Entries Library</h3>
           <p class="text-xs text-slate-400 mt-1" id="library-folder-status">Not connected to Drive.</p>
         </div>
         <button onclick="closeEntriesLibrary()" class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
@@ -686,7 +686,7 @@
     class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
-        <h3 class="text-base font-bold text-white">Master Rules Database</h3>
+        <h3 class="text-base font-bold text-white">Manage rules library</h3>
         <button onclick="closeRulesManager()"
           class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
       </div>
@@ -695,13 +695,13 @@
           class="flex-1 py-3 text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 bg-slate-800/50 transition">Pronunciation</button>
         <button id="tab-rule-var" onclick="switchRulesTab('var')"
           class="flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent transition">Lexical
-          Variant</button>
+          variant</button>
       </div>
 
       <!-- Add New Rule Section -->
       <div class="p-4 bg-slate-900/80 border-b border-slate-700">
         <div id="add-rule-form-pron" class="space-y-2">
-          <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Add New Pronunciation Rule</div>
+          <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Add new pronunciation rule</div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <input type="text" id="mgr-new-pron-target" placeholder="Vietnamese"
               class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-indigo-500">
@@ -720,7 +720,7 @@
         </div>
 
         <div id="add-rule-form-var" class="space-y-2 hidden">
-          <div class="text-xs font-bold text-amber-400 uppercase tracking-wider">Add New Lexical Variant Rule</div>
+          <div class="text-xs font-bold text-amber-400 uppercase tracking-wider">Add new lexical variant rule</div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <input type="text" id="mgr-new-var-find" placeholder="Main form"
               class="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white outline-none focus:border-amber-500">
@@ -730,7 +730,7 @@
           <div class="flex justify-end">
             <button onclick="addMgrVarRule()"
               class="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow">+
-              Add Variant Rule</button>
+              Add variant rule</button>
           </div>
         </div>
       </div>
@@ -749,7 +749,7 @@
     <div
       class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
-        <h3 id="rule-selector-title" class="text-base font-bold text-white">Suggested Rules</h3>
+        <h3 id="rule-selector-title" class="text-base font-bold text-white">Suggested rules</h3>
         <button onclick="closeRuleSelector()" class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
       </div>
       <div class="p-4 border-b border-slate-700 bg-slate-900/50 hidden" id="rule-selector-search-container">
@@ -765,7 +765,7 @@
     class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-sm font-bold text-white">Delete Rule</h3><button onclick="closeConfirmDeleteRuleModal()"
+        <h3 class="text-sm font-bold text-white">Delete rule</h3><button onclick="closeConfirmDeleteRuleModal()"
           class="text-slate-400">×</button>
       </div>
       <p id="confirm-delete-rule-text" class="text-xs text-slate-300"></p>
@@ -782,7 +782,7 @@
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-700">
         <h3 class="text-base font-bold text-rose-400 flex items-center gap-2">
-          <span>⚠️</span> Drive Connection Troubleshooting
+          <span>⚠️</span> Drive connection troubleshooting
         </h3>
         <button onclick="closeDriveAuthErrorModal()"
           class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
@@ -790,7 +790,7 @@
 
       <div class="space-y-3 text-xs text-slate-300">
         <div class="bg-rose-950/40 border border-rose-800/60 rounded-lg p-3">
-          <p class="font-semibold text-rose-300 mb-1">Error Details:</p>
+          <p class="font-semibold text-rose-300 mb-1">Error details:</p>
           <p id="drive-error-msg" class="font-mono text-[11px] text-rose-200 break-all"></p>
         </div>
 
@@ -814,7 +814,7 @@
         </div>
 
         <div class="border-t border-slate-700/80 pt-3 space-y-2">
-          <p class="font-semibold text-slate-200">Option 2: Paste Access Token Manually</p>
+          <p class="font-semibold text-slate-200">Option 2: paste access token manually</p>
           <p class="text-slate-400 text-[11px]">If pop-up authorization is blocked by browser restrictions, paste a
             valid Access Token here:</p>
           <div class="flex gap-2">
@@ -855,10 +855,10 @@
     <div class="flex items-center gap-2 flex-wrap">
       <button onclick="openEntriesLibrary()"
         class="text-xs bg-slate-700/60 hover:bg-slate-700 text-indigo-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-indigo-500/30">Entries
-        Library</button>
+        library</button>
       <button onclick="openRulesManager()"
-        class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">Manage
-        Rules DB</button>
+        class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">Rules
+        library</button>
 
       <!-- Google Drive Auth Button -->
       <button type="button" id="drive-auth-btn" onclick="handleDriveAuthClick(event)"
@@ -913,7 +913,7 @@
   <!-- Toast -->
   <div id="toast"
     class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 bg-emerald-600 text-white font-medium text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 pointer-events-none translate-y-20 opacity-0">
-    <span id="toast-msg">Action Completed</span>
+    <span id="toast-msg">Action completed</span>
   </div>
 
   <!-- Main Layout -->
@@ -928,13 +928,13 @@
         <div class="flex items-center gap-1">
           <button id="tab-btn-form" onclick="switchTab('form')"
             class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm">Form
-            Editor</button>
+            editor</button>
           <button id="tab-btn-code" onclick="switchTab('code')"
             class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200">Raw
             HTML</button>
           <button id="tab-btn-import" onclick="switchTab('import')"
-            class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200">HTML
-            Import</button>
+            class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200">Import
+            HTML</button>
         </div>
       </div>
 
@@ -944,11 +944,11 @@
         <!-- Form Builder -->
         <div id="tab-content-form" class="space-y-6">
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-rose-400">Entry Overview</h3>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-rose-400">Entry overview</h3>
             <div class="space-y-3">
               <div>
                 <div class="flex items-center justify-between mb-1">
-                  <label class="block text-xs font-semibold text-slate-300">English Headword</label>
+                  <label class="block text-xs font-semibold text-slate-300">English headword</label>
                   <button onclick="searchUMLS()"
                     class="text-[10px] bg-sky-600/20 text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded hover:bg-sky-600/40 transition">Search
                     UMLS</button>
@@ -958,7 +958,7 @@
               </div>
               <div>
                 <div class="flex items-center justify-between mb-1">
-                  <label class="block text-xs font-semibold text-slate-300">Alternative English Terms</label>
+                  <label class="block text-xs font-semibold text-slate-300">Alternative English terms</label>
                   <div class="flex gap-1 text-[11px]">
                     <button onclick="formatAltEnglishText('bold')"
                       class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-bold text-slate-300">B</button>
@@ -981,14 +981,14 @@
 
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
             <div class="flex justify-between">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Global Pronunciation</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Global pronunciation rules</h3>
               <div class="flex gap-2">
                 <button onclick="openRuleSuggest('pron')"
                   class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">Suggest</button>
                 <button onclick="openRuleBrowse('pron')"
                   class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">Browse</button>
                 <button onclick="addGlobalPronunciationRule()"
-                  class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-lg">+ Add Rule</button>
+                  class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-lg">+ Add rule</button>
               </div>
             </div>
             <div id="global-pron-rules-container" class="space-y-2"></div>
@@ -996,14 +996,14 @@
 
           <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 space-y-3">
             <div class="flex justify-between">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Global Lexical Variant</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Global lexical variants</h3>
               <div class="flex gap-2">
                 <button onclick="openRuleSuggest('var')"
                   class="text-xs bg-amber-600/20 text-amber-300 border border-amber-500/30 px-2 py-1 rounded-lg">Suggest</button>
                 <button onclick="openRuleBrowse('var')"
                   class="text-xs bg-amber-600/20 text-amber-300 border border-amber-500/30 px-2 py-1 rounded-lg">Browse</button>
                 <button onclick="addGlobalVariantRule()"
-                  class="text-xs bg-amber-600 text-white px-2.5 py-1 rounded-lg">+ Add Rule</button>
+                  class="text-xs bg-amber-600 text-white px-2.5 py-1 rounded-lg">+ Add rule</button>
               </div>
             </div>
             <div id="global-rules-container" class="space-y-2"></div>
@@ -1011,10 +1011,10 @@
 
           <div class="space-y-3">
             <div class="flex justify-between">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Terms & Headwords</h3><button
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Terms & headwords</h3><button
                 onclick="addNewTerm()"
                 class="text-xs bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg">+
-                Add Term</button>
+                Add term</button>
             </div>
             <div id="terms-container" class="space-y-4"></div>
           </div>
@@ -1024,7 +1024,7 @@
               <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">References</h3><button
                 onclick="addReferenceItem()"
                 class="text-xs bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg">+
-                Add Reference</button>
+                Add reference</button>
             </div>
             <div id="references-list" class="space-y-4"></div>
           </div>
@@ -1032,8 +1032,8 @@
 
         <!-- Raw HTML -->
         <div id="tab-content-code" class="space-y-3 h-full flex flex-col hidden">
-          <div class="flex justify-between text-xs text-slate-400"><span>Direct Entry HTML</span><button
-              onclick="parseCodeBackToForm()" class="text-rose-400 font-medium">Parse Code To Form</button></div>
+          <div class="flex justify-between text-xs text-slate-400"><span>Direct entry HTML</span><button
+              onclick="parseCodeBackToForm()" class="text-rose-400 font-medium">Parse code to form</button></div>
           <textarea id="raw-html-editor" oninput="handleManualCodeEdit()"
             class="w-full flex-1 bg-slate-950 text-rose-300 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:outline-none focus:border-rose-500/80 resize-none shadow-inner"
             spellcheck="false"></textarea>
@@ -1048,7 +1048,7 @@
               placeholder="Paste entry HTML here..."></textarea>
             <button onclick="runImportHTML()"
               class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse
-              &amp; Populate Form</button>
+              &amp; populate form</button>
           </div>
         </div>
       </div>
@@ -1059,7 +1059,7 @@
       <div class="bg-slate-800/80 border-b border-slate-700/80 px-4 h-12 flex items-center justify-end">
         <button onclick="togglePreviewTheme()"
           class="bg-slate-900 border border-slate-700 text-xs px-2.5 py-1 rounded-lg text-slate-300 hover:text-white flex items-center gap-1.5"><span
-            id="theme-btn-text">Light Theme</span></button>
+            id="theme-btn-text">Light theme</span></button>
       </div>
       <div class="flex-1 bg-slate-900/50 p-4 sm:p-6 overflow-y-auto flex justify-center items-start">
         <div id="preview-viewport-container"
@@ -1067,7 +1067,7 @@
           <div class="p-6 sm:p-8">
             <div class="border-b border-slate-200/80 pb-3 mb-4">
               <h1 id="preview-post-title"
-                class="preview-post-title text-3xl font-bold font-publiiHeading text-slate-900">Entry Title</h1>
+                class="preview-post-title text-3xl font-bold font-publiiHeading text-slate-900">Entry title</h1>
             </div>
             <div id="publii-live-output" class="publii-render-frame"></div>
           </div>
@@ -1815,7 +1815,7 @@
       return (convertedOnset + convertedNucleus + convertedCoda).normalize('NFC');
     }
 
-    // Reverse-engineers Quấc ngữ string back into Quasi-IPA
+    // Reverse-engineers quấc ngữ string back into modified IPA
     function reverseQuocNguToQuasiIPA(quocNguStr) {
       if (!quocNguStr) return "";
       return quocNguStr.trim()
@@ -1840,7 +1840,7 @@
 
       let base = norm.normalize('NFC');
 
-      // Nucleus mapping table (Quấc ngữ base -> Quasi-IPA base)
+      // Nucleus mapping table (quấc ngữ base -> modified IPA base)
       const NUCLEUS_MAP = [
         ["iê", "iə"], ["yê", "iə"], ["ia", "iə"], ["ya", "iə"],
         ["uô", "uə"], ["ua", "uə"],
@@ -2471,7 +2471,7 @@
 
       document.getElementById('annotation-modal-title').textContent = isP ? "Edit Pronunciation" : "Edit Lexical Variant";
       document.getElementById('annotation-target-text').value = span.textContent;
-      document.getElementById('annotation-value-label').textContent = isP ? "Quasi-IPA" : "Variant(s)";
+      document.getElementById('annotation-value-label').textContent = isP ? "Modified IPA" : "Variant(s)";
 
       const inp = document.getElementById('annotation-value-input');
       const prevContainer = document.getElementById('annotation-preview-container');
@@ -2731,7 +2731,7 @@
       const ipa = document.getElementById('mgr-new-pron-ipa')?.value.trim();
 
       if (!target || !ipa) {
-        showToast("Please enter both target word and Quasi-IPA.");
+        showToast("Please enter both target word and modified IPA.");
         return;
       }
 
@@ -2764,7 +2764,7 @@
         const target = document.getElementById('new-manager-target')?.value.trim();
         const ipa = document.getElementById('new-manager-ipa')?.value.trim();
         if (!target || !ipa) {
-          showToast("Please enter both target word and Quasi-IPA.");
+          showToast("Please enter both target word and modified IPA.");
           return;
         }
         savePronRuleToDB(target, ipa);
@@ -3118,11 +3118,11 @@
         const target = span.textContent.trim();
         const quocNguVal = span.getAttribute('data-pronunciation');
         if (target && quocNguVal) {
-          // Reverse-engineer Quấc ngữ annotation into Quasi-IPA
+          // Reverse-engineer quấc ngữ annotation into modified IPA
           const quasiIPA = reverseQuocNguToQuasiIPA(quocNguVal);
-          // Save rule to IndexedDB using Quasi-IPA
+          // Save rule to IndexedDB using modified IPA
           savePronRuleToDB(target, quasiIPA);
-          // Update preview attribute to formatted Quấc ngữ
+          // Update preview attribute to formatted quấc ngữ
           span.setAttribute('data-pronunciation', convertQuasiIPA(quasiIPA));
         }
       });
@@ -3217,6 +3217,7 @@
 
       // 5. Update UI, notify user, and clear import textarea
       renderFormUI();
+      switchTab('form');
       showToast("HTML Imported & Cleaned Successfully!");
       if (inputEl) inputEl.value = '';
     }
