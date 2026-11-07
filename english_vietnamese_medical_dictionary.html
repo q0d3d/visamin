@@ -1678,20 +1678,19 @@
 
     function convertIPASyllable(syl) {
       if (!syl) return "";
-      syl = syl.trim().replace(/^\/+|\/+$/g, '');
+      syl = syl.trim().replace(/^\/+|\/+$/g, '').normalize('NFD');
       if (!syl) return "";
 
       // 1. Extract tone combining diacritics
       let toneMarks = "";
-      let baseSyl = syl.replace(/[\u0300\u0301\u0309\u0303\u0323]/g, (match) => {
-        toneMarks += match;
+      let baseSyl = syl.replace(/[\u0300\u0301\u0309\u0303\u0323]/g, (m) => {
+        toneMarks += m;
         return "";
-      });
+      }).normalize('NFC');
 
       // 2. Locate Nucleus
       const NUCLEUS_REGEX = /(iə|uə|ɨə|ă|a\u0306|ə̆|ə\u0306|a|ɛ|e|i|ᵼ|ɔ|ꬿ|o|ə|u|ɨ)/;
       const nucleusMatch = baseSyl.match(NUCLEUS_REGEX);
-
       if (!nucleusMatch) return syl;
 
       let nucleusBaseRaw = nucleusMatch[1];
@@ -1730,14 +1729,13 @@
         convertedOnset = isFrontVowelGI ? "g" : "gi";
       } else {
         const ONSET_MAP = {
-          "d͡ʒ": "ᴊ", "tʰ": "th", // Multi-char symbols first
-          "b": "b", "c": "ch", "z": "d", "ᵶ": "z", "d": "đ", "h": "h",
-          "x": "kh", "l": "l", "m": "m", "n": "n", "ɲ": "nh", "f": "ph",
-          "ɹ": "r", "ꭨ": "ʀ", "ʂ": "s", "t": "t", "ʈ": "tr", "v": "v",
-          "ⱴ": "ⱴ", "s": "x", "ʷ": "w", "j": "ʏ", "p": "p", "ʒ": "j"
+          "d͡ʒ": "ᴊ", "tʰ": "th", "b": "b", "c": "ch", "z": "d", "ᵶ": "z",
+          "d": "đ", "h": "h", "x": "kh", "l": "l", "m": "m", "n": "n",
+          "ɲ": "nh", "f": "ph", "ɹ": "r", "ꭨ": "ʀ", "ʂ": "s", "t": "t",
+          "ʈ": "tr", "v": "v", "ⱴ": "ⱴ", "s": "x", "ʷ": "w", "j": "ʏ",
+          "p": "p", "ʒ": "j"
         };
 
-        // Loop through the onset cluster and map each symbol safely
         let tempOnset = initialConsonant;
         while (tempOnset.length > 0) {
           let matched = false;
@@ -1774,20 +1772,15 @@
             "ŋ": "ng", "ɲ": "nh", "p": "p", "t": "t", "ᵵ": "ᴛ",
             "f": "f", "s": "s", "ᵶ": "z"
           };
-
           let tempCoda = rawCoda;
           while (tempCoda.length > 0) {
-            if (CODA_MAP[tempCoda[0]]) {
-              convertedCoda += CODA_MAP[tempCoda[0]];
-            } else {
-              convertedCoda += tempCoda[0];
-            }
+            convertedCoda += CODA_MAP[tempCoda[0]] || tempCoda[0];
             tempCoda = tempCoda.substring(1);
           }
         }
       }
 
-      // 5. Convert Nucleus & Position Tone Marks
+      // 5. Convert Nucleus & Place Tone Marks
       let convertedNucleus = "";
       switch (nucleusBase) {
         case "a": convertedNucleus = "a" + toneMarks; break;
@@ -1799,7 +1792,7 @@
         case "ᵼ": convertedNucleus = "ɪ" + toneMarks; break;
         case "iə": convertedNucleus = hasCoda ? ("iê" + toneMarks) : ("i" + toneMarks + "a"); break;
         case "ɔ": convertedNucleus = "o" + toneMarks; break;
-        case "ꬿ": convertedNucleus = "oo" + toneMarks; break;
+        case "ꬿ": convertedNucleus = "oo" + toneMarks; break; // Tone placed on second 'o'
         case "o": convertedNucleus = "ô" + toneMarks; break;
         case "ə": convertedNucleus = "ơ" + toneMarks; break;
         case "u": convertedNucleus = "u" + toneMarks; break;
@@ -1809,7 +1802,6 @@
         default: convertedNucleus = nucleusBase + toneMarks; break;
       }
 
-      // 6. Assemble and Normalize
       return (convertedOnset + convertedNucleus + convertedCoda).normalize('NFC');
     }
 
@@ -1829,7 +1821,7 @@
       if (!syl) return "";
       let norm = syl.normalize('NFD');
 
-      // Extract tone mark combining diacritics
+      // Extract tone combining diacritics
       let toneMark = "";
       norm = norm.replace(/[\u0300\u0301\u0309\u0303\u0323]/g, m => {
         toneMark += m;
@@ -1844,8 +1836,8 @@
         ["uô", "uə"], ["ua", "uə"],
         ["ươ", "ɨə"], ["ưa", "ɨə"],
         ["ă", "ă"], ["â", "ə̆"], ["e", "ɛ"], ["ê", "e"],
-        ["i", "i"], ["y", "i"], ["ɪ", "ᵼ"], ["o", "ɔ"],
-        ["oo", "ꬿ"], ["ô", "o"], ["ơ", "ə"], ["u", "u"],
+        ["oo", "ꬿ"], ["o", "ɔ"], ["ô", "o"], ["ơ", "ə"],
+        ["i", "i"], ["y", "i"], ["ɪ", "ᵼ"], ["u", "u"],
         ["ư", "ɨ"], ["a", "a"]
       ];
 
@@ -1869,46 +1861,61 @@
       let rawOnset = base.slice(0, nIndex);
       let rawCoda = base.slice(nIndex + nLen);
 
-      // Onset mapping
+      // Parse Onset & Medial Glide
       let ipaOnset = "";
       let hasMedialW = false;
 
-      if (rawOnset === "qu") {ipaOnset = "k"; hasMedialW = true;}
-      else if (rawOnset === "gh") ipaOnset = "ɣ";
-      else if (rawOnset === "ngh") ipaOnset = "ŋ";
-      else if (rawOnset === "ng") ipaOnset = "ŋ";
-      else if (rawOnset === "gi") ipaOnset = "ʝ";
-      else if (rawOnset === "g") ipaOnset = (['e', 'ê', 'i', 'y'].includes(foundNucleus.qn[0])) ? "ʝ" : "ɣ";
-      else if (rawOnset === "th") ipaOnset = "tʰ";
-      else if (rawOnset === "ch") ipaOnset = "c";
-      else if (rawOnset === "kh") ipaOnset = "x";
-      else if (rawOnset === "nh") ipaOnset = "ɲ";
-      else if (rawOnset === "ph") ipaOnset = "f";
-      else if (rawOnset === "tr") ipaOnset = "ʈ";
-      else if (rawOnset === "đ") ipaOnset = "d";
-      else if (rawOnset === "d") ipaOnset = "z";
-      else if (rawOnset === "z") ipaOnset = "ᵶ";
-      else if (rawOnset === "r") ipaOnset = "ɹ";
-      else if (rawOnset === "ʀ") ipaOnset = "ꭨ";
-      else if (rawOnset === "s") ipaOnset = "ʂ";
-      else if (rawOnset === "x") ipaOnset = "s";
-      else if (rawOnset === "c") ipaOnset = "k";
-      else if (rawOnset === "b") ipaOnset = "b";
-      else if (rawOnset === "h") ipaOnset = "h";
-      else if (rawOnset === "l") ipaOnset = "l";
-      else if (rawOnset === "m") ipaOnset = "m";
-      else if (rawOnset === "n") ipaOnset = "n";
-      else if (rawOnset === "t") ipaOnset = "t";
-      else if (rawOnset === "v") ipaOnset = "v";
-      else if (rawOnset === "ⱴ") ipaOnset = "ⱴ";
-      else if (rawOnset === "ᴊ") ipaOnset = "d͡ʒ";
-      else if (rawOnset === "ʏ") ipaOnset = "j";
-      else if (rawOnset === "p") ipaOnset = "p";
-      else if (rawOnset === "j") ipaOnset = "ʒ";
-      else ipaOnset = rawOnset;
+      if (rawOnset === "qu") {
+        ipaOnset = "k";
+        hasMedialW = true;
+      } else {
+        if (rawOnset.endsWith("o") || rawOnset.endsWith("u")) {
+          // Check if trailing o/u is medial glide
+          if (rawOnset.length > 1) {
+            hasMedialW = true;
+            rawOnset = rawOnset.slice(0, -1);
+          }
+        }
 
-      // Coda mapping
+        if (rawOnset === "ngh") ipaOnset = "ŋ";
+        else if (rawOnset === "ng") ipaOnset = "ŋ";
+        else if (rawOnset === "gh") ipaOnset = "ɣ";
+        else if (rawOnset === "gi") ipaOnset = "ʝ";
+        else if (rawOnset === "g") ipaOnset = (['e', 'ê', 'i', 'y', 'ɪ'].includes(foundNucleus.qn)) ? "ʝ" : "ɣ";
+        else if (rawOnset === "th") ipaOnset = "tʰ";
+        else if (rawOnset === "ch") ipaOnset = "c";
+        else if (rawOnset === "kh") ipaOnset = "x";
+        else if (rawOnset === "nh") ipaOnset = "ɲ";
+        else if (rawOnset === "ph") ipaOnset = "f";
+        else if (rawOnset === "tr") ipaOnset = "ʈ";
+        else if (rawOnset === "đ") ipaOnset = "d";
+        else if (rawOnset === "d") ipaOnset = "z";
+        else if (rawOnset === "z") ipaOnset = "ᵶ";
+        else if (rawOnset === "r") ipaOnset = "ɹ";
+        else if (rawOnset === "ʀ" || rawOnset === "ꭨ") ipaOnset = "ꭨ";
+        else if (rawOnset === "s") ipaOnset = "ʂ";
+        else if (rawOnset === "x") ipaOnset = "s";
+        else if (rawOnset === "c") ipaOnset = "k";
+        else if (rawOnset === "k") ipaOnset = "k";
+        else if (rawOnset === "b") ipaOnset = "b";
+        else if (rawOnset === "h") ipaOnset = "h";
+        else if (rawOnset === "l") ipaOnset = "l";
+        else if (rawOnset === "m") ipaOnset = "m";
+        else if (rawOnset === "n") ipaOnset = "n";
+        else if (rawOnset === "t") ipaOnset = "t";
+        else if (rawOnset === "v") ipaOnset = "v";
+        else if (rawOnset === "ⱴ") ipaOnset = "ⱴ";
+        else if (rawOnset === "ᴊ") ipaOnset = "d͡ʒ";
+        else if (rawOnset === "ʏ") ipaOnset = "j";
+        else if (rawOnset === "p") ipaOnset = "p";
+        else if (rawOnset === "j") ipaOnset = "ʒ";
+        else ipaOnset = rawOnset;
+      }
+
+      // Determine Coda & Nucleus Refinements
       let ipaCoda = "";
+      let finalIpaNucleus = foundNucleus.ipa;
+
       if (rawCoda === "ch") ipaCoda = "c";
       else if (rawCoda === "ng") ipaCoda = "ŋ";
       else if (rawCoda === "nh") ipaCoda = "ɲ";
@@ -1917,14 +1924,25 @@
       else if (rawCoda === "n") ipaCoda = "n";
       else if (rawCoda === "p") ipaCoda = "p";
       else if (rawCoda === "t") ipaCoda = "t";
-      else if (rawCoda === "y" || rawCoda === "i") ipaCoda = "j";
-      else if (rawCoda === "o" || rawCoda === "u") ipaCoda = "w";
       else if (rawCoda === "ɴ") ipaCoda = "ᵰ";
-      else if (rawCoda === "ᴛ") ipaCoda = "ᵵ";
+      else if (rawCoda === "ᴛ" || rawCoda === "ᵵ") ipaCoda = "ᵵ";
+      else if (rawCoda === "y") {
+        ipaCoda = "j";
+        if (foundNucleus.qn === "a") finalIpaNucleus = "ă"; // ay -> /ăj/
+      } else if (rawCoda === "i") {
+        ipaCoda = "j"; // ai -> /aj/
+      } else if (rawCoda === "o") {
+        ipaCoda = "w"; // ao -> /aw/, eo -> /ɛw/
+      } else if (rawCoda === "u") {
+        ipaCoda = "w";
+        if (foundNucleus.qn === "a") finalIpaNucleus = "ă"; // au -> /ăw/
+      } else if (rawCoda === "f") ipaCoda = "f";
+      else if (rawCoda === "s") ipaCoda = "s";
+      else if (rawCoda === "z") ipaCoda = "ᵶ";
       else ipaCoda = rawCoda;
 
-      let ipaNucleus = foundNucleus.ipa + toneMark;
-      return (ipaOnset + (hasMedialW ? "w" : "") + ipaNucleus + ipaCoda).normalize('NFC');
+      let ipaNucleusWithTone = finalIpaNucleus + toneMark;
+      return (ipaOnset + (hasMedialW ? "w" : "") + ipaNucleusWithTone + ipaCoda).normalize('NFC');
     }
 
     /* ==========================================================================
