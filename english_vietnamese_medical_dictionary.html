@@ -1044,12 +1044,13 @@
           <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 space-y-3">
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Paste HTML</h3>
             <input type="text" id="import-headword-input" placeholder="English headword"
-                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-medium">
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-medium">
             <textarea id="import-html-input" rows="12"
               class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:outline-none"
               placeholder="Entry HTML"></textarea>
             <button onclick="runImportHTML()"
-              class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse entry</button>
+              class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg text-xs transition">Parse
+              entry</button>
           </div>
         </div>
       </div>
@@ -3165,7 +3166,18 @@
       }
 
       if (altP && !altP.closest('.medical-term') && !altP.closest('details')) {
-        entryData.altEnglishTerms = cleanImportedHTMLWhitespace(altP.innerHTML);
+        let rawAlt = cleanImportedHTMLWhitespace(altP.innerHTML);
+
+        // Strip outer <em> or <i> wrapper if the imported paragraph is enclosed in italics
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = rawAlt;
+        if (tempDiv.childNodes.length === 1 && ['em', 'i'].includes(tempDiv.firstChild.nodeName?.toLowerCase())) {
+          rawAlt = tempDiv.firstChild.innerHTML;
+        } else {
+          rawAlt = rawAlt.replace(/^<(em|i)[^>]*>([\s\S]*)<\/\1>$/i, '$2');
+        }
+
+        entryData.altEnglishTerms = rawAlt.trim();
       }
 
       // 3. Extract Terms & Vietnamese Headwords (cleaning whitespace per line)
