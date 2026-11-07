@@ -1813,6 +1813,120 @@
       return (convertedOnset + convertedNucleus + convertedCoda).normalize('NFC');
     }
 
+    // Reverse-engineers Quấc ngữ string back into Quasi-IPA
+    function reverseQuocNguToQuasiIPA(quocNguStr) {
+      if (!quocNguStr) return "";
+      return quocNguStr.trim()
+        .split('~')
+        .map(alt =>
+          alt.trim().split(/\s+/).map(word =>
+            word.split('-').map(syl => convertQuocNguSyllable(syl)).join('.')
+          ).join(' ')
+        ).join(' ~ ');
+    }
+
+    function convertQuocNguSyllable(syl) {
+      if (!syl) return "";
+      let norm = syl.normalize('NFD');
+
+      // Extract tone mark combining diacritics
+      let toneMark = "";
+      norm = norm.replace(/[\u0300\u0301\u0309\u0303\u0323]/g, m => {
+        toneMark += m;
+        return "";
+      });
+
+      let base = norm.normalize('NFC');
+
+      // Nucleus mapping table (Quấc ngữ base -> Quasi-IPA base)
+      const NUCLEUS_MAP = [
+        ["iê", "iə"], ["yê", "iə"], ["ia", "iə"], ["ya", "iə"],
+        ["uô", "uə"], ["ua", "uə"],
+        ["ươ", "ɨə"], ["ưa", "ɨə"],
+        ["ă", "ă"], ["â", "ə̆"], ["e", "ɛ"], ["ê", "e"],
+        ["i", "i"], ["y", "i"], ["ɪ", "ᵼ"], ["o", "ɔ"],
+        ["oo", "ꬿ"], ["ô", "o"], ["ơ", "ə"], ["u", "u"],
+        ["ư", "ɨ"], ["a", "a"]
+      ];
+
+      let foundNucleus = null;
+      let nIndex = -1;
+      let nLen = 0;
+
+      for (let [qnNuc, ipaNuc] of NUCLEUS_MAP) {
+        let idx = base.indexOf(qnNuc);
+        if (idx !== -1) {
+          if ((qnNuc === 'ia' || qnNuc === 'a') && base.startsWith('gi') && idx === 1) continue;
+          foundNucleus = {qn: qnNuc, ipa: ipaNuc};
+          nIndex = idx;
+          nLen = qnNuc.length;
+          break;
+        }
+      }
+
+      if (!foundNucleus) return syl;
+
+      let rawOnset = base.slice(0, nIndex);
+      let rawCoda = base.slice(nIndex + nLen);
+
+      // Onset mapping
+      let ipaOnset = "";
+      let hasMedialW = false;
+
+      if (rawOnset === "qu") {ipaOnset = "k"; hasMedialW = true;}
+      else if (rawOnset === "gh") ipaOnset = "ɣ";
+      else if (rawOnset === "ngh") ipaOnset = "ŋ";
+      else if (rawOnset === "ng") ipaOnset = "ŋ";
+      else if (rawOnset === "gi") ipaOnset = "ʝ";
+      else if (rawOnset === "g") ipaOnset = (['e', 'ê', 'i', 'y'].includes(foundNucleus.qn[0])) ? "ʝ" : "ɣ";
+      else if (rawOnset === "th") ipaOnset = "tʰ";
+      else if (rawOnset === "ch") ipaOnset = "c";
+      else if (rawOnset === "kh") ipaOnset = "x";
+      else if (rawOnset === "nh") ipaOnset = "ɲ";
+      else if (rawOnset === "ph") ipaOnset = "f";
+      else if (rawOnset === "tr") ipaOnset = "ʈ";
+      else if (rawOnset === "đ") ipaOnset = "d";
+      else if (rawOnset === "d") ipaOnset = "z";
+      else if (rawOnset === "z") ipaOnset = "ᵶ";
+      else if (rawOnset === "r") ipaOnset = "ɹ";
+      else if (rawOnset === "ʀ") ipaOnset = "ꭨ";
+      else if (rawOnset === "s") ipaOnset = "ʂ";
+      else if (rawOnset === "x") ipaOnset = "s";
+      else if (rawOnset === "c") ipaOnset = "k";
+      else if (rawOnset === "b") ipaOnset = "b";
+      else if (rawOnset === "h") ipaOnset = "h";
+      else if (rawOnset === "l") ipaOnset = "l";
+      else if (rawOnset === "m") ipaOnset = "m";
+      else if (rawOnset === "n") ipaOnset = "n";
+      else if (rawOnset === "t") ipaOnset = "t";
+      else if (rawOnset === "v") ipaOnset = "v";
+      else if (rawOnset === "ⱴ") ipaOnset = "ⱴ";
+      else if (rawOnset === "ᴊ") ipaOnset = "d͡ʒ";
+      else if (rawOnset === "ʏ") ipaOnset = "j";
+      else if (rawOnset === "p") ipaOnset = "p";
+      else if (rawOnset === "j") ipaOnset = "ʒ";
+      else ipaOnset = rawOnset;
+
+      // Coda mapping
+      let ipaCoda = "";
+      if (rawCoda === "ch") ipaCoda = "c";
+      else if (rawCoda === "ng") ipaCoda = "ŋ";
+      else if (rawCoda === "nh") ipaCoda = "ɲ";
+      else if (rawCoda === "c") ipaCoda = "k";
+      else if (rawCoda === "m") ipaCoda = "m";
+      else if (rawCoda === "n") ipaCoda = "n";
+      else if (rawCoda === "p") ipaCoda = "p";
+      else if (rawCoda === "t") ipaCoda = "t";
+      else if (rawCoda === "y" || rawCoda === "i") ipaCoda = "j";
+      else if (rawCoda === "o" || rawCoda === "u") ipaCoda = "w";
+      else if (rawCoda === "ɴ") ipaCoda = "ᵰ";
+      else if (rawCoda === "ᴛ") ipaCoda = "ᵵ";
+      else ipaCoda = rawCoda;
+
+      let ipaNucleus = foundNucleus.ipa + toneMark;
+      return (ipaOnset + (hasMedialW ? "w" : "") + ipaNucleus + ipaCoda).normalize('NFC');
+    }
+
     /* ==========================================================================
        3. SANITIZER & PARSERS
        ========================================================================== */
@@ -2044,19 +2158,19 @@
     function formatAltEnglishText(cmd) {const e = document.getElementById('alt-english-terms'); if (e) {e.focus(); document.execCommand(cmd, false, null); onAltEnglishTermsInput();} }
 
     function renderGlobalPronunciationRulesUI() {
-  const c = document.getElementById('global-pron-rules-container'); if (!c) return; c.innerHTML = '';
-  if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global rules.</p>`; return;}
-  entryData.globalPronunciationRules.forEach((r, idx) => {
-    const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
-    div.innerHTML = `
+      const c = document.getElementById('global-pron-rules-container'); if (!c) return; c.innerHTML = '';
+      if (!entryData.globalPronunciationRules || entryData.globalPronunciationRules.length === 0) {c.innerHTML = `<p class="text-[11px] text-slate-500 italic">No global rules.</p>`; return;}
+      entryData.globalPronunciationRules.forEach((r, idx) => {
+        const div = document.createElement('div'); div.className = "flex gap-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 items-center";
+        div.innerHTML = `
       <div class="flex-1"><span class="text-[11px] text-slate-400 block">Target:</span><input value="${escapeAttr(r.target)}" oninput="updateGlobalPronRule(${idx}, 'target', this.value)" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"></div>
       <div class="flex-1"><span class="text-[11px] text-slate-400 block">IPA:</span><input value="${escapeAttr(r.ipa)}" oninput="updateGlobalPronRule(${idx}, 'ipa', this.value)" data-ipa-input="true" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono"></div>
       <div class="flex-1"><span class="text-[11px] text-slate-400 block">Quấc ngữ:</span><div id="quac-ngu-preview-${idx}" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs text-indigo-300 font-mono italic h-[28px] overflow-hidden">${escapeAttr(convertQuasiIPA(r.ipa))}</div></div>
       <button onclick="removeGlobalPronRule(${idx})" class="text-rose-400 mt-4">&times;</button>
     `;
-    c.appendChild(div);
-  });
-}
+        c.appendChild(div);
+      });
+    }
     function addGlobalPronunciationRule() {
       if (!entryData.globalPronunciationRules) entryData.globalPronunciationRules = [];
       entryData.globalPronunciationRules.push({target: "", ipa: ""});
@@ -2065,19 +2179,19 @@
     }
 
     function updateGlobalPronRule(idx, field, val) {
-  entryData.globalPronunciationRules[idx][field] = val;
-  savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa);
-  
-  // Targeted DOM update: strictly update the preview box for this row when IPA changes
-  if (field === 'ipa') {
-    const previewBox = document.getElementById(`quac-ngu-preview-${idx}`);
-    if (previewBox) {
-      previewBox.textContent = convertQuasiIPA(val);
+      entryData.globalPronunciationRules[idx][field] = val;
+      savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa);
+
+      // Targeted DOM update: strictly update the preview box for this row when IPA changes
+      if (field === 'ipa') {
+        const previewBox = document.getElementById(`quac-ngu-preview-${idx}`);
+        if (previewBox) {
+          previewBox.textContent = convertQuasiIPA(val);
+        }
+      }
+
+      renderLivePreview();
     }
-  }
-  
-  renderLivePreview();
-}
 
     function removeGlobalPronRule(idx) {
       entryData.globalPronunciationRules.splice(idx, 1);
@@ -2925,13 +3039,18 @@
 
       const doc = new DOMParser().parseFromString(rawHTML, 'text/html');
 
-      // 1. Extract embedded Pronunciation & Variant rules and save them to the Master Database
+      // 1. Extract embedded Pronunciation & Variant rules, reverse-engineer to Quasi-IPA, and save to DB
       const pronSpans = doc.querySelectorAll('.pronunciation');
       pronSpans.forEach(span => {
         const target = span.textContent.trim();
-        const pronVal = span.getAttribute('data-pronunciation');
-        if (target && pronVal) {
-          savePronRuleToDB(target, pronVal);
+        const quocNguVal = span.getAttribute('data-pronunciation');
+        if (target && quocNguVal) {
+          // Reverse-engineer Quấc ngữ annotation into Quasi-IPA
+          const quasiIPA = reverseQuocNguToQuasiIPA(quocNguVal);
+          // Save rule to IndexedDB using Quasi-IPA
+          savePronRuleToDB(target, quasiIPA);
+          // Ensure element annotation holds converted Quấc ngữ preview
+          span.setAttribute('data-pronunciation', convertQuasiIPA(quasiIPA));
         }
       });
 
@@ -3045,6 +3164,34 @@
         showToast("Failed to parse HTML code.");
       }
     }
+
+    // Trims trailing whitespace from active DOM selection range
+    function trimSelectionTrailingWhitespace() {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
+
+      const range = sel.getRangeAt(0);
+      let selectedText = range.toString();
+
+      while (selectedText.length > 0 && /\s$/.test(selectedText)) {
+        if (range.endOffset > 0) {
+          range.setEnd(range.endContainer, range.endOffset - 1);
+        } else {
+          break;
+        }
+        selectedText = range.toString();
+      }
+
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    // Automatically trim trailing space when double-clicking text inside Vietnamese headword fields
+    document.addEventListener('dblclick', (e) => {
+      if (e.target.closest('.headword-editor')) {
+        setTimeout(trimSelectionTrailingWhitespace, 0);
+      }
+    });
   </script>
 </body>
 
