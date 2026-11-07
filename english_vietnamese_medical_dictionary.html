@@ -2976,7 +2976,7 @@
       f.forEach(e => {
         const d = document.createElement('div');
         d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-        d.innerHTML = `<div><strong class="text-indigo-300">${escapeAttr(e.data.postTitle || "Untitled")}</strong><span class="text-slate-500 text-xs block">${e.name}</span></div><div><button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2">Open</button><button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded">Delete</button></div>`;
+        d.innerHTML = `<div><strong class="text-indigo-300">${escapeAttr(e.data.postTitle || "Untitled")}</strong></div><div><button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2">Open</button><button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded">Delete</button></div>`;
         c.appendChild(d);
       });
     }
