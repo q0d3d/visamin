@@ -3097,47 +3097,61 @@
         }
       }
 
-      // Parse references
+      // Parse references (only target top-level citation paragraphs, ignoring table/blockquote <p> tags)
       const details = doc.querySelector('details');
       if (details) {
         newEntry.references = [];
-        const refPs = details.querySelectorAll('p');
+        // Filter out any <p> tags nested inside blockquotes or tables
+        const refPs = Array.from(details.querySelectorAll('p')).filter(p => !p.closest('blockquote, table'));
 
         refPs.forEach((p, idx) => {
           const text = p.textContent.trim();
           if (!text) return;
 
-          const isIbid = /^ibid\./i.test(text) || /^id\./i.test(text);
           let author = "";
           let title = "";
           let titleFormat = "italics";
           let pages = "";
 
-          const em = p.querySelector('em');
-          const quoteMatch = text.match(/‘([^’]+)’|'([^']+)'/);
+          const em = p.querySelector('em, i');
+          const quoteMatch = text.match(/‘([^’]+)’|'([^']+)'|"([^"]+)"|“([^”]+)”/);
 
           if (em) {
             title = em.textContent.trim();
             titleFormat = "italics";
+            const fullHtml = p.innerHTML;
+            const emOuter = em.outerHTML;
+            const splitParts = fullHtml.split(emOuter);
+            if (splitParts.length > 0) {
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = splitParts[0];
+              author = tempDiv.textContent.replace(/,\s*$/, '').trim();
+            }
           } else if (quoteMatch) {
-            title = quoteMatch[1] || quoteMatch[2];
+            title = quoteMatch[1] || quoteMatch[2] || quoteMatch[3] || quoteMatch[4];
             titleFormat = "quotes";
+            const matchedStr = quoteMatch[0];
+            const matchIdx = text.indexOf(matchedStr);
+            if (matchIdx > 0) {
+              author = text.substring(0, matchIdx).replace(/,\s*$/, '').trim();
+            }
+          } else {
+            const parts = text.split(',');
+            if (parts.length > 0) {
+              author = parts[0].trim();
+            }
           }
 
-          const pageMatch = text.match(/p{1,2}\.?\s*([\d\s–-]+)/i);
+          const pageMatch = text.match(/\b(pp?)\.?\s*([\d\s–-]+)/i);
           if (pageMatch) {
-            pages = pageMatch[1].trim();
+            pages = pageMatch[2].trim();
           }
 
-          const parts = text.split(',');
-          if (parts.length > 0 && !isIbid) {
-            author = parts[0].trim();
-          }
-
+          // Check if the immediate next sibling element is a blockquote
           let quoteHTML = "";
-          const nextSibling = p.nextElementSibling;
-          if (nextSibling && nextSibling.tagName.toLowerCase() === 'blockquote') {
-            quoteHTML = sanitizeHTMLBlock(nextSibling.innerHTML);
+          const nextEl = p.nextElementSibling;
+          if (nextEl && nextEl.tagName.toLowerCase() === 'blockquote') {
+            quoteHTML = sanitizeHTMLBlock(nextEl.innerHTML);
           }
 
           newEntry.references.push({
@@ -3273,25 +3287,70 @@
         });
       }
 
-      // 4. Extract References
+      // 4. Extract References (only target top-level citation paragraphs, ignoring table/blockquote <p> tags)
       const details = doc.querySelector('details');
       if (details) {
         entryData.references = [];
-        const paragraphs = details.querySelectorAll('p');
-        const blockquotes = details.querySelectorAll('blockquote');
+        // Filter out any <p> tags nested inside blockquotes or tables
+        const refPs = Array.from(details.querySelectorAll('p')).filter(p => !p.closest('blockquote, table'));
 
-        paragraphs.forEach((p, idx) => {
+        refPs.forEach((p, idx) => {
           const text = p.textContent.trim();
-          if (!text || text.startsWith('ibid')) return;
+          if (!text) return;
 
-          const quoteHTML = blockquotes[idx] ? cleanImportedHTMLWhitespace(blockquotes[idx].innerHTML) : '';
+          let author = "";
+          let title = "";
+          let titleFormat = "italics";
+          let pages = "";
+
+          const em = p.querySelector('em, i');
+          const quoteMatch = text.match(/‘([^’]+)’|'([^']+)'|"([^"]+)"|“([^”]+)”/);
+
+          if (em) {
+            title = em.textContent.trim();
+            titleFormat = "italics";
+            const fullHtml = p.innerHTML;
+            const emOuter = em.outerHTML;
+            const splitParts = fullHtml.split(emOuter);
+            if (splitParts.length > 0) {
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = splitParts[0];
+              author = tempDiv.textContent.replace(/,\s*$/, '').trim();
+            }
+          } else if (quoteMatch) {
+            title = quoteMatch[1] || quoteMatch[2] || quoteMatch[3] || quoteMatch[4];
+            titleFormat = "quotes";
+            const matchedStr = quoteMatch[0];
+            const matchIdx = text.indexOf(matchedStr);
+            if (matchIdx > 0) {
+              author = text.substring(0, matchIdx).replace(/,\s*$/, '').trim();
+            }
+          } else {
+            const parts = text.split(',');
+            if (parts.length > 0) {
+              author = parts[0].trim();
+            }
+          }
+
+          const pageMatch = text.match(/\b(pp?)\.?\s*([\d\s–-]+)/i);
+          if (pageMatch) {
+            pages = pageMatch[2].trim();
+          }
+
+          // Check if the immediate next sibling element is a blockquote
+          let quoteHTML = "";
+          const nextEl = p.nextElementSibling;
+          if (nextEl && nextEl.tagName.toLowerCase() === 'blockquote') {
+            quoteHTML = cleanImportedHTMLWhitespace(nextEl.innerHTML);
+          }
+
           entryData.references.push({
-            id: 'ref-' + Date.now() + '-' + idx,
-            authors: text,
-            title: '',
-            titleFormat: 'italics',
-            pages: '',
-            quoteHTML
+            id: `ref-${Date.now()}-${idx}`,
+            authors: author,
+            title: title,
+            titleFormat: titleFormat,
+            pages: pages,
+            quoteHTML: quoteHTML
           });
         });
       }
