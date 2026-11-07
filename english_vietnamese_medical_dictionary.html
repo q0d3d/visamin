@@ -2013,13 +2013,17 @@
     /* Requirement 7: Headword Sanitization: Only line breaks (<br>) and italics (<i>/<em>) allowed */
     function sanitizeHeadwordHTML(rawHTML) {
       if (!rawHTML) return "";
-      const doc = new DOMParser().parseFromString(`<div>${rawHTML}</div>`, 'text/html');
+      
+      // Convert plain text line breaks (\n) into <br> tags
+      let html = rawHTML.replace(/\r?\n/g, '<br>');
+
+      const doc = new DOMParser().parseFromString(`<div>${html}</div>`, 'text/html');
       const container = doc.body.firstElementChild;
 
-      // Replace block level wrappers (h1-h6, div, p) with line breaks
+      // Replace block level wrappers (h1-h6, div, p) with line breaks BEFORE unwrapping content
       const blocks = container.querySelectorAll('h1, h2, h3, h4, h5, h6, p, div');
       blocks.forEach(b => {
-        b.insertAdjacentHTML('afterend', '<br>');
+        b.insertAdjacentHTML('beforebegin', '<br>');
         while (b.firstChild) {
           b.parentNode.insertBefore(b.firstChild, b);
         }
@@ -2316,6 +2320,11 @@
 
     /* Drag & Drop Reordering Handlers */
     function handleTermDragStart(e, idx) {
+      // Prevent card reordering when dragging inside text inputs or contenteditable fields
+      if (e.target.closest('input, textarea, [contenteditable="true"]')) {
+        e.preventDefault();
+        return;
+      }
       draggedTermIndex = idx;
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', idx);
