@@ -666,10 +666,16 @@
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-3xl w-full h-[80vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <div>
-          <h3 class="text-base font-bold text-white">Entries Library</h3>
+          <h3 class="text-base font-bold text-white">Entries Library (Google Drive)</h3>
           <p class="text-xs text-slate-400 mt-1" id="library-folder-status">Not connected to Drive.</p>
         </div>
-        <button onclick="closeEntriesLibrary()" class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
+        <div class="flex items-center gap-2">
+          <button onclick="refreshEntriesLibrary()" type="button"
+            class="bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+            ↻ Refresh
+          </button>
+          <button onclick="closeEntriesLibrary()" class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
+        </div>
       </div>
       <div class="p-4 border-b border-slate-700 bg-slate-900/50">
         <input type="text" id="library-search" oninput="filterLibraryEntries()" placeholder="Search entries..."
@@ -1519,12 +1525,18 @@
       }
     }
 
+    async function refreshEntriesLibrary() {
+      libraryEntriesCache = [];
+      await loadEntriesFromDrive();
+    }
+
     async function saveEntryToDrive() {
       if (!isDriveConnected) {showToast("Please 'Connect Drive' first!"); return;}
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
       const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
       showToast("Saving to Drive...");
       await uploadJsonToDrive(fileName, JSON.stringify(entryData, null, 2));
+      libraryEntriesCache = []; // Reset cache so new entry appears next time library is opened
       showToast(`Saved to ${fileName}`);
       markClean();
     }
@@ -1595,7 +1607,7 @@
         isLibraryLoading = false;
       }
     }
-    
+
     /* ==========================================================================
        1. STATE MANAGEMENT, PRESETS, & INDEXED_DB STORAGE
        ========================================================================== */
