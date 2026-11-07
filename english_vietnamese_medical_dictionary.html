@@ -1594,33 +1594,218 @@
        2. TRANSLITERATION ENGINE
        ========================================================================== */
     function convertQuasiIPA(ipaInput) {
-      if (!ipaInput) return "";
-      let cleaned = ipaInput.trim();
-      if (cleaned.startsWith('/') && cleaned.endsWith('/')) cleaned = cleaned.slice(1, -1).trim();
-      return cleaned.split('~').map(alt => convertSingleIPAPhrase(alt.trim())).join(' ~ ');
-    }
+  if (!ipaInput) return "";
+  let cleaned = ipaInput.trim();
+  if (cleaned.startsWith('/') && cleaned.endsWith('/')) {
+    cleaned = cleaned.slice(1, -1).trim();
+  }
+  return cleaned
+    .split('~')
+    .map(alt => convertSingleIPAPhrase(alt.trim()))
+    .join(' ~ ');
+}
 
-    function convertSingleIPAPhrase(phrase) {
-      return phrase.split(/\s+/).map(word => word.split('.').map(syl => convertIPASyllable(syl)).join('-')).join(' ');
-    }
+function convertSingleIPAPhrase(phrase) {
+  return phrase
+    .split(/\s+/)
+    .map(word =>
+      word
+        .split('.')
+        .map(syl => convertIPASyllable(syl))
+        .join('-')
+    )
+    .join(' ');
+}
 
-    function convertIPASyllable(syl) {
-      if (!syl) return "";
-      let res = syl.replace(/d͡ʒ/g, 'ᴊ').replace(/ꭨ/g, 'ʀ').replace(/ᵰ/g, 'ɴ').replace(/ᵵ/g, 'ᴛ').replace(/ꬿ/g, 'oo')
-        .replace(/ʒ/g, 'j').replace(/ʝ/g, 'gi').replace(/ᵶ/g, 'z').replace(/ⱴ/g, 'ⱴ').replace(/ᵼ/g, 'ɪ').replace(/j/g, 'ʏ')
-        .replace(/^tʰ/, 'th').replace(/^ʈ/, 'tr').replace(/^ngh(?=[i|e|ê|y|ɪ])/g, 'ngh').replace(/^ŋ(?=[i|e|ê|y|ɪ])/g, 'ngh')
-        .replace(/^ŋ/g, 'ng').replace(/^ɣ(?=[i|e|ê|y|ɪ])/g, 'gh').replace(/^ɣ/g, 'g').replace(/^k(?=[i|e|ê|y|ɪ])/g, 'k')
-        .replace(/^k(?=u)/g, 'q').replace(/^k/g, 'c').replace(/^c/g, 'ch').replace(/^z/g, 'd').replace(/^d/g, 'đ')
-        .replace(/^x/g, 'kh').replace(/^ɲ/g, 'nh').replace(/^f/g, 'ph').replace(/^ɹ/g, 'r').replace(/^ʂ/g, 's').replace(/^s/g, 'x')
-        .replace(/ɨə/g, 'ươ').replace(/ɨ/g, 'ư').replace(/ə̆/g, 'â').replace(/ə/g, 'ơ').replace(/ɛ/g, 'e')
-        .replace(/e/g, 'ê').replace(/ɔ/g, 'o').replace(/o/g, 'ô').replace(/uə/g, 'uô').replace(/iə/g, 'iê')
-        .replace(/(?<=[a-zA-Zàáảãạăằắẳẵặâầấẩẫậeèéẻẽẹêềếểễệiìíỉĩịoòóỏõọôồốổỗộơờớởỡợuùúủũụưừứửữựyỳýỷỹỵɪoo])k([\u0300-\u036f]*)$/gi, 'c$1');
-      if (res.endsWith('k') && !res.endsWith('hk')) res = res.slice(0, -1) + 'c';
-      else if (res.endsWith('c') && !res.endsWith('ch')) res = res.slice(0, -1) + 'ch';
-      else if (res.endsWith('ŋ')) res = res.slice(0, -1) + 'ng';
-      else if (res.endsWith('ɲ')) res = res.slice(0, -1) + 'nh';
-      return res;
+function convertIPASyllable(syl) {
+  if (!syl) return "";
+  syl = syl.trim().replace(/^\/+|\/+$/g, '');
+  if (!syl) return "";
+
+  // 1. Extract tone combining diacritics (̀  ́  ̉  ̃  ̣)
+  let toneMarks = "";
+  let baseSyl = syl.replace(/[\u0300\u0301\u0309\u0303\u0323]/g, (match) => {
+    toneMarks += match;
+    return "";
+  });
+
+  // 2. Locate Nucleus (Ordered from multi-character to single-character)
+  const NUCLEUS_REGEX = /(iə|uə|ɨə|ă|a\u0306|ə̆|ə\u0306|a|ɛ|e|i|ᵼ|ɔ|ꬿ|o|ə|u|ɨ)/;
+  const nucleusMatch = baseSyl.match(NUCLEUS_REGEX);
+
+  if (!nucleusMatch) {
+    return syl; // Fallback for non-matching input
+  }
+
+  let nucleusBaseRaw = nucleusMatch[1];
+  const nucleusIndex = nucleusMatch.index;
+  const nucleusLength = nucleusMatch[0].length;
+
+  // Standardize composed/decomposed nucleus variants
+  let nucleusBase = nucleusBaseRaw;
+  if (nucleusBaseRaw === "a\u0306") nucleusBase = "ă";
+  if (nucleusBaseRaw === "ə\u0306") nucleusBase = "ə̆";
+
+  const rawOnset = baseSyl.slice(0, nucleusIndex);
+  const rawCoda = baseSyl.slice(nucleusIndex + nucleusLength);
+  const hasCoda = rawCoda.length > 0;
+
+  // 3. Parse Onset & Medial Glide (/w/)
+  let hasMedialW = false;
+  let initialConsonant = rawOnset;
+
+  if (rawOnset.endsWith("w")) {
+    hasMedialW = true;
+    initialConsonant = rawOnset.slice(0, -1);
+  }
+
+  const isFrontVowelK_GH_NGH = ['ɛ', 'e', 'i', 'ᵼ'].includes(nucleusBase);
+  const isFrontVowelGI = ['e', 'i', 'ᵼ'].includes(nucleusBase);
+
+  let convertedOnset = "";
+
+  if (initialConsonant === "k") {
+    if (hasMedialW) {
+      convertedOnset = "qu";
+    } else {
+      convertedOnset = isFrontVowelK_GH_NGH ? "k" : "c";
     }
+  } else if (initialConsonant === "ɣ") {
+    convertedOnset = isFrontVowelK_GH_NGH ? "gh" : "g";
+  } else if (initialConsonant === "ŋ") {
+    convertedOnset = isFrontVowelK_GH_NGH ? "ngh" : "ng";
+  } else if (initialConsonant === "ʝ") {
+    convertedOnset = isFrontVowelGI ? "g" : "gi";
+  } else {
+    const ONSET_MAP = {
+      "b": "b",
+      "c": "ch",
+      "z": "d",
+      "ᵶ": "z",
+      "d": "đ",
+      "h": "h",
+      "x": "kh",
+      "l": "l",
+      "m": "m",
+      "n": "n",
+      "ɲ": "nh",
+      "f": "ph",
+      "ɹ": "r",
+      "ꭨ": "ʀ",
+      "ʂ": "s",
+      "t": "t",
+      "tʰ": "th",
+      "ʈ": "tr",
+      "v": "v",
+      "ⱴ": "ⱴ",
+      "s": "x",
+      "ʷ": "w",
+      "d͡ʒ": "ᴊ",
+      "j": "ʏ",
+      "p": "p",
+      "ʒ": "j"
+    };
+    convertedOnset = ONSET_MAP[initialConsonant] || initialConsonant;
+  }
+
+  // Convert medial /w/ when not preceded by /k/
+  if (hasMedialW && initialConsonant !== "k") {
+    if (['ə̆', 'i', 'ə', 'ᵼ'].includes(nucleusBase)) {
+      convertedOnset += "u";
+    } else {
+      convertedOnset += "o";
+    }
+  }
+
+  // 4. Convert Coda
+  let convertedCoda = "";
+  if (hasCoda) {
+    if (rawCoda === "j") {
+      convertedCoda = (nucleusBase === "ă" || nucleusBase === "ə̆") ? "y" : "i";
+    } else if (rawCoda === "w") {
+      convertedCoda = (nucleusBase === "a" || nucleusBase === "ɛ") ? "o" : "u";
+    } else {
+      const CODA_MAP = {
+        "k": "c",
+        "c": "ch",
+        "m": "m",
+        "n": "n",
+        "ᵰ": "ɴ",
+        "ŋ": "ng",
+        "ɲ": "nh",
+        "p": "p",
+        "t": "t",
+        "ᵵ": "ᴛ",
+        "f": "f",
+        "s": "s",
+        "ᵶ": "z"
+      };
+      convertedCoda = CODA_MAP[rawCoda] || rawCoda;
+    }
+  }
+
+  // 5. Convert Nucleus & Position Tone Marks
+  let convertedNucleus = "";
+
+  switch (nucleusBase) {
+    case "a":
+      convertedNucleus = "a" + toneMarks;
+      break;
+    case "ă":
+      const vĂ = (rawCoda === "w" || rawCoda === "j") ? "a" : "ă";
+      convertedNucleus = vĂ + toneMarks;
+      break;
+    case "ə̆":
+      convertedNucleus = "â" + toneMarks;
+      break;
+    case "ɛ":
+      convertedNucleus = "e" + toneMarks;
+      break;
+    case "e":
+      convertedNucleus = "ê" + toneMarks;
+      break;
+    case "i":
+      const vI = hasMedialW ? "y" : "i";
+      convertedNucleus = vI + toneMarks;
+      break;
+    case "ᵼ":
+      convertedNucleus = "ɪ" + toneMarks;
+      break;
+    case "iə":
+      convertedNucleus = hasCoda ? ("i" + "ê" + toneMarks) : ("i" + toneMarks + "a");
+      break;
+    case "ɔ":
+      convertedNucleus = "o" + toneMarks;
+      break;
+    case "ꬿ":
+      convertedNucleus = "o" + "o" + toneMarks;
+      break;
+    case "o":
+      convertedNucleus = "ô" + toneMarks;
+      break;
+    case "ə":
+      convertedNucleus = "ơ" + toneMarks;
+      break;
+    case "u":
+      convertedNucleus = "u" + toneMarks;
+      break;
+    case "uə":
+      convertedNucleus = hasCoda ? ("u" + "ô" + toneMarks) : ("u" + toneMarks + "a");
+      break;
+    case "ɨ":
+      convertedNucleus = "ư" + toneMarks;
+      break;
+    case "ɨə":
+      convertedNucleus = hasCoda ? ("ư" + "ơ" + toneMarks) : ("ư" + toneMarks + "a");
+      break;
+    default:
+      convertedNucleus = nucleusBase + toneMarks;
+      break;
+  }
+
+  // 6. Assemble and Normalize (NFC combines base vowels and tone diacritics)
+  return (convertedOnset + convertedNucleus + convertedCoda).normalize('NFC');
+}
 
     /* ==========================================================================
        3. SANITIZER & PARSERS
@@ -2176,9 +2361,59 @@
         c.appendChild(b);
       });
     }
-    document.addEventListener('focusin', e => {if (e.target?.getAttribute('data-ipa-input') === 'true') {activeIPAInput = e.target; const rect = e.target.getBoundingClientRect(); const tb = document.getElementById('ipa-toolbar'); tb.style.top = `${rect.bottom + 6 > window.innerHeight - 120 ? rect.top - 116 : rect.bottom + 6}px`; tb.style.left = `${Math.max(10, rect.left)}px`; tb.classList.remove('hidden');} });
-    document.addEventListener('focusout', () => {setTimeout(() => {if (!document.getElementById('ipa-toolbar').contains(document.activeElement)) document.getElementById('ipa-toolbar').classList.add('hidden');}, 150);});
+    // Enhanced IPA Toolbar Focus & Positioning Handler
+    document.addEventListener('focusin', (e) => {
+      const tb = document.getElementById('ipa-toolbar');
+      if (!tb) return;
 
+      const isIPAInput = e.target && e.target.getAttribute('data-ipa-input') === 'true';
+
+      if (isIPAInput) {
+        activeIPAInput = e.target;
+        const rect = e.target.getBoundingClientRect();
+
+        // Only calculate position and display toolbar if input is actively rendered/visible
+        if (rect.width > 0 && rect.height > 0) {
+          let top = rect.bottom + 6;
+          // Position above the input if it would overflow the bottom of the screen
+          if (top > window.innerHeight - 130) {
+            top = Math.max(10, rect.top - 120);
+          }
+
+          let left = Math.max(10, rect.left);
+          // Keep inside viewport if near the right edge
+          if (left + 350 > window.innerWidth) {
+            left = Math.max(10, window.innerWidth - 360);
+          }
+
+          tb.style.top = `${top}px`;
+          tb.style.left = `${left}px`;
+          tb.classList.remove('hidden');
+        }
+      } else {
+        // Hide immediately if focus moves to any non-IPA element outside the toolbar
+        if (!tb.contains(e.target)) {
+          tb.classList.add('hidden');
+        }
+      }
+    });
+
+    document.addEventListener('focusout', () => {
+      const tb = document.getElementById('ipa-toolbar');
+      if (!tb) return;
+
+      setTimeout(() => {
+        const active = document.activeElement;
+        const isIPAInput = active && active.getAttribute('data-ipa-input') === 'true';
+        const isInsideToolbar = active && tb.contains(active);
+
+        // Hide toolbar if active focus is neither an IPA input nor inside the toolbar
+        if (!isIPAInput && !isInsideToolbar) {
+          tb.classList.add('hidden');
+        }
+      }, 150);
+    });
+    
     function updateStateFromForm() {entryData.postTitle = document.getElementById('post-title').value; renderLivePreview();}
     function handleManualCodeEdit() {document.getElementById('publii-live-output').innerHTML = document.getElementById('raw-html-editor').value; markDirty();}
     function switchTab(t) {currentTab = t;['form', 'code', 'import'].forEach(x => {document.getElementById(`tab-btn-${x}`).className = x === t ? "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm" : "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200"; const c = document.getElementById(`tab-content-${x}`); if (x === t) c.classList.remove('hidden'); else c.classList.add('hidden');});}
@@ -2200,97 +2435,95 @@
     function openRulesManager() {document.getElementById('rules-manager-modal').classList.remove('hidden'); switchRulesTab('pron');}
     function closeRulesManager() {document.getElementById('rules-manager-modal').classList.add('hidden');}
 
+
     function switchRulesTab(t) {
-      ['pron', 'var'].forEach(x => {
-        document.getElementById(`tab-rule-${x}`).className = x === t ? `flex-1 py-3 text-sm font-semibold ${t === 'pron' ? 'text-indigo-400 border-indigo-500' : 'text-amber-400 border-amber-500'} border-b-2 bg-slate-800/50` : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent";
-      });
-      document.getElementById('add-rule-form-pron').classList.toggle('hidden', t !== 'pron');
-      document.getElementById('add-rule-form-var').classList.toggle('hidden', t !== 'var');
-      loadRulesForManager(t);
+  const isPron = t === 'pron';
+
+  // Toggle tab button highlight styling
+  document.getElementById('tab-rule-pron').className = isPron 
+    ? "flex-1 py-3 text-sm font-semibold text-indigo-400 border-indigo-500 border-b-2 bg-slate-800/50" 
+    : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent";
+    
+  document.getElementById('tab-rule-var').className = !isPron 
+    ? "flex-1 py-3 text-sm font-semibold text-amber-400 border-amber-500 border-b-2 bg-slate-800/50" 
+    : "flex-1 py-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent";
+    
+  // Toggle visibility of static creation forms
+  document.getElementById('add-rule-form-pron').classList.toggle('hidden', !isPron);
+  document.getElementById('add-rule-form-var').classList.toggle('hidden', isPron);
+
+  // Reset search filter and reload DB list
+  document.getElementById('rules-search').value = '';
+  loadRulesForManager(t);
+}
+
+function loadRulesForManager(type, q = '') {
+  if (!db) return;
+  const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+  
+  db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
+    let rs = e.target.result.sort((a, b) => b.createdAt - a.createdAt);
+    if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
+
+    const c = document.getElementById('rules-manager-list');
+    c.innerHTML = '';
+
+    if (rs.length === 0) {
+      c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored.</p>`;
+      return;
     }
 
-    function updateMgrPronPreview() {
-      const ipa = document.getElementById('mgr-new-pron-ipa').value;
-      document.getElementById('mgr-pron-preview').textContent = 'Preview: ' + (convertQuasiIPA(ipa) || '—');
-    }
+    rs.forEach(r => {
+      const d = document.createElement('div');
+      d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+      d.innerHTML = type === 'pron' 
+        ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>` 
+        : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
+      c.appendChild(d);
+    });
+  };
+}
 
-    function addMgrPronRule() {
-      const target = document.getElementById('mgr-new-pron-target').value.trim();
-      const ipa = document.getElementById('mgr-new-pron-ipa').value.trim();
-      if (!target || !ipa) {showToast("Please enter target word and IPA."); return;}
-      savePronRuleToDB(target, ipa);
-      document.getElementById('mgr-new-pron-target').value = '';
-      document.getElementById('mgr-new-pron-ipa').value = '';
-      document.getElementById('mgr-pron-preview').textContent = 'Preview: —';
-      filterRulesManager();
-      showToast("Pronunciation rule saved!");
-    }
+function updateMgrPronPreview() {
+  const ipa = document.getElementById('mgr-new-pron-ipa')?.value || '';
+  const previewEl = document.getElementById('mgr-pron-preview');
+  if (previewEl) {
+    previewEl.textContent = ipa.trim() ? `Preview: ${convertQuasiIPA(ipa.trim())}` : 'Preview: —';
+  }
+}
 
-    function addMgrVarRule() {
-      const find = document.getElementById('mgr-new-var-find').value.trim();
-      const vars = document.getElementById('mgr-new-var-variants').value.trim();
-      if (!find || !vars) {showToast("Please enter main word and variants."); return;}
-      saveVarRuleToDB(find, vars);
-      document.getElementById('mgr-new-var-find').value = '';
-      document.getElementById('mgr-new-var-variants').value = '';
-      filterRulesManager();
-      showToast("Variant rule saved!");
-    }
+function addMgrPronRule() {
+  const target = document.getElementById('mgr-new-pron-target')?.value.trim();
+  const ipa = document.getElementById('mgr-new-pron-ipa')?.value.trim();
+  
+  if (!target || !ipa) {
+    showToast("Please enter both target word and Quasi-IPA.");
+    return;
+  }
+  
+  savePronRuleToDB(target, ipa);
+  document.getElementById('mgr-new-pron-target').value = '';
+  document.getElementById('mgr-new-pron-ipa').value = '';
+  updateMgrPronPreview();
+  showToast("Pronunciation rule saved!");
+  loadRulesForManager('pron');
+}
 
-    function loadRulesForManager(type, q = '') {
-      if (!db) return;
-      const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
-
-      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
-        let rs = e.target.result.sort((a, b) => b.createdAt - a.createdAt);
-        if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
-
-        const c = document.getElementById('rules-manager-list');
-        c.innerHTML = '';
-
-        // Add New Rule Form at the top of the modal list
-        const formDiv = document.createElement('div');
-        if (type === 'pron') {
-          formDiv.className = "bg-slate-900/90 border border-indigo-500/40 p-3 rounded-xl mb-4 space-y-2";
-          formDiv.innerHTML = `
-        <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Add New Pronunciation Rule</h4>
-        <div class="flex gap-2">
-          <input type="text" id="new-manager-target" placeholder="Target word (e.g. mình)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none">
-          <input type="text" id="new-manager-ipa" data-ipa-input="true" placeholder="Quasi-IPA (e.g. z)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-indigo-300 font-mono outline-none">
-          <button onclick="addRuleFromManager('pron')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-4 py-1.5 rounded-lg font-semibold shrink-0">Add Rule</button>
-        </div>
-      `;
-        } else {
-          formDiv.className = "bg-slate-900/90 border border-amber-500/40 p-3 rounded-xl mb-4 space-y-2";
-          formDiv.innerHTML = `
-        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Add New Variant Rule</h4>
-        <div class="flex gap-2">
-          <input type="text" id="new-manager-find" placeholder="Main word (e.g. mình)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none">
-          <input type="text" id="new-manager-variants" placeholder="Variants (e.g. thân mình, mình mẩy)" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-amber-300 font-mono outline-none">
-          <button onclick="addRuleFromManager('var')" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-1.5 rounded-lg font-semibold shrink-0">Add Rule</button>
-        </div>
-      `;
-        }
-        c.appendChild(formDiv);
-
-        if (rs.length === 0) {
-          const emptyMsg = document.createElement('p');
-          emptyMsg.className = "text-slate-500 text-sm";
-          emptyMsg.textContent = "No rules stored.";
-          c.appendChild(emptyMsg);
-          return;
-        }
-
-        rs.forEach(r => {
-          const d = document.createElement('div');
-          d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-          d.innerHTML = type === 'pron'
-            ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`
-            : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
-          c.appendChild(d);
-        });
-      };
-    }
+function addMgrVarRule() {
+  const find = document.getElementById('mgr-new-var-find')?.value.trim();
+  const variants = document.getElementById('mgr-new-var-variants')?.value.trim();
+  
+  if (!find || !variants) {
+    showToast("Please enter both main word and variants.");
+    return;
+  }
+  
+  saveVarRuleToDB(find, variants);
+  document.getElementById('mgr-new-var-find').value = '';
+  document.getElementById('mgr-new-var-variants').value = '';
+  showToast("Variant rule saved!");
+  loadRulesForManager('var');
+}
 
     function addRuleFromManager(type) {
       if (type === 'pron') {
@@ -2615,108 +2848,130 @@
       return newEntry;
     }
 
-    function runImportHTML() {
-      const inputEl = document.getElementById('import-html-input');
-      const rawHTML = inputEl ? inputEl.value : '';
+    // Helper function to strip HTML formatting whitespace, line breaks, and tabs
+function cleanImportedHTMLWhitespace(rawHTML) {
+  if (!rawHTML) return '';
+  return rawHTML
+    .split(/<br\s*\/?>/gi)
+    .map(line => line.replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .join('<br>');
+}
 
-      if (!rawHTML.trim()) {
-        showToast("Please paste HTML content first.");
-        return;
-      }
+function runImportHTML() {
+  const inputEl = document.getElementById('import-html-input');
+  const rawHTML = inputEl ? inputEl.value : '';
 
-      const doc = new DOMParser().parseFromString(rawHTML, 'text/html');
+  if (!rawHTML.trim()) {
+    showToast("Please paste HTML content first.");
+    return;
+  }
 
-      // 1. Extract embedded Pronunciation & Variant rules and save them to the Master Database
-      const pronSpans = doc.querySelectorAll('.pronunciation');
-      pronSpans.forEach(span => {
-        const target = span.textContent.trim();
-        const pronVal = span.getAttribute('data-pronunciation');
-        if (target && pronVal) {
-          savePronRuleToDB(target, pronVal);
-        }
-      });
+  const doc = new DOMParser().parseFromString(rawHTML, 'text/html');
 
-      const varSpans = doc.querySelectorAll('.lexical-variant');
-      varSpans.forEach(span => {
-        const target = span.textContent.trim();
-        const varVal = span.getAttribute('data-variant');
-        if (target && varVal) {
-          saveVarRuleToDB(target, varVal);
-        }
-      });
-
-      // 2. Extract English Headword / Title
-      const h1Title = doc.querySelector('h1, .preview-post-title');
-      if (h1Title) {
-        entryData.postTitle = h1Title.textContent.trim();
-      }
-
-      // Extract Alt English terms
-      const firstP = doc.querySelector('p:has(em), p em');
-      if (firstP) {
-        entryData.altEnglishTerms = firstP.innerHTML;
-      }
-
-      // 3. Extract Terms & Vietnamese Headwords
-      const termSections = doc.querySelectorAll('.medical-term');
-      if (termSections.length > 0) {
-        entryData.terms = [];
-        termSections.forEach((sec, idx) => {
-          const h3 = sec.querySelector('h3');
-          const headwordHTML = h3 ? h3.innerHTML : '';
-
-          const labels = [];
-          const customLabels = [];
-          sec.querySelectorAll('.term-label').forEach(lbl => {
-            const txt = lbl.textContent.trim();
-            if (PRESET_LABELS.includes(txt)) {
-              labels.push(txt);
-            } else {
-              customLabels.push(txt);
-            }
-          });
-
-          const commentNodes = Array.from(sec.children).filter(child => child.tagName !== 'H3' && !child.querySelector('.term-label'));
-          const commentsHTML = commentNodes.map(node => node.outerHTML).join('\n');
-
-          entryData.terms.push({
-            id: 'term-' + Date.now() + '-' + idx,
-            headwordHTML,
-            labels,
-            customLabels,
-            commentsHTML
-          });
-        });
-      }
-
-      // 4. Extract References
-      const details = doc.querySelector('details');
-      if (details) {
-        entryData.references = [];
-        const paragraphs = details.querySelectorAll('p');
-        const blockquotes = details.querySelectorAll('blockquote');
-
-        paragraphs.forEach((p, idx) => {
-          const text = p.textContent.trim();
-          if (!text || text.startsWith('ibid')) return;
-
-          const quoteHTML = blockquotes[idx] ? blockquotes[idx].innerHTML : '';
-          entryData.references.push({
-            id: 'ref-' + Date.now() + '-' + idx,
-            authors: text,
-            title: '',
-            titleFormat: 'italics',
-            pages: '',
-            quoteHTML
-          });
-        });
-      }
-
-      // 5. Update UI, notify user, and clear import textarea
-      renderFormUI();
-      showToast("HTML & Embedded Rules Imported Successfully!");
-      if (inputEl) inputEl.value = '';
+  // 1. Extract embedded Pronunciation & Variant rules and save them to the Master Database
+  const pronSpans = doc.querySelectorAll('.pronunciation');
+  pronSpans.forEach(span => {
+    const target = span.textContent.trim();
+    const pronVal = span.getAttribute('data-pronunciation');
+    if (target && pronVal) {
+      savePronRuleToDB(target, pronVal);
     }
+  });
+
+  const varSpans = doc.querySelectorAll('.lexical-variant');
+  varSpans.forEach(span => {
+    const target = span.textContent.trim();
+    const varVal = span.getAttribute('data-variant');
+    if (target && varVal) {
+      saveVarRuleToDB(target, varVal);
+    }
+  });
+
+  // 2. Extract English Headword / Title
+  const h1Title = doc.querySelector('h1, .preview-post-title');
+  if (h1Title) {
+    entryData.postTitle = h1Title.textContent.replace(/[\r\n\t]+/g, ' ').trim();
+  }
+
+  // Extract Alt English terms (clean surrounding line breaks and tabs)
+  const medicalTermsDiv = doc.querySelector('.medical-terms');
+  let altP = null;
+  if (medicalTermsDiv) {
+    let prev = medicalTermsDiv.previousElementSibling;
+    while (prev) {
+      if (prev.tagName === 'P') { altP = prev; break; }
+      prev = prev.previousElementSibling;
+    }
+  }
+  if (!altP) {
+    altP = doc.querySelector('p');
+  }
+
+  if (altP && !altP.closest('.medical-term') && !altP.closest('details')) {
+    entryData.altEnglishTerms = cleanImportedHTMLWhitespace(altP.innerHTML);
+  }
+
+  // 3. Extract Terms & Vietnamese Headwords (cleaning whitespace per line)
+  const termSections = doc.querySelectorAll('.medical-term');
+  if (termSections.length > 0) {
+    entryData.terms = [];
+    termSections.forEach((sec, idx) => {
+      const h3 = sec.querySelector('h3');
+      const headwordHTML = h3 ? cleanImportedHTMLWhitespace(h3.innerHTML) : '';
+      
+      const labels = [];
+      const customLabels = [];
+      sec.querySelectorAll('.term-label').forEach(lbl => {
+        const txt = lbl.textContent.trim();
+        if (PRESET_LABELS.includes(txt)) {
+          labels.push(txt);
+        } else {
+          customLabels.push(txt);
+        }
+      });
+
+      const commentNodes = Array.from(sec.children).filter(child => child.tagName !== 'H3' && !child.querySelector('.term-label'));
+      const commentsHTML = commentNodes.map(node => cleanImportedHTMLWhitespace(node.outerHTML)).join('\n');
+
+      entryData.terms.push({
+        id: 'term-' + Date.now() + '-' + idx,
+        headwordHTML,
+        labels,
+        customLabels,
+        commentsHTML
+      });
+    });
+  }
+
+  // 4. Extract References
+  const details = doc.querySelector('details');
+  if (details) {
+    entryData.references = [];
+    const paragraphs = details.querySelectorAll('p');
+    const blockquotes = details.querySelectorAll('blockquote');
+
+    paragraphs.forEach((p, idx) => {
+      const text = p.textContent.trim();
+      if (!text || text.startsWith('ibid')) return;
+      
+      const quoteHTML = blockquotes[idx] ? cleanImportedHTMLWhitespace(blockquotes[idx].innerHTML) : '';
+      entryData.references.push({
+        id: 'ref-' + Date.now() + '-' + idx,
+        authors: text,
+        title: '',
+        titleFormat: 'italics',
+        pages: '',
+        quoteHTML
+      });
+    });
+  }
+
+  // 5. Update UI, notify user, and clear import textarea
+  renderFormUI();
+  showToast("HTML Imported & Cleaned Successfully!");
+  if (inputEl) inputEl.value = '';
+}
 
     function parseCodeBackToForm() {
       const rawInput = document.getElementById('raw-html-editor').value;
