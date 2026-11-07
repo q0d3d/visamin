@@ -1537,8 +1537,11 @@
         .replace(/Đ/g, 'D');
     }
     let libraryEntriesCache = [];
+    let isLibraryLoading = false;
     async function loadEntriesFromDrive() {
-      if (!isDriveConnected || !driveFolderId) return;
+      if (!isDriveConnected || !driveFolderId || isLibraryLoading) return;
+      isLibraryLoading = true;
+
       const list = document.getElementById('library-entries-list');
       list.innerHTML = `<p class="text-slate-400 text-xs">Loading files from Google Drive...</p>`;
       libraryEntriesCache = [];
@@ -1550,36 +1553,49 @@
 
         if (!data.files || data.files.length === 0) {
           list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Drive folder yet.</p>`;
+          isLibraryLoading = false;
           return;
         }
 
         for (const file of data.files) {
           if (file.name.startsWith('_')) continue;
-          const content = await readJsonFromDrive(file.name);
-          if (content) {
-            const enTitle = content.postTitle || "";
-            const altEn = content.altEnglishTerms || "";
-            const vnTerms = (content.terms || []).map(t => {
-              const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
-            }).join(' ');
-            const altVn = computeAutomaticAltSpellings(content);
-            const fullSearchText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.toLowerCase();
+          
+          try {
+            const fileRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`);
+            const content = await fileRes.json();
 
-            libraryEntriesCache.push({
-              name: file.name,
-              fileId: file.id,
-              data: content,
-              searchStr: removeDiacritics(fullSearchText)
-            });
+            if (content) {
+              const enTitle = content.postTitle || "";
+              const altEn = content.altEnglishTerms || "";
+              const vnTerms = (content.terms || []).map(t => {
+                const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
+              }).join(' ');
+              const altVn = computeAutomaticAltSpellings(content);
+              const fullSearchText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.toLowerCase();
+
+              // Prevent duplicate items by file ID and name
+              if (!libraryEntriesCache.some(e => e.fileId === file.id || e.name === file.name)) {
+                libraryEntriesCache.push({
+                  name: file.name,
+                  fileId: file.id,
+                  data: content,
+                  searchStr: removeDiacritics(fullSearchText)
+                });
+              }
+            }
+          } catch (err) {
+            console.error(`Failed to load file ${file.name}:`, err);
           }
         }
         filterLibraryEntries();
       } catch (e) {
         console.error(e);
         list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Drive folder: ${e.message}</p>`;
+      } finally {
+        isLibraryLoading = false;
       }
     }
-
+    
     /* ==========================================================================
        1. STATE MANAGEMENT, PRESETS, & INDEXED_DB STORAGE
        ========================================================================== */
