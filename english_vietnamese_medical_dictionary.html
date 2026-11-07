@@ -666,7 +666,7 @@
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-3xl w-full h-[80vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <div>
-          <h3 class="text-base font-bold text-white">Entries Library (Google Drive)</h3>
+          <h3 class="text-base font-bold text-white">Entries</h3>
           <p class="text-xs text-slate-400 mt-1" id="library-folder-status">Not connected to Drive.</p>
         </div>
         <div class="flex items-center gap-2">
@@ -674,12 +674,20 @@
             class="bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
             ↻ Refresh
           </button>
-          <button onclick="closeEntriesLibrary()" class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
+          <button onclick="closeEntriesLibrary()"
+            class="text-slate-400 hover:text-white text-2xl leading-none">×</button>
         </div>
       </div>
+      <!-- Search input container with clear button -->
       <div class="p-4 border-b border-slate-700 bg-slate-900/50">
-        <input type="text" id="library-search" oninput="filterLibraryEntries()" placeholder="Search entries..."
-          class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:border-indigo-500 outline-none">
+        <div class="relative w-full">
+          <input type="text" id="library-search" oninput="onLibrarySearchInput()" placeholder="Search entries..."
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-4 pr-10 py-2 text-sm text-white focus:border-indigo-500 outline-none">
+          <button id="library-search-clear" onclick="clearLibrarySearch()" type="button"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-sm font-bold hidden transition">
+            ✕
+          </button>
+        </div>
       </div>
       <div class="flex-1 overflow-y-auto p-4 space-y-2" id="library-entries-list">
         <div class="text-center py-10 text-slate-500 text-sm">Please connect Google Drive to view entries.</div>
@@ -1569,36 +1577,39 @@
           return;
         }
 
-        for (const file of data.files) {
-          if (file.name.startsWith('_')) continue;
-          
-          try {
-            const fileRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`);
-            const content = await fileRes.json();
+        const validFiles = data.files.filter(f => !f.name.startsWith('_'));
 
-            if (content) {
-              const enTitle = content.postTitle || "";
-              const altEn = content.altEnglishTerms || "";
-              const vnTerms = (content.terms || []).map(t => {
-                const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
-              }).join(' ');
-              const altVn = computeAutomaticAltSpellings(content);
-              const fullSearchText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.toLowerCase();
+        // Fetch all JSON contents in parallel using Promise.all
+        const loadedEntries = await Promise.all(
+          validFiles.map(async (file) => {
+            try {
+              const fileRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`);
+              const content = await fileRes.json();
 
-              // Prevent duplicate items by file ID and name
-              if (!libraryEntriesCache.some(e => e.fileId === file.id || e.name === file.name)) {
-                libraryEntriesCache.push({
+              if (content) {
+                const enTitle = content.postTitle || "";
+                const altEn = content.altEnglishTerms || "";
+                const vnTerms = (content.terms || []).map(t => {
+                  const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
+                }).join(' ');
+                const altVn = computeAutomaticAltSpellings(content);
+                const fullSearchText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.toLowerCase();
+
+                return {
                   name: file.name,
                   fileId: file.id,
                   data: content,
                   searchStr: removeDiacritics(fullSearchText)
-                });
+                };
               }
+            } catch (err) {
+              console.error(`Failed to load file ${file.name}:`, err);
             }
-          } catch (err) {
-            console.error(`Failed to load file ${file.name}:`, err);
-          }
-        }
+            return null;
+          })
+        );
+
+        libraryEntriesCache = loadedEntries.filter(entry => entry !== null);
         filterLibraryEntries();
       } catch (e) {
         console.error(e);
@@ -2041,7 +2052,7 @@
     /* Requirement 7: Headword Sanitization: Only line breaks (<br>) and italics (<i>/<em>) allowed */
     function sanitizeHeadwordHTML(rawHTML) {
       if (!rawHTML) return "";
-      
+
       // Convert plain text line breaks (\n) into <br> tags
       let html = rawHTML.replace(/\r?\n/g, '<br>');
 
@@ -3407,6 +3418,25 @@
         setTimeout(trimSelectionTrailingWhitespace, 0);
       }
     });
+
+    function onLibrarySearchInput() {
+      const inp = document.getElementById('library-search');
+      const clearBtn = document.getElementById('library-search-clear');
+      if (clearBtn && inp) {
+        clearBtn.classList.toggle('hidden', !inp.value.trim());
+      }
+      filterLibraryEntries();
+    }
+
+    function clearLibrarySearch() {
+      const inp = document.getElementById('library-search');
+      if (inp) {
+        inp.value = '';
+        onLibrarySearchInput();
+        inp.focus();
+      }
+    }
+
   </script>
 </body>
 
