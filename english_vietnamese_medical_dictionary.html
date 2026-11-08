@@ -2152,12 +2152,29 @@
     }
 
     function sanitizeHTMLBlock(rawHtml) {
-      if (!rawHtml) return '';
+      if (!rawHtml || isHTMLEmpty(rawHtml)) return '';
       const doc = new DOMParser().parseFromString(`<div>${rawHtml}</div>`, 'text/html');
       const root = doc.body.firstElementChild;
-      root.querySelectorAll('*').forEach(el => ['style', 'class', 'width', 'height', 'id', 'dir', 'align', 'valign', 'cellspacing', 'cellpadding', 'border', 'color', 'face', 'size'].forEach(a => el.removeAttribute(a)));
-      root.querySelectorAll('span').forEach(s => {if (s.attributes.length === 0) s.replaceWith(doc.createTextNode(s.innerHTML));});
-      root.querySelectorAll('div').forEach(d => {if (d.querySelector('table, p, blockquote')) {while (d.firstChild) d.parentNode.insertBefore(d.firstChild, d); d.remove();} else {const p = doc.createElement('p'); p.innerHTML = d.innerHTML; d.parentNode.replaceChild(p, d);} });
+
+      root.querySelectorAll('*').forEach(el =>
+        ['style', 'class', 'width', 'height', 'id', 'dir', 'align', 'valign', 'cellspacing', 'cellpadding', 'border', 'color', 'face', 'size']
+          .forEach(a => el.removeAttribute(a))
+      );
+
+      root.querySelectorAll('span').forEach(s => {
+        if (s.attributes.length === 0) s.replaceWith(doc.createTextNode(s.innerHTML));
+      });
+
+      root.querySelectorAll('div').forEach(d => {
+        if (d.querySelector('table, p, blockquote')) {
+          while (d.firstChild) d.parentNode.insertBefore(d.firstChild, d);
+          d.remove();
+        } else {
+          const p = doc.createElement('p');
+          p.innerHTML = d.innerHTML;
+          d.parentNode.replaceChild(p, d);
+        }
+      });
 
       const childNodes = Array.from(root.childNodes);
       let curP = null;
@@ -2174,7 +2191,14 @@
           else {const p = doc.createElement('p'); p.innerHTML = n.innerHTML; n.replaceWith(p); curP = p;}
         }
       });
-      root.querySelectorAll('p').forEach(p => {if (!p.textContent.trim() && !p.querySelector('table, img, br, sub, sup')) p.remove();});
+
+      // Remove <p> elements that only contain whitespace/br without media
+      root.querySelectorAll('p').forEach(p => {
+        const text = p.textContent.replace(/\u00a0/g, ' ').trim();
+        const hasMedia = p.querySelector('table, img, iframe');
+        if (!text && !hasMedia) p.remove();
+      });
+
       return root.innerHTML.trim();
     }
 
@@ -2485,7 +2509,14 @@
       }
     }
 
-    function onCommentInput(id) {const t = entryData.terms.find(x => x.id === id); const el = document.getElementById(`comment-editor-${id}`); if (t && el) {t.commentsHTML = el.innerHTML; renderLivePreview();} }
+    function onCommentInput(id) {
+      const t = entryData.terms.find(x => x.id === id);
+      const el = document.getElementById(`comment-editor-${id}`);
+      if (t && el) {
+        t.commentsHTML = isHTMLEmpty(el.innerHTML) ? "" : el.innerHTML;
+        renderLivePreview();
+      }
+    }
     function formatCommentText(id, cmd) {const el = document.getElementById(`comment-editor-${id}`); if (el) {el.focus(); document.execCommand(cmd, false, null); onCommentInput(id);} }
     function togglePresetLabel(id, lbl) {const t = entryData.terms.find(x => x.id === id); if (t) {t.labels = t.labels || []; if (t.labels.includes(lbl)) t.labels = t.labels.filter(x => x !== lbl); else t.labels.push(lbl); renderFormUI();} }
     function addNewTerm() {entryData.terms.push({id: "term-" + Date.now(), headwordHTML: "", labels: [], customLabels: [], commentsHTML: ""}); renderFormUI();}
@@ -2908,69 +2939,69 @@
       };
     }
 
-function renderRuleSelectorList(rs, t, targetText = "") {
-  const c = document.getElementById('rule-selector-list');
-  c.innerHTML = '';
-  if (!rs || rs.length === 0) {
-    c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
-    return;
-  }
-
-  // Extract clean plain text if targetText contains HTML tags
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = targetText || "";
-  const cleanTarget = (tempDiv.textContent || tempDiv.innerText || "").trim().toLowerCase();
-
-  // Filter rules if target text is provided
-  if (cleanTarget) {
-    if (t === 'pron') {
-      const matches = rs.filter(r => r.target && cleanTarget.includes(r.target.toLowerCase()));
-      if (matches.length === 0) {
-        c.innerHTML = `<p class="text-slate-500 text-sm">No pronunciation rule matches found for "${escapeAttr(cleanTarget)}".</p>`;
-        return;
-      }
-      matches.forEach(r => appendRuleItem(c, r, t, false));
-    } else if (t === 'var') {
-      const directMatches = [];
-      const reverseMatches = [];
-
-      rs.forEach(r => {
-        const findLow = r.find ? r.find.toLowerCase() : '';
-        const varsArr = parseVariantsString(r.variantsStr).map(v => v.toLowerCase());
-
-        const isDirect = findLow && cleanTarget.includes(findLow);
-        const isReverse = varsArr.some(v => cleanTarget.includes(v) && v !== findLow);
-
-        if (isDirect) directMatches.push(r);
-        else if (isReverse) reverseMatches.push(r);
-      });
-
-      if (directMatches.length === 0 && reverseMatches.length === 0) {
-        c.innerHTML = `<p class="text-slate-500 text-sm">No direct or reverse variant matches found for "${escapeAttr(cleanTarget)}".</p>`;
+    function renderRuleSelectorList(rs, t, targetText = "") {
+      const c = document.getElementById('rule-selector-list');
+      c.innerHTML = '';
+      if (!rs || rs.length === 0) {
+        c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
         return;
       }
 
-      if (directMatches.length > 0) {
-        const h = document.createElement('div');
-        h.className = "text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 mt-1";
-        h.textContent = "Direct Matches (Main Word Found)";
-        c.appendChild(h);
-        directMatches.forEach(r => appendRuleItem(c, r, t, false));
-      }
+      // Extract clean plain text if targetText contains HTML tags
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = targetText || "";
+      const cleanTarget = (tempDiv.textContent || tempDiv.innerText || "").trim().toLowerCase();
 
-      if (reverseMatches.length > 0) {
-        const h = document.createElement('div');
-        h.className = "text-xs font-bold text-sky-400 uppercase tracking-wider mb-2 mt-3 pt-2 border-t border-slate-700";
-        h.textContent = "Reverse Matches (Variant Found in Text)";
-        c.appendChild(h);
-        reverseMatches.forEach(r => appendRuleItem(c, r, t, true));
+      // Filter rules if target text is provided
+      if (cleanTarget) {
+        if (t === 'pron') {
+          const matches = rs.filter(r => r.target && cleanTarget.includes(r.target.toLowerCase()));
+          if (matches.length === 0) {
+            c.innerHTML = `<p class="text-slate-500 text-sm">No pronunciation rule matches found for "${escapeAttr(cleanTarget)}".</p>`;
+            return;
+          }
+          matches.forEach(r => appendRuleItem(c, r, t, false));
+        } else if (t === 'var') {
+          const directMatches = [];
+          const reverseMatches = [];
+
+          rs.forEach(r => {
+            const findLow = r.find ? r.find.toLowerCase() : '';
+            const varsArr = parseVariantsString(r.variantsStr).map(v => v.toLowerCase());
+
+            const isDirect = findLow && cleanTarget.includes(findLow);
+            const isReverse = varsArr.some(v => cleanTarget.includes(v) && v !== findLow);
+
+            if (isDirect) directMatches.push(r);
+            else if (isReverse) reverseMatches.push(r);
+          });
+
+          if (directMatches.length === 0 && reverseMatches.length === 0) {
+            c.innerHTML = `<p class="text-slate-500 text-sm">No direct or reverse variant matches found for "${escapeAttr(cleanTarget)}".</p>`;
+            return;
+          }
+
+          if (directMatches.length > 0) {
+            const h = document.createElement('div');
+            h.className = "text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 mt-1";
+            h.textContent = "Direct Matches (Main Word Found)";
+            c.appendChild(h);
+            directMatches.forEach(r => appendRuleItem(c, r, t, false));
+          }
+
+          if (reverseMatches.length > 0) {
+            const h = document.createElement('div');
+            h.className = "text-xs font-bold text-sky-400 uppercase tracking-wider mb-2 mt-3 pt-2 border-t border-slate-700";
+            h.textContent = "Reverse Matches (Variant Found in Text)";
+            c.appendChild(h);
+            reverseMatches.forEach(r => appendRuleItem(c, r, t, true));
+          }
+        }
+      } else {
+        // Show all rules only if there is no text in the editor or selection
+        rs.forEach(r => appendRuleItem(c, r, t, false));
       }
     }
-  } else {
-    // Show all rules only if there is no text in the editor or selection
-    rs.forEach(r => appendRuleItem(c, r, t, false));
-  }
-}
 
     function appendRuleItem(container, r, t, isReverse = false) {
       const d = document.createElement('div');
@@ -3463,6 +3494,15 @@ function renderRuleSelectorList(rs, t, targetText = "") {
         onLibrarySearchInput();
         inp.focus();
       }
+    }
+
+    function isHTMLEmpty(html) {
+      if (!html) return true;
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      const hasMedia = temp.querySelector('img, table, iframe');
+      const text = temp.textContent.replace(/\u00a0/g, ' ').trim();
+      return !hasMedia && text === '';
     }
 
   </script>
