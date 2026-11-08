@@ -2908,54 +2908,69 @@
       };
     }
 
-    function renderRuleSelectorList(rs, t, targetText = "") {
-      const c = document.getElementById('rule-selector-list');
-      c.innerHTML = '';
-      if (!rs || rs.length === 0) {
-        c.innerHTML = `<p class="text-slate-500 text-sm">No matching rules found.</p>`;
+function renderRuleSelectorList(rs, t, targetText = "") {
+  const c = document.getElementById('rule-selector-list');
+  c.innerHTML = '';
+  if (!rs || rs.length === 0) {
+    c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
+    return;
+  }
+
+  // Extract clean plain text if targetText contains HTML tags
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = targetText || "";
+  const cleanTarget = (tempDiv.textContent || tempDiv.innerText || "").trim().toLowerCase();
+
+  // Filter rules if target text is provided
+  if (cleanTarget) {
+    if (t === 'pron') {
+      const matches = rs.filter(r => r.target && cleanTarget.includes(r.target.toLowerCase()));
+      if (matches.length === 0) {
+        c.innerHTML = `<p class="text-slate-500 text-sm">No pronunciation rule matches found for "${escapeAttr(cleanTarget)}".</p>`;
+        return;
+      }
+      matches.forEach(r => appendRuleItem(c, r, t, false));
+    } else if (t === 'var') {
+      const directMatches = [];
+      const reverseMatches = [];
+
+      rs.forEach(r => {
+        const findLow = r.find ? r.find.toLowerCase() : '';
+        const varsArr = parseVariantsString(r.variantsStr).map(v => v.toLowerCase());
+
+        const isDirect = findLow && cleanTarget.includes(findLow);
+        const isReverse = varsArr.some(v => cleanTarget.includes(v) && v !== findLow);
+
+        if (isDirect) directMatches.push(r);
+        else if (isReverse) reverseMatches.push(r);
+      });
+
+      if (directMatches.length === 0 && reverseMatches.length === 0) {
+        c.innerHTML = `<p class="text-slate-500 text-sm">No direct or reverse variant matches found for "${escapeAttr(cleanTarget)}".</p>`;
         return;
       }
 
-      if (t === 'var' && targetText) {
-        const tgtLow = targetText.toLowerCase();
-        const directMatches = [];
-        const reverseMatches = [];
+      if (directMatches.length > 0) {
+        const h = document.createElement('div');
+        h.className = "text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 mt-1";
+        h.textContent = "Direct Matches (Main Word Found)";
+        c.appendChild(h);
+        directMatches.forEach(r => appendRuleItem(c, r, t, false));
+      }
 
-        rs.forEach(r => {
-          const findLow = r.find.toLowerCase();
-          const varsArr = parseVariantsString(r.variantsStr).map(v => v.toLowerCase());
-
-          const isDirect = tgtLow.includes(findLow);
-          const isReverse = varsArr.some(v => tgtLow.includes(v) && v !== findLow);
-
-          if (isDirect) directMatches.push(r);
-          else if (isReverse) reverseMatches.push(r);
-        });
-
-        if (directMatches.length === 0 && reverseMatches.length === 0) {
-          c.innerHTML = `<p class="text-slate-500 text-sm">No direct or reverse variant matches found.</p>`;
-          return;
-        }
-
-        if (directMatches.length > 0) {
-          const h = document.createElement('div');
-          h.className = "text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 mt-1";
-          h.textContent = "Direct Matches (Main Word Found)";
-          c.appendChild(h);
-          directMatches.forEach(r => appendRuleItem(c, r, t, false));
-        }
-
-        if (reverseMatches.length > 0) {
-          const h = document.createElement('div');
-          h.className = "text-xs font-bold text-sky-400 uppercase tracking-wider mb-2 mt-3 pt-2 border-t border-slate-700";
-          h.textContent = "Reverse Matches (Variant Found in Text)";
-          c.appendChild(h);
-          reverseMatches.forEach(r => appendRuleItem(c, r, t, true));
-        }
-      } else {
-        rs.forEach(r => appendRuleItem(c, r, t, false));
+      if (reverseMatches.length > 0) {
+        const h = document.createElement('div');
+        h.className = "text-xs font-bold text-sky-400 uppercase tracking-wider mb-2 mt-3 pt-2 border-t border-slate-700";
+        h.textContent = "Reverse Matches (Variant Found in Text)";
+        c.appendChild(h);
+        reverseMatches.forEach(r => appendRuleItem(c, r, t, true));
       }
     }
+  } else {
+    // Show all rules only if there is no text in the editor or selection
+    rs.forEach(r => appendRuleItem(c, r, t, false));
+  }
+}
 
     function appendRuleItem(container, r, t, isReverse = false) {
       const d = document.createElement('div');
