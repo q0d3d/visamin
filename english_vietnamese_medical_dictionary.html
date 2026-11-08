@@ -667,7 +667,7 @@
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <div>
           <h3 class="text-base font-bold text-white">Entries</h3>
-          <p class="text-xs text-slate-400 mt-1" id="library-folder-status">Not connected to Drive.</p>
+          <p class="text-xs text-slate-400 mt-1" id="library-folder-status">Not connected to Google Drive.</p>
         </div>
         <div class="flex items-center gap-2">
           <button onclick="refreshEntriesLibrary()" type="button"
@@ -796,7 +796,7 @@
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-700">
         <h3 class="text-base font-bold text-rose-400 flex items-center gap-2">
-          <span>⚠️</span> Drive connection troubleshooting
+          <span>⚠️</span> Google Drive connection troubleshooting
         </h3>
         <button onclick="closeDriveAuthErrorModal()"
           class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
@@ -907,7 +907,7 @@
             </linearGradient>
           </defs>
         </svg>
-        <span>Connect Drive</span>
+        <span>Connect Google Drive</span>
       </button>
 
       <div class="w-px h-6 bg-slate-700 mx-1"></div>
@@ -1191,7 +1191,7 @@
         // Clean up the URL so the access token is hidden
         window.history.replaceState(null, null, window.location.pathname);
 
-        showToast("Google Drive Connected!");
+        showToast("Google Drive connected!");
         await verifyAndInitDrive();
       } else {
         // 2. Not returning from redirect; check for existing saved token
@@ -1213,7 +1213,7 @@
           }
           return true;
         }
-      } catch (e) {console.warn("Drive token validation failed:", e);}
+      } catch (e) {console.warn("Google Drive token validation failed:", e);}
 
       clearSavedDriveToken();
       return false;
@@ -1269,7 +1269,7 @@
               </linearGradient>
             </defs>
           </svg>
-          <span>Drive Connected ✓</span>
+          <span>Google Drive connected ✓</span>
         `;
         btn.className = 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-emerald-500 font-medium';
       } else {
@@ -1308,7 +1308,7 @@
             </linearGradient>
           </defs>
         </svg>
-        <span>Connect Drive</span>
+        <span>Connect Google Drive</span>
       `;
       btn.className = 'text-xs bg-slate-100 hover:bg-white text-slate-800 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-slate-300 font-medium';
 
@@ -1413,7 +1413,7 @@
       const isValid = await verifyAndInitDrive();
       if (isValid) {
         closeDriveAuthErrorModal();
-        showToast("Google Drive Connected with Manual Token!");
+        showToast("Google Drive connected with manual token!");
       } else {
         showToast("Token invalid or expired.");
       }
@@ -1429,7 +1429,7 @@
         const errText = await res.text();
         if (res.status === 401) {
           clearSavedDriveToken();
-          showToast("Drive session expired. Please click 'Connect Drive' again.");
+          showToast("Google Drive session expired. Please click connect Google Drive again.");
         }
         throw new Error(`Drive API Error ${res.status}: ${errText}`);
       }
@@ -1539,10 +1539,10 @@
     }
 
     async function saveEntryToDrive() {
-      if (!isDriveConnected) {showToast("Please 'Connect Drive' first!"); return;}
+      if (!isDriveConnected) {showToast("Please connect Google Drive first!"); return;}
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
       const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
-      showToast("Saving to Drive...");
+      showToast("Saving to Google Drive...");
       await uploadJsonToDrive(fileName, JSON.stringify(entryData, null, 2));
       libraryEntriesCache = []; // Reset cache so new entry appears next time library is opened
       showToast(`Saved to ${fileName}`);
@@ -1572,7 +1572,7 @@
         const data = await listRes.json();
 
         if (!data.files || data.files.length === 0) {
-          list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Drive folder yet.</p>`;
+          list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Google Drive folder yet.</p>`;
           isLibraryLoading = false;
           return;
         }
@@ -1613,7 +1613,7 @@
         filterLibraryEntries();
       } catch (e) {
         console.error(e);
-        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Drive folder: ${e.message}</p>`;
+        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Google Drive folder: ${e.message}</p>`;
       } finally {
         isLibraryLoading = false;
       }
@@ -2550,7 +2550,7 @@
       savePronRuleToDB(savedRange.toString(), ipa);
       const span = document.createElement('span'); span.className = 'pronunciation'; span.setAttribute('data-pronunciation', convertQuasiIPA(ipa)); span.textContent = savedRange.toString().trim();
       savedRange.deleteContents(); savedRange.insertNode(span);
-      onHeadwordInput(activeHeadwordEditorId); closeAddPronModal(); savedRange = null; showToast("Added Pronunciation!");
+      onHeadwordInput(activeHeadwordEditorId); closeAddPronModal(); savedRange = null; showToast("Added pronunciation!");
     }
 
     function openAddVarModal() {
@@ -2567,7 +2567,7 @@
       saveVarRuleToDB(savedRange.toString(), v);
       const span = document.createElement('span'); span.className = 'lexical-variant'; span.setAttribute('data-variant', parseVariantsString(v).join(', ')); span.textContent = savedRange.toString().trim();
       savedRange.deleteContents(); savedRange.insertNode(span);
-      onHeadwordInput(activeHeadwordEditorId); closeAddVarModal(); savedRange = null; showToast("Added Variant!");
+      onHeadwordInput(activeHeadwordEditorId); closeAddVarModal(); savedRange = null; showToast("Added variant!");
     }
 
     function handleHeadwordSpanClick(e, tId) {
@@ -2624,7 +2624,7 @@
 
       onHeadwordInput(activeAnnotationTermId);
       closeAnnotationModal();
-      showToast("Updated Annotation!");
+      showToast("Updated annotation!");
     }
 
     function closeAnnotationModal() {
@@ -2674,7 +2674,7 @@
       ht += '<tbody>'; for (let i = 0; i < (h ? Math.max(1, r - 1) : r); i++) {ht += '<tr>'; for (let j = 0; j < c; j++) ht += '<td></td>'; ht += '</tr>';} ht += '</tbody></table>';
       const el = document.getElementById(`quote-editor-${activeQuoteRefIdx}`);
       if (el) {el.focus(); if (savedQuoteRange) {const s = window.getSelection(); s.removeAllRanges(); s.addRange(savedQuoteRange);} document.execCommand('insertHTML', false, ht); onQuoteInput(activeQuoteRefIdx);}
-      closeTableModal(); showToast("Table Inserted");
+      closeTableModal(); showToast("Table inserted");
     }
 
     /* Modals & Handlers */
@@ -2770,7 +2770,7 @@
       if (term) {
         window.open(`https://uts.nlm.nih.gov/uts/umls/searchResults?searchString=${encodeURIComponent(term)}`, '_blank');
       } else {
-        showToast("Please enter an English Headword first.");
+        showToast("Please enter an English headword first.");
       }
     }
 
@@ -3428,7 +3428,7 @@
       // 5. Update UI, notify user, and clear import textarea
       renderFormUI();
       switchTab('form');
-      showToast("HTML Imported & Cleaned Successfully!");
+      showToast("HTML imported successfully!");
       if (importHwInput) importHwInput.value = '';
       if (inputEl) inputEl.value = '';
     }
@@ -3444,7 +3444,7 @@
         entryData = parsedData;
         renderFormUI();
         switchTab('form');
-        showToast("Code Parsed to Form!");
+        showToast("Code parsed to form!");
       } else {
         showToast("Failed to parse HTML code.");
       }
