@@ -381,6 +381,7 @@
       border-color: #6366f1;
     }
   </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body
@@ -1160,6 +1161,7 @@
 
     // Bind initialization hooks to window
     window.onload = async function () {
+      initGisTokenClient();
       initIPAPalette();
       await initDB();
       await loadDraft();
@@ -1351,30 +1353,47 @@
       else setDriveDisconnectedUI();
     }
 
+    let tokenClient = null;
+
+    function initGisTokenClient() {
+      if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: async (tokenResponse) => {
+            if (tokenResponse && tokenResponse.access_token) {
+              accessToken = tokenResponse.access_token;
+              tokenExpiry = Date.now() + (parseInt(tokenResponse.expires_in, 10) || 3600) * 1000 - 60000;
+              localStorage.setItem('gdrive_access_token', accessToken);
+              localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
+              showToast("Google Drive Connected!");
+              await verifyAndInitDrive();
+            }
+          },
+        });
+      }
+    }
+
     function handleDriveAuthClick(e) {
       if (e) e.preventDefault();
+      if (!tokenClient) initGisTokenClient();
 
-      if (isDriveConnected) {
-        if (confirm("Google Drive is currently connected. Click OK to re-authorize or switch account, or Cancel to keep existing connection.")) {
-          clearSavedDriveToken();
-        } else {
-          return;
-        }
+      if (!tokenClient) {
+        showToast("Connecting to Google Services...");
+        setTimeout(() => handleDriveAuthClick(e), 500);
+        return;
       }
 
-      const btn1 = document.getElementById('drive-auth-btn');
-      const btn2 = document.getElementById('initial-drive-auth-btn');
-      [btn1, btn2].forEach(btn => {
-        if (btn) {
-          btn.disabled = true;
-          btn.innerHTML = `<span class="animate-spin text-indigo-600 font-bold">↻</span> <span>Redirecting...</span>`;
-        }
-      });
-
-      // Execute Redirect Authentication
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${encodeURIComponent(SCOPES)}&prompt=consent`;
-      window.location.href = authUrl;
+      // If already connected, prompt silently in the background without popping up
+      tokenClient.requestAccessToken({prompt: isDriveConnected ? '' : 'select_account'});
     }
+
+    // Automatically renew the Drive access token silently in the background every 45 minutes
+    setInterval(() => {
+      if (isDriveConnected && tokenClient) {
+        tokenClient.requestAccessToken({prompt: ''});
+      }
+    }, 45 * 60 * 1000);
 
     function showDriveAuthErrorModal(errCode, errDetail) {
       const modal = document.getElementById('drive-auth-error-modal');
@@ -1700,7 +1719,8 @@
       const t = target.trim();
       const tx = db.transaction('pronunciation_rules', 'readwrite');
       const store = tx.objectStore('pronunciation_rules');
-      const id = 'pron_' + t.toLowerCase();
+      // Adding Date.now() ensures every rule gets a unique ID so duplicates are preserved
+      const id = 'pron_' + t.toLowerCase() + '_' + Date.now();
       store.put({id, target: t, ipa: ipa.trim(), quốcNgữ: convertQuasiIPA(ipa.trim()), createdAt: Date.now()});
       tx.oncomplete = () => syncRulesToDrive();
     }
@@ -1710,7 +1730,8 @@
       const f = find.trim();
       const tx = db.transaction('variant_rules', 'readwrite');
       const store = tx.objectStore('variant_rules');
-      const id = 'var_' + f.toLowerCase();
+      // Adding Date.now() ensures every rule gets a unique ID so duplicates are preserved
+      const id = 'var_' + f.toLowerCase() + '_' + Date.now();
       store.put({id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now()});
       tx.oncomplete = () => syncRulesToDrive();
     }
