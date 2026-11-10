@@ -1350,14 +1350,7 @@
     }
 
 
-    function removeDiacritics(str) {
-      if (!str) return "";
-      return str
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/đ/g, 'd')
-        .replace(/Đ/g, 'D');
-    }
+
     let libraryEntriesCache = [];
     let isLibraryLoading = false;
 
@@ -1412,18 +1405,37 @@
       }
     }
 
+    // 1. Strips HTML tags and converts block elements/line breaks to spaces
+    function stripHTML(html) {
+      if (!html) return "";
+      const d = document.createElement('div');
+      d.innerHTML = String(html)
+        .replace(/<br\s*\/?>/gi, ' ')
+        .replace(/<\/(div|p|h[1-6])>/gi, ' ');
+      return d.textContent || d.innerText || "";
+    }
+
+    // 2. Converts diacritics and ALL Unicode dash variants (hyphens, en-dashes, em-dashes, minus signs) to spaces
+    function removeDiacritics(str) {
+      if (!str) return "";
+      return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .replace(/[\u2010-\u2015\u2212\-–—]/g, ' ');
+    }
+
+    // 3. Extracts clean, unformatted search text
     function buildEntrySearchString(data) {
       if (!data) return "";
       const enTitle = data.postTitle || "";
-      const altEn = data.altEnglishTerms || "";
-      const vnTerms = (data.terms || []).map(t => {
-        const d = document.createElement('div');
-        d.innerHTML = (t.headwordHTML || "").replace(/<br\s*\/?>/gi, ' ');
-        return d.textContent;
-      }).join(' ');
+      const altEn = stripHTML(data.altEnglishTerms);
+      const vnTerms = (data.terms || []).map(t => stripHTML(t.headwordHTML)).join(' ');
       const altVn = computeAutomaticAltSpellings(data);
-      const fullText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.replace(/\s+/g, ' ').toLowerCase();
-      return removeDiacritics(fullText);
+
+      const fullText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`;
+      return removeDiacritics(fullText).replace(/\s+/g, ' ').trim().toLowerCase();
     }
 
     async function saveEntryToDrive() {
