@@ -1452,37 +1452,48 @@
     async function saveEntryToDrive() {
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
       const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+      const displayName = entryData.postTitle || "Untitled";
+      const searchStr = buildEntrySearchString(entryData);
+
       showToast("Saving to Google Drive...");
 
-      await uploadJsonToDrive(fileName, JSON.stringify(entryData, null, 2));
-
-      const searchStr = buildEntrySearchString(entryData);
-      const displayName = entryData.postTitle || "Untitled";
-
       try {
-        let indexData = await readJsonFromDrive('_search_index.json') || {};
-        indexData[fileName] = {title: displayName, searchStr: searchStr};
-        await uploadJsonToDrive('_search_index.json', JSON.stringify(indexData, null, 2));
-      } catch (err) {
-        console.error("Failed to update index:", err);
-      }
-
-      // Update in-memory cache instantly without clearing or refetching
-      const existingIdx = libraryEntriesCache.findIndex(e => e.name === fileName);
-      if (existingIdx !== -1) {
-        libraryEntriesCache[existingIdx].displayName = displayName;
-        libraryEntriesCache[existingIdx].searchStr = searchStr;
-      } else {
-        libraryEntriesCache.push({
-          name: fileName,
-          fileId: fileName,
-          displayName: displayName,
-          searchStr: searchStr
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'save_with_index',
+            fileName: fileName,
+            content: JSON.stringify(entryData, null, 2),
+            indexEntry: {title: displayName, searchStr: searchStr}
+          })
         });
-      }
 
-      showToast(`Saved to ${fileName}`);
-      markClean();
+        const result = await res.json();
+
+        if (result.status === "success") {
+          // Update local memory cache instantly
+          const existingIdx = libraryEntriesCache.findIndex(e => e.name === fileName);
+          if (existingIdx !== -1) {
+            libraryEntriesCache[existingIdx].displayName = displayName;
+            libraryEntriesCache[existingIdx].searchStr = searchStr;
+          } else {
+            libraryEntriesCache.push({
+              name: fileName,
+              fileId: fileName,
+              displayName: displayName,
+              searchStr: searchStr
+            });
+          }
+
+          showToast(`Saved to ${fileName}`);
+          markClean();
+        } else {
+          showToast("Save failed: " + (result.error || "Unknown error"));
+        }
+      } catch (err) {
+        console.error("Save error:", err);
+        showToast("Save failed!");
+      }
     }
 
     async function deleteEntryFromDrive(fileId, name) {
