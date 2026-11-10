@@ -1406,47 +1406,47 @@
     }
 
     // Extracts clean terms separated by semicolons from HTML blocks and line breaks
-function extractTermsFromHTML(html) {
-  if (!html) return [];
-  const temp = document.createElement('div');
-  // Convert opening tags, closing tags, and line breaks into semicolon delimiters
-  temp.innerHTML = String(html)
-    .replace(/<br\s*\/?>/gi, ' ; ')
-    .replace(/<\/(div|p|h[1-6])>/gi, ' ; ')
-    .replace(/<(div|p|h[1-6])[^>]*>/gi, ' ; ');
-  
-  const rawText = temp.textContent || temp.innerText || "";
-  return rawText.split(';').map(s => s.trim()).filter(Boolean);
-}
+    function extractTermsFromHTML(html) {
+      if (!html) return [];
+      const temp = document.createElement('div');
+      // Convert opening tags, closing tags, and line breaks into semicolon delimiters
+      temp.innerHTML = String(html)
+        .replace(/<br\s*\/?>/gi, ' ; ')
+        .replace(/<\/(div|p|h[1-6])>/gi, ' ; ')
+        .replace(/<(div|p|h[1-6])[^>]*>/gi, ' ; ');
 
-// Converts diacritics and all Unicode dash variants to spaces
-function removeDiacritics(str) {
-  if (!str) return "";
-  return str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-    .replace(/[\u2010-\u2015\u2212\-–—]/g, ' '); 
-}
+      const rawText = temp.textContent || temp.innerText || "";
+      return rawText.split(';').map(s => s.trim()).filter(Boolean);
+    }
 
-// Builds a clean, semicolon-delimited search index string
-function buildEntrySearchString(data) {
-  if (!data) return "";
-  const enTitle = (data.postTitle || "").trim();
-  const altEnTerms = extractTermsFromHTML(data.altEnglishTerms);
-  const vnTerms = (data.terms || []).flatMap(t => extractTermsFromHTML(t.headwordHTML));
-  
-  const altVnTerms = computeAutomaticAltSpellings(data)
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean);
-  
-  // Combine all distinct terms with semicolon delimiters
-  const allItems = [enTitle, ...altEnTerms, ...vnTerms, ...altVnTerms].filter(Boolean);
-  const fullText = allItems.join(' ; ');
-  return removeDiacritics(fullText).replace(/\s+/g, ' ').trim().toLowerCase();
-}
+    // Converts diacritics and all Unicode dash variants to spaces
+    function removeDiacritics(str) {
+      if (!str) return "";
+      return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .replace(/[\u2010-\u2015\u2212\-–—]/g, ' ');
+    }
+
+    // Builds a clean, semicolon-delimited search index string
+    function buildEntrySearchString(data) {
+      if (!data) return "";
+      const enTitle = (data.postTitle || "").trim();
+      const altEnTerms = extractTermsFromHTML(data.altEnglishTerms);
+      const vnTerms = (data.terms || []).flatMap(t => extractTermsFromHTML(t.headwordHTML));
+
+      const altVnTerms = computeAutomaticAltSpellings(data)
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      // Combine all distinct terms with semicolon delimiters
+      const allItems = [enTitle, ...altEnTerms, ...vnTerms, ...altVnTerms].filter(Boolean);
+      const fullText = allItems.join(' ; ');
+      return removeDiacritics(fullText).replace(/\s+/g, ' ').trim().toLowerCase();
+    }
 
     async function saveEntryToDrive() {
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
@@ -1662,22 +1662,49 @@ function buildEntrySearchString(data) {
     function savePronRuleToDB(target, ipa) {
       if (!db || !target.trim() || !ipa.trim()) return;
       const t = target.trim();
+      const cleanIpa = ipa.trim();
+
       const tx = db.transaction('pronunciation_rules', 'readwrite');
       const store = tx.objectStore('pronunciation_rules');
-      // Adding Date.now() ensures every rule gets a unique ID so duplicates are preserved
-      const id = 'pron_' + t.toLowerCase() + '_' + Date.now();
-      store.put({id, target: t, ipa: ipa.trim(), quốcNgữ: convertQuasiIPA(ipa.trim()), createdAt: Date.now()});
+
+      store.getAll().onsuccess = (e) => {
+        const existingRules = e.target.result || [];
+        // Check if an exact duplicate (same target AND same IPA) already exists
+        const isExactDuplicate = existingRules.some(
+          r => (r.target || "").toLowerCase() === t.toLowerCase() && (r.ipa || "").trim() === cleanIpa
+        );
+
+        if (isExactDuplicate) return; // Do not insert duplicate
+
+        const id = 'pron_' + t.toLowerCase() + '_' + Date.now();
+        store.put({id, target: t, ipa: cleanIpa, quốcNgữ: convertQuasiIPA(cleanIpa), createdAt: Date.now()});
+      };
+
       tx.oncomplete = () => syncRulesToDrive();
     }
 
     function saveVarRuleToDB(find, variantsStr) {
       if (!db || !find.trim() || !variantsStr.trim()) return;
       const f = find.trim();
+      const cleanVars = parseVariantsString(variantsStr).join(', ');
+
       const tx = db.transaction('variant_rules', 'readwrite');
       const store = tx.objectStore('variant_rules');
-      // Adding Date.now() ensures every rule gets a unique ID so duplicates are preserved
-      const id = 'var_' + f.toLowerCase() + '_' + Date.now();
-      store.put({id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now()});
+
+      store.getAll().onsuccess = (e) => {
+        const existingRules = e.target.result || [];
+        // Check if an exact duplicate (same main word AND same variant values) already exists
+        const isExactDuplicate = existingRules.some(r => {
+          const rVars = parseVariantsString(r.variantsStr).join(', ');
+          return (r.find || "").toLowerCase() === f.toLowerCase() && rVars === cleanVars;
+        });
+
+        if (isExactDuplicate) return; // Do not insert duplicate
+
+        const id = 'var_' + f.toLowerCase() + '_' + Date.now();
+        store.put({id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now()});
+      };
+
       tx.oncomplete = () => syncRulesToDrive();
     }
 
