@@ -1560,6 +1560,11 @@
           };
         });
 
+        // Sort cache immediately upon receiving from Drive
+        libraryEntriesCache.sort((a, b) =>
+          (a.displayName || '').localeCompare(b.displayName || '', 'vi', {sensitivity: 'base'})
+        );
+
         filterLibraryEntries();
       } catch (e) {
         console.error(e);
@@ -1570,16 +1575,24 @@
     }
 
     function filterLibraryEntries() {
-      const rawQuery = document.getElementById('library-search').value.toLowerCase();
+      const rawQuery = (document.getElementById('library-search')?.value || '').toLowerCase();
       const normalizedQuery = removeDiacritics(rawQuery);
       const c = document.getElementById('library-entries-list');
+      if (!c) return;
       c.innerHTML = '';
 
-      const f = libraryEntriesCache.filter(e => e.searchStr.includes(normalizedQuery));
+      // Sort main cache alphabetically A-Z by displayName
+      libraryEntriesCache.sort((a, b) =>
+        (a.displayName || '').localeCompare(b.displayName || '', 'vi', {sensitivity: 'base'})
+      );
+
+      const f = libraryEntriesCache.filter(e => (e.searchStr || '').includes(normalizedQuery));
+
       if (f.length === 0) {
         c.innerHTML = `<p class="text-slate-500 text-sm">No entries found.</p>`;
         return;
       }
+
       f.forEach(e => {
         const d = document.createElement('div');
         d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
@@ -2827,7 +2840,14 @@
       const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
 
       db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
-        let rs = e.target.result.sort((a, b) => b.createdAt - a.createdAt);
+        let rs = e.target.result || [];
+
+        // Sort rules alphabetically A-Z by target (Pronunciation) or find phrase (Variant)
+        if (type === 'pron') {
+          rs.sort((a, b) => (a.target || '').localeCompare(b.target || '', 'vi', {sensitivity: 'base'}));
+        } else {
+          rs.sort((a, b) => (a.find || '').localeCompare(b.find || '', 'vi', {sensitivity: 'base'}));
+        }
         if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
 
         const c = document.getElementById('rules-manager-list');
@@ -2967,6 +2987,13 @@
       if (!rs || rs.length === 0) {
         c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored in database.</p>`;
         return;
+      }
+
+      // Sort rules alphabetically A-Z
+      if (t === 'pron') {
+        rs.sort((a, b) => (a.target || '').localeCompare(b.target || '', 'vi', {sensitivity: 'base'}));
+      } else {
+        rs.sort((a, b) => (a.find || '').localeCompare(b.find || '', 'vi', {sensitivity: 'base'}));
       }
 
       // Extract clean plain text if targetText contains HTML tags
