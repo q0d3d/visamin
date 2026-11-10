@@ -1116,6 +1116,7 @@
       renderFormUI();
       hideInitialOverlay(); // Auto-hide login screen since Web App is permanently connected
       setDriveConnectedUI(true);
+      loadEntriesFromDrive();
     };
 
     function setDriveConnectedUI(connected) {
@@ -1455,18 +1456,31 @@
 
       await uploadJsonToDrive(fileName, JSON.stringify(entryData, null, 2));
 
+      const searchStr = buildEntrySearchString(entryData);
+      const displayName = entryData.postTitle || "Untitled";
+
       try {
         let indexData = await readJsonFromDrive('_search_index.json') || {};
-        indexData[fileName] = {
-          title: entryData.postTitle || "Untitled",
-          searchStr: buildEntrySearchString(entryData)
-        };
+        indexData[fileName] = {title: displayName, searchStr: searchStr};
         await uploadJsonToDrive('_search_index.json', JSON.stringify(indexData, null, 2));
       } catch (err) {
         console.error("Failed to update index:", err);
       }
 
-      libraryEntriesCache = [];
+      // Update in-memory cache instantly without clearing or refetching
+      const existingIdx = libraryEntriesCache.findIndex(e => e.name === fileName);
+      if (existingIdx !== -1) {
+        libraryEntriesCache[existingIdx].displayName = displayName;
+        libraryEntriesCache[existingIdx].searchStr = searchStr;
+      } else {
+        libraryEntriesCache.push({
+          name: fileName,
+          fileId: fileName,
+          displayName: displayName,
+          searchStr: searchStr
+        });
+      }
+
       showToast(`Saved to ${fileName}`);
       markClean();
     }
@@ -1489,7 +1503,9 @@
             console.error("Failed to update index after deletion:", err);
           }
 
-          await loadEntriesFromDrive();
+          // Remove from local memory instantly
+          libraryEntriesCache = libraryEntriesCache.filter(e => e.name !== name);
+          filterLibraryEntries();
           showToast("Deleted!");
         } catch (e) {
           showToast("Delete failed");
@@ -1502,21 +1518,28 @@
       isLibraryLoading = true;
 
       const list = document.getElementById('library-entries-list');
-      list.innerHTML = `<p class="text-slate-400 text-xs">Loading entries...</p>`;
-      libraryEntriesCache = [];
+      // Only show loading indicator if the modal is currently open and cache is empty
+      if (libraryEntriesCache.length === 0 && list) {
+        list.innerHTML = `<p class="text-slate-400 text-xs">Loading entries...</p>`;
+      }
 
       try {
-        const listRes = await fetch(`${SCRIPT_URL}?action=list`);
-        const files = await listRes.json();
+        // Fetch file list AND search index concurrently in parallel
+        const [listRes, indexDataResult] = await Promise.all([
+          fetch(`${SCRIPT_URL}?action=list`).then(r => r.json()),
+          readJsonFromDrive('_search_index.json')
+        ]);
+
+        const files = listRes || [];
+        const indexData = indexDataResult || {};
 
         if (!files || files.length === 0) {
-          list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Google Drive folder yet.</p>`;
+          if (list) list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Google Drive folder yet.</p>`;
           isLibraryLoading = false;
           return;
         }
 
         const validFiles = files.filter(f => !f.name.startsWith('_'));
-        const indexData = await readJsonFromDrive('_search_index.json') || {};
 
         libraryEntriesCache = validFiles.map(file => {
           const cached = indexData[file.name];
@@ -1534,7 +1557,7 @@
         filterLibraryEntries();
       } catch (e) {
         console.error(e);
-        list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Google Drive folder: ${e.message}</p>`;
+        if (list) list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Google Drive folder: ${e.message}</p>`;
       } finally {
         isLibraryLoading = false;
       }
