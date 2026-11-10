@@ -1469,6 +1469,11 @@
         });
       }
 
+      // Keep cache sorted after saving new entry
+      libraryEntriesCache.sort((a, b) =>
+        (a.displayName || '').localeCompare(b.displayName || '', 'vi', {sensitivity: 'base'})
+      );
+
       // 2. Mark clean and notify user instantly (0ms wait)
       markClean();
       showToast("Saved!", 2000);
