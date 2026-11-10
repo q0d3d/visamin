@@ -1455,47 +1455,42 @@
       const displayName = entryData.postTitle || "Untitled";
       const searchStr = buildEntrySearchString(entryData);
 
-      showToast("Saving to Google Drive...");
-
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: 'save_with_index',
-            fileName: fileName,
-            content: JSON.stringify(entryData, null, 2),
-            indexEntry: {title: displayName, searchStr: searchStr}
-          })
+      // 1. Instantly update in-memory cache
+      const existingIdx = libraryEntriesCache.findIndex(e => e.name === fileName);
+      if (existingIdx !== -1) {
+        libraryEntriesCache[existingIdx].displayName = displayName;
+        libraryEntriesCache[existingIdx].searchStr = searchStr;
+      } else {
+        libraryEntriesCache.push({
+          name: fileName,
+          fileId: fileName,
+          displayName: displayName,
+          searchStr: searchStr
         });
-
-        const result = await res.json();
-
-        if (result.status === "success") {
-          // Update local memory cache instantly
-          const existingIdx = libraryEntriesCache.findIndex(e => e.name === fileName);
-          if (existingIdx !== -1) {
-            libraryEntriesCache[existingIdx].displayName = displayName;
-            libraryEntriesCache[existingIdx].searchStr = searchStr;
-          } else {
-            libraryEntriesCache.push({
-              name: fileName,
-              fileId: fileName,
-              displayName: displayName,
-              searchStr: searchStr
-            });
-          }
-
-          showToast(`Saved to ${fileName}`);
-          markClean();
-        } else {
-          showToast("Save failed: " + (result.error || "Unknown error"));
-        }
-      } catch (err) {
-        console.error("Save error:", err);
-        showToast("Save failed!");
       }
-    }
 
+      // 2. Mark clean and notify user instantly (0ms wait)
+      markClean();
+      showToast("Saved!", 2000);
+
+      // 3. Send write operation to Google Drive in the background
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'save_with_index',
+          fileName: fileName,
+          content: JSON.stringify(entryData, null, 2),
+          indexEntry: {title: displayName, searchStr: searchStr}
+        })
+      }).then(r => r.json()).then(result => {
+        if (result.status !== "success") {
+          showToast("Background sync error: " + (result.error || "Failed"), 4000);
+        }
+      }).catch(err => {
+        console.error("Background save failed:", err);
+        showToast("Background sync failed. Check connection.", 4000);
+      });
+    }
     async function deleteEntryFromDrive(fileId, name) {
       if (confirm(`Delete ${name} from Google Drive?`)) {
         try {
