@@ -2780,19 +2780,44 @@
     function switchTab(t) {currentTab = t;['form', 'code', 'import'].forEach(x => {document.getElementById(`tab-btn-${x}`).className = x === t ? "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm" : "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200"; const c = document.getElementById(`tab-content-${x}`); if (x === t) c.classList.remove('hidden'); else c.classList.add('hidden');});}
     function togglePreviewTheme() {isDarkPreview = !isDarkPreview; const f = document.getElementById('publii-live-output'), c = document.getElementById('preview-viewport-container'), b = document.getElementById('theme-btn-text'); if (isDarkPreview) {f.classList.add('dark-theme-preview'); c.classList.add('dark-theme-preview'); b.textContent = "Dark Theme";} else {f.classList.remove('dark-theme-preview'); c.classList.remove('dark-theme-preview'); b.textContent = "Light Theme";} }
     function showToast(msg, duration = 3000) {
-      const el = document.getElementById('toast');
-      if (!el) return;
+      let el = document.getElementById('toast');
+
+      // Create the element dynamically if it doesn't exist in HTML
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'toast';
+        document.body.appendChild(el);
+      }
+
+      // Force top-level fixed styling directly via inline CSS
+      el.style.cssText = `
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 99999 !important;
+    background-color: #0f172a !important;
+    color: #38bdf8 !important;
+    border: 1px solid #334155 !important;
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    display: block !important;
+    opacity: 1 !important;
+    transition: opacity 0.2s ease-in-out !important;
+  `;
 
       el.textContent = msg;
-      el.classList.remove('hidden');
-      el.style.display = 'block'; // Forces visibility regardless of CSS setup
 
       if (el._timer) clearTimeout(el._timer);
 
       if (duration > 0) {
         el._timer = setTimeout(() => {
-          el.classList.add('hidden');
-          el.style.display = 'none';
+          el.style.opacity = '0';
+          setTimeout(() => {
+            el.style.display = 'none';
+          }, 200);
         }, duration);
       }
     }
