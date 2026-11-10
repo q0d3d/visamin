@@ -1438,22 +1438,42 @@
       }
     }
 
-    // Direct REST API fetch wrapper
-    async function driveFetch(url, options = {}) {
-      if (!accessToken) throw new Error("Not authenticated");
-      options.headers = options.headers || {};
-      options.headers['Authorization'] = `Bearer ${accessToken}`;
-      const res = await fetch(url, options);
-      if (!res.ok) {
-        const errText = await res.text();
-        if (res.status === 401) {
-          clearSavedDriveToken();
-          showToast("Google Drive session expired. Please click connect Google Drive again.");
-        }
-        throw new Error(`Drive API Error ${res.status}: ${errText}`);
-      }
-      return res;
+    // Direct REST API fetch wrapper with automatic silent token refresh
+async function driveFetch(url, options = {}) {
+  // Check if token is missing or within 2 minutes of expiring
+  if (!accessToken || Date.now() > (parseInt(tokenExpiry, 10) - 120000)) {
+    if (tokenClient) {
+      await new Promise((resolve) => {
+        tokenClient.requestAccessToken({
+          prompt: '',
+          callback: (tokenResponse) => {
+            if (tokenResponse && tokenResponse.access_token) {
+              accessToken = tokenResponse.access_token;
+              tokenExpiry = Date.now() + (parseInt(tokenResponse.expires_in, 10) || 3600) * 1000 - 60000;
+              localStorage.setItem('gdrive_access_token', accessToken);
+              localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
+            }
+            resolve();
+          }
+        });
+      });
     }
+  }
+
+  if (!accessToken) throw new Error("Not authenticated");
+  options.headers = options.headers || {};
+  options.headers['Authorization'] = `Bearer ${accessToken}`;
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    const errText = await res.text();
+    if (res.status === 401) {
+      clearSavedDriveToken();
+      showToast("Google Drive session expired. Please click connect Google Drive again.");
+    }
+    throw new Error(`Drive API Error ${res.status}: ${errText}`);
+  }
+  return res;
+}
 
     async function getOrCreateAppFolder() {
       if (!accessToken) return;
