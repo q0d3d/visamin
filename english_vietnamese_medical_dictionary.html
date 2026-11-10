@@ -1431,10 +1431,11 @@
       if (!data) return "";
       const enTitle = data.postTitle || "";
       const altEn = stripHTML(data.altEnglishTerms);
-      const vnTerms = (data.terms || []).map(t => stripHTML(t.headwordHTML)).join(' ');
+      const vnTerms = (data.terms || []).map(t => stripHTML(t.headwordHTML)).filter(Boolean).join(' ; ');
       const altVn = computeAutomaticAltSpellings(data);
 
-      const fullText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`;
+      // Join sections with semicolons to prevent cross-term boundary matches
+      const fullText = [enTitle, altEn, vnTerms, altVn].filter(Boolean).join(' ; ');
       return removeDiacritics(fullText).replace(/\s+/g, ' ').trim().toLowerCase();
     }
 
