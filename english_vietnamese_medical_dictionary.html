@@ -1448,12 +1448,11 @@
       const fullText = allItems.join(' ; ');
       return removeDiacritics(fullText).replace(/\s+/g, ' ').trim().toLowerCase();
     }
+
     async function saveEntryToDrive() {
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
       const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
-
-      // 1. Show persistent toast (0 = stay on screen until updated)
-      showToast("Saving to Google Drive...", 0);
+      showToast("Saving to Google Drive...");
 
       await uploadJsonToDrive(fileName, JSON.stringify(entryData, null, 2));
 
@@ -1468,7 +1467,7 @@
         console.error("Failed to update index:", err);
       }
 
-      // Update in-memory cache
+      // Update in-memory cache instantly without clearing or refetching
       const existingIdx = libraryEntriesCache.findIndex(e => e.name === fileName);
       if (existingIdx !== -1) {
         libraryEntriesCache[existingIdx].displayName = displayName;
@@ -1482,11 +1481,10 @@
         });
       }
 
+      showToast(`Saved to ${fileName}`);
       markClean();
-
-      // 2. Overwrite with success message (auto-hides after 3 seconds)
-      showToast(`Saved to ${fileName}`, 3000);
     }
+
     async function deleteEntryFromDrive(fileId, name) {
       if (confirm(`Delete ${name} from Google Drive?`)) {
         try {
@@ -2779,48 +2777,7 @@
     function handleManualCodeEdit() {document.getElementById('publii-live-output').innerHTML = document.getElementById('raw-html-editor').value; markDirty();}
     function switchTab(t) {currentTab = t;['form', 'code', 'import'].forEach(x => {document.getElementById(`tab-btn-${x}`).className = x === t ? "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm" : "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200"; const c = document.getElementById(`tab-content-${x}`); if (x === t) c.classList.remove('hidden'); else c.classList.add('hidden');});}
     function togglePreviewTheme() {isDarkPreview = !isDarkPreview; const f = document.getElementById('publii-live-output'), c = document.getElementById('preview-viewport-container'), b = document.getElementById('theme-btn-text'); if (isDarkPreview) {f.classList.add('dark-theme-preview'); c.classList.add('dark-theme-preview'); b.textContent = "Dark Theme";} else {f.classList.remove('dark-theme-preview'); c.classList.remove('dark-theme-preview'); b.textContent = "Light Theme";} }
-    function showToast(msg, duration = 3000) {
-      let el = document.getElementById('toast');
-
-      // Create the element dynamically if it doesn't exist in HTML
-      if (!el) {
-        el = document.createElement('div');
-        el.id = 'toast';
-        document.body.appendChild(el);
-      }
-
-      // Force top-level fixed styling directly via inline CSS
-      el.style.cssText = `
-    position: fixed !important;
-    bottom: 24px !important;
-    right: 24px !important;
-    z-index: 99999 !important;
-    background-color: #0f172a !important;
-    color: #38bdf8 !important;
-    border: 1px solid #334155 !important;
-    padding: 12px 20px !important;
-    border-radius: 8px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
-    display: block !important;
-    opacity: 1 !important;
-    transition: opacity 0.2s ease-in-out !important;
-  `;
-
-      el.textContent = msg;
-
-      if (el._timer) clearTimeout(el._timer);
-
-      if (duration > 0) {
-        el._timer = setTimeout(() => {
-          el.style.opacity = '0';
-          setTimeout(() => {
-            el.style.display = 'none';
-          }, 200);
-        }, duration);
-      }
-    }
+    function showToast(msg) {const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; t.classList.remove('translate-y-20', 'opacity-0'); t.classList.add('translate-y-0', 'opacity-100'); setTimeout(() => {t.classList.remove('translate-y-0', 'opacity-100'); t.classList.add('translate-y-20', 'opacity-0');}, 2500);}
     function copyHTMLForPublii() {const h = generateEntryHTML(); navigator.clipboard.writeText(h).then(() => showToast("Copied!")).catch(() => {const t = document.createElement('textarea'); t.value = h; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); showToast("Copied!");});}
     function escapeAttr(str) {return str ? String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';}
 
