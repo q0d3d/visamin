@@ -1405,39 +1405,48 @@
       }
     }
 
-    // 1. Strips HTML tags and converts block elements/line breaks to spaces
-    function stripHTML(html) {
-      if (!html) return "";
-      const d = document.createElement('div');
-      d.innerHTML = String(html)
-        .replace(/<br\s*\/?>/gi, ' ')
-        .replace(/<\/(div|p|h[1-6])>/gi, ' ');
-      return d.textContent || d.innerText || "";
-    }
+    // Extracts clean terms separated by semicolons from HTML blocks and line breaks
+function extractTermsFromHTML(html) {
+  if (!html) return [];
+  const temp = document.createElement('div');
+  // Convert opening tags, closing tags, and line breaks into semicolon delimiters
+  temp.innerHTML = String(html)
+    .replace(/<br\s*\/?>/gi, ' ; ')
+    .replace(/<\/(div|p|h[1-6])>/gi, ' ; ')
+    .replace(/<(div|p|h[1-6])[^>]*>/gi, ' ; ');
+  
+  const rawText = temp.textContent || temp.innerText || "";
+  return rawText.split(';').map(s => s.trim()).filter(Boolean);
+}
 
-    // 2. Converts diacritics and ALL Unicode dash variants (hyphens, en-dashes, em-dashes, minus signs) to spaces
-    function removeDiacritics(str) {
-      if (!str) return "";
-      return str
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/đ/g, 'd')
-        .replace(/Đ/g, 'D')
-        .replace(/[\u2010-\u2015\u2212\-–—]/g, ' ');
-    }
+// Converts diacritics and all Unicode dash variants to spaces
+function removeDiacritics(str) {
+  if (!str) return "";
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .replace(/[\u2010-\u2015\u2212\-–—]/g, ' '); 
+}
 
-    // 3. Extracts clean, unformatted search text
-    function buildEntrySearchString(data) {
-      if (!data) return "";
-      const enTitle = data.postTitle || "";
-      const altEn = stripHTML(data.altEnglishTerms);
-      const vnTerms = (data.terms || []).map(t => stripHTML(t.headwordHTML)).filter(Boolean).join(' ; ');
-      const altVn = computeAutomaticAltSpellings(data);
-
-      // Join sections with semicolons to prevent cross-term boundary matches
-      const fullText = [enTitle, altEn, vnTerms, altVn].filter(Boolean).join(' ; ');
-      return removeDiacritics(fullText).replace(/\s+/g, ' ').trim().toLowerCase();
-    }
+// Builds a clean, semicolon-delimited search index string
+function buildEntrySearchString(data) {
+  if (!data) return "";
+  const enTitle = (data.postTitle || "").trim();
+  const altEnTerms = extractTermsFromHTML(data.altEnglishTerms);
+  const vnTerms = (data.terms || []).flatMap(t => extractTermsFromHTML(t.headwordHTML));
+  
+  const altVnTerms = computeAutomaticAltSpellings(data)
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+  
+  // Combine all distinct terms with semicolon delimiters
+  const allItems = [enTitle, ...altEnTerms, ...vnTerms, ...altVnTerms].filter(Boolean);
+  const fullText = allItems.join(' ; ');
+  return removeDiacritics(fullText).replace(/\s+/g, ' ').trim().toLowerCase();
+}
 
     async function saveEntryToDrive() {
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
