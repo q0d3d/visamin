@@ -1095,188 +1095,35 @@
 
   <script>
     /* ==========================================================================
-       0. GOOGLE DRIVE API INTEGRATION & AUTHENTICATION (OAUTH REDIRECT)
-       ========================================================================== */
-    const CLIENT_ID = '588068745367-pspl34cbq8mb4uu6kqp7ei21c8ah5upd.apps.googleusercontent.com';
-    const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-    const FOLDER_NAME = 'Danh Từ Y Khoa Anh–Việt';
-    const REDIRECT_URI = window.location.origin + window.location.pathname;
+   0. GOOGLE DRIVE APPS SCRIPT WEB APP CONFIGURATION
+   ========================================================================== */
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8UyVCEbiRmqwSknBjB8MySKAtjIj4Jr886QMMG6OaK5W7WtATG5llpRf3GRKipz7H/exec'; // <-- PASTE YOUR DEPLOYED WEB APP URL HERE
 
-    let accessToken = localStorage.getItem('gdrive_access_token') || null;
-    let tokenExpiry = localStorage.getItem('gdrive_token_expiry') || 0;
-    let driveFolderId = null;
-    let isDriveConnected = false;
+    let isDriveConnected = true;
     let hasUnsavedChanges = false;
     let draggedTermIndex = null;
 
     function markDirty() {hasUnsavedChanges = true;}
     function markClean() {hasUnsavedChanges = false;}
 
-
-
-    // Helper to check if entry has any content
-    function isEntryEmpty(data = entryData) {
-      if (!data) return true;
-
-      // Helper to extract clean plain text from HTML strings
-      const getText = (html) => {
-        if (!html) return '';
-        const temp = document.createElement('div');
-        temp.innerHTML = html;
-        return (temp.textContent || temp.innerText || '').trim();
-      };
-
-      const hasTitle = Boolean(data.postTitle && data.postTitle.trim());
-      const hasAlt = Boolean(getText(data.altEnglishTerms));
-      const hasGlobalPron = Boolean(data.globalPronunciationRules && data.globalPronunciationRules.length > 0);
-      const hasGlobalVar = Boolean(data.globalVariantRules && data.globalVariantRules.length > 0);
-
-      const hasTerms = (data.terms || []).some(t => {
-        const hwText = getText(t.headwordHTML);
-        const commText = getText(t.commentsHTML);
-        const hasLabels = (t.labels && t.labels.length > 0) || (t.customLabels && t.customLabels.length > 0);
-        return hwText || commText || hasLabels;
-      });
-
-      const hasRefs = (data.references || []).some(r => {
-        return (r.authors && r.authors.trim()) ||
-          (r.title && r.title.trim()) ||
-          (r.pages && r.pages.trim()) ||
-          getText(r.quoteHTML);
-      });
-
-      return !(hasTitle || hasAlt || hasGlobalPron || hasGlobalVar || hasTerms || hasRefs);
-    }
-
-    // Guard against closing tab when unsaved (only if entry has actual content)
-    window.addEventListener('beforeunload', (e) => {
-      if (hasUnsavedChanges && !isEntryEmpty()) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    });
-
     function hideInitialOverlay() {const el = document.getElementById('initial-login-overlay'); if (el) el.classList.add('hidden');}
     function showInitialOverlay() {const el = document.getElementById('initial-login-overlay'); if (el) el.classList.remove('hidden');}
 
-    // Bind initialization hooks to window
     window.onload = async function () {
-      initGisTokenClient();
       initIPAPalette();
       await initDB();
       await loadDraft();
       renderFormUI();
-
-      // 1. Check if returning from Google OAuth Redirect
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      const urlAccessToken = params.get('access_token');
-      const urlExpiresIn = params.get('expires_in');
-      const urlError = params.get('error');
-
-      if (urlError) {
-        showDriveAuthErrorModal("redirect_error", "Google returned an error: " + urlError);
-        window.history.replaceState(null, null, window.location.pathname);
-        showInitialOverlay();
-        return;
-      }
-
-      if (urlAccessToken) {
-        // Successfully got token from URL!
-        accessToken = urlAccessToken;
-        const expiresIn = (parseInt(urlExpiresIn, 10) || 3600) * 1000;
-        tokenExpiry = Date.now() + expiresIn - 60000;
-
-        localStorage.setItem('gdrive_access_token', accessToken);
-        localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
-
-        // Clean up the URL so the access token is hidden
-        window.history.replaceState(null, null, window.location.pathname);
-
-        showToast("Google Drive connected!");
-        await verifyAndInitDrive();
-      } else {
-        // 2. Not returning from redirect; check for existing saved token
-        await checkSavedDriveToken();
-      }
+      hideInitialOverlay(); // Auto-hide login screen since Web App is permanently connected
+      setDriveConnectedUI(true);
     };
-
-    async function verifyAndInitDrive() {
-      try {
-        const res = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
-          headers: {'Authorization': `Bearer ${accessToken}`}
-        });
-        if (res.ok) {
-          setDriveConnectedUI(true);
-          await getOrCreateAppFolder();
-          await loadRulesFromDrive();
-          if (!document.getElementById('entries-library-modal').classList.contains('hidden')) {
-            await loadEntriesFromDrive();
-          }
-          return true;
-        }
-      } catch (e) {console.warn("Google Drive token validation failed:", e);}
-
-      clearSavedDriveToken();
-      return false;
-    }
-
-    async function checkSavedDriveToken() {
-      if (accessToken && Date.now() < parseInt(tokenExpiry, 10)) {
-        const isValid = await verifyAndInitDrive();
-        if (isValid) return true;
-      }
-      clearSavedDriveToken();
-      return false;
-    }
-
-    function clearSavedDriveToken() {
-      accessToken = null;
-      tokenExpiry = 0;
-      isDriveConnected = false;
-      localStorage.removeItem('gdrive_access_token');
-      localStorage.removeItem('gdrive_token_expiry');
-      setDriveDisconnectedUI();
-    }
 
     function setDriveConnectedUI(connected) {
       isDriveConnected = connected;
-      if (connected) hideInitialOverlay();
       const btn = document.getElementById('drive-auth-btn');
       if (!btn) return;
-      if (connected) {
-        btn.innerHTML = `
-          <svg class="w-4 h-4 shrink-0" viewBox="0 0 800 741.37" fill="none">
-            <mask id="drive-logo-mask-conn" width="168" height="154" x="12" y="18" maskUnits="userSpaceOnUse">
-              <path fill="#fff" d="M63.09 37c14.626-25.333 51.193-25.334 65.819 0l45.033 78c14.626 25.334-3.657 57.001-32.91 57.001H50.967c-29.253 0-47.536-31.667-32.91-57.001Z"/>
-            </mask>
-            <g mask="url(#drive-logo-mask-conn)" transform="matrix(4.8140532,0,0,4.8140532,-62.146701,-86.652356)">
-              <path fill="url(#drive-logo-b-conn)" d="M206.905 172.02h-91.888l-19.015-32.934 45.944-79.578Z"/>
-              <path fill="url(#drive-logo-c-conn)" d="M-14.919 172.006 50.04 59.494v.002L31.032 92.422h38.02L115 172.004l-129.918.001Z"/>
-              <path fill="url(#drive-logo-d-conn)" d="M96.007-20.085 141.954 59.5l-19.011 32.928H31.048Z"/>
-            </g>
-            <defs>
-              <linearGradient id="drive-logo-b-conn" x1="193.6" x2="103.09" y1="165.6" y2="111.21" gradientUnits="userSpaceOnUse">
-                <stop offset=".09" stop-color="#ffe921"/>
-                <stop offset="1" stop-color="#fec700"/>
-              </linearGradient>
-              <linearGradient id="drive-logo-c-conn" x1="114.4" x2="15.53" y1="181.61" y2="121.8" gradientUnits="userSpaceOnUse">
-                <stop offset=".15" stop-color="#a9a8ff"/>
-                <stop offset=".33" stop-color="#6d97ff"/>
-                <stop offset=".48" stop-color="#3186ff"/>
-              </linearGradient>
-              <linearGradient id="drive-logo-d-conn" x1="128.88" x2="28.7" y1="37.88" y2="84.64" gradientUnits="userSpaceOnUse">
-                <stop offset=".55" stop-color="#0ebc5f"/>
-                <stop offset=".85" stop-color="#78c9ff"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <span>Google Drive connected ✓</span>
-        `;
-        btn.className = 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm border border-emerald-500 font-medium';
-      } else {
-        setDriveDisconnectedUI();
-      }
+      btn.innerHTML = `<span>Google Drive Connected ✓</span>`;
+      btn.className = 'text-xs bg-emerald-600 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm font-medium';
     }
 
     function setDriveDisconnectedUI() {
@@ -1439,41 +1286,41 @@
     }
 
     // Direct REST API fetch wrapper with automatic silent token refresh
-async function driveFetch(url, options = {}) {
-  // Check if token is missing or within 2 minutes of expiring
-  if (!accessToken || Date.now() > (parseInt(tokenExpiry, 10) - 120000)) {
-    if (tokenClient) {
-      await new Promise((resolve) => {
-        tokenClient.requestAccessToken({
-          prompt: '',
-          callback: (tokenResponse) => {
-            if (tokenResponse && tokenResponse.access_token) {
-              accessToken = tokenResponse.access_token;
-              tokenExpiry = Date.now() + (parseInt(tokenResponse.expires_in, 10) || 3600) * 1000 - 60000;
-              localStorage.setItem('gdrive_access_token', accessToken);
-              localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
-            }
-            resolve();
-          }
-        });
-      });
-    }
-  }
+    async function driveFetch(url, options = {}) {
+      // Check if token is missing or within 2 minutes of expiring
+      if (!accessToken || Date.now() > (parseInt(tokenExpiry, 10) - 120000)) {
+        if (tokenClient) {
+          await new Promise((resolve) => {
+            tokenClient.requestAccessToken({
+              prompt: '',
+              callback: (tokenResponse) => {
+                if (tokenResponse && tokenResponse.access_token) {
+                  accessToken = tokenResponse.access_token;
+                  tokenExpiry = Date.now() + (parseInt(tokenResponse.expires_in, 10) || 3600) * 1000 - 60000;
+                  localStorage.setItem('gdrive_access_token', accessToken);
+                  localStorage.setItem('gdrive_token_expiry', tokenExpiry.toString());
+                }
+                resolve();
+              }
+            });
+          });
+        }
+      }
 
-  if (!accessToken) throw new Error("Not authenticated");
-  options.headers = options.headers || {};
-  options.headers['Authorization'] = `Bearer ${accessToken}`;
-  const res = await fetch(url, options);
-  if (!res.ok) {
-    const errText = await res.text();
-    if (res.status === 401) {
-      clearSavedDriveToken();
-      showToast("Google Drive session expired. Please click connect Google Drive again.");
+      if (!accessToken) throw new Error("Not authenticated");
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = `Bearer ${accessToken}`;
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const errText = await res.text();
+        if (res.status === 401) {
+          clearSavedDriveToken();
+          showToast("Google Drive session expired. Please click connect Google Drive again.");
+        }
+        throw new Error(`Drive API Error ${res.status}: ${errText}`);
+      }
+      return res;
     }
-    throw new Error(`Drive API Error ${res.status}: ${errText}`);
-  }
-  return res;
-}
 
     async function getOrCreateAppFolder() {
       if (!accessToken) return;
@@ -1497,51 +1344,47 @@ async function driveFetch(url, options = {}) {
       } catch (e) {console.error("Error creating/finding folder", e);}
     }
 
+    async function refreshEntriesLibrary() {
+      libraryEntriesCache = [];
+      await loadEntriesFromDrive();
+    }
+
+
+    function removeDiacritics(str) {
+      if (!str) return "";
+      return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
+    }
+    let libraryEntriesCache = [];
+    let isLibraryLoading = false;
+
     async function uploadJsonToDrive(fileName, content) {
-      if (!accessToken || !driveFolderId) return;
       try {
-        const q = encodeURIComponent(`name='${fileName}' and '${driveFolderId}' in parents and trashed=false`);
-        const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`);
-        const searchData = await searchRes.json();
-        const existingFileId = searchData.files && searchData.files.length > 0 ? searchData.files[0].id : null;
-
-        const fileMetadata = {name: fileName, parents: existingFileId ? [] : [driveFolderId]};
-        const boundary = '-------314159265358979323846';
-        const delimiter = "\r\n--" + boundary + "\r\n";
-        const close_delim = "\r\n--" + boundary + "--";
-        const multipartRequestBody =
-          delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(fileMetadata) +
-          delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + content + close_delim;
-
-        const url = existingFileId
-          ? `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=multipart`
-          : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
-
-        await driveFetch(url, {
-          method: existingFileId ? 'PATCH' : 'POST',
-          headers: {'Content-Type': `multipart/related; boundary="${boundary}"`},
-          body: multipartRequestBody
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({action: 'write', fileName: fileName, content: content})
         });
-      } catch (e) {console.error("Upload failed", e);}
+        return await res.json();
+      } catch (e) {
+        console.error("Upload failed", e);
+      }
     }
 
     async function readJsonFromDrive(fileName) {
-      if (!accessToken || !driveFolderId) return null;
       try {
-        const q = encodeURIComponent(`name='${fileName}' and '${driveFolderId}' in parents and trashed=false`);
-        const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`);
-        const searchData = await searchRes.json();
-        if (searchData.files && searchData.files.length > 0) {
-          const fileId = searchData.files[0].id;
-          const getRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
-          return await getRes.json();
-        }
-      } catch (e) {console.error("Read failed", e);}
-      return null;
+        const res = await fetch(`${SCRIPT_URL}?action=read&name=${encodeURIComponent(fileName)}`);
+        return await res.json();
+      } catch (e) {
+        console.error("Read failed", e);
+        return null;
+      }
     }
 
     async function syncRulesToDrive() {
-      if (!isDriveConnected || !driveFolderId || !db) return;
+      if (!db) return;
       const getStoreData = (storeName) => new Promise((resolve) => {
         const tx = db.transaction(storeName, 'readonly');
         tx.objectStore(storeName).getAll().onsuccess = (e) => resolve(e.target.result);
@@ -1553,7 +1396,6 @@ async function driveFetch(url, options = {}) {
     }
 
     async function loadRulesFromDrive() {
-      if (!isDriveConnected || !driveFolderId) return;
       try {
         const pRules = await readJsonFromDrive('_pronunciation_rules.json');
         if (pRules && Array.isArray(pRules)) {
@@ -1565,96 +1407,157 @@ async function driveFetch(url, options = {}) {
           const tx = db.transaction('variant_rules', 'readwrite');
           vRules.forEach(r => tx.objectStore('variant_rules').put(r));
         }
-
-        await syncRulesToDrive();
       } catch (e) {
         console.error("Failed to sync rules from drive", e);
       }
     }
 
-    async function refreshEntriesLibrary() {
-      libraryEntriesCache = [];
-      await loadEntriesFromDrive();
+    function buildEntrySearchString(data) {
+      if (!data) return "";
+      const enTitle = data.postTitle || "";
+      const altEn = data.altEnglishTerms || "";
+      const vnTerms = (data.terms || []).map(t => {
+        const d = document.createElement('div');
+        d.innerHTML = (t.headwordHTML || "").replace(/<br\s*\/?>/gi, ' ');
+        return d.textContent;
+      }).join(' ');
+      const altVn = computeAutomaticAltSpellings(data);
+      const fullText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.replace(/\s+/g, ' ').toLowerCase();
+      return removeDiacritics(fullText);
     }
 
     async function saveEntryToDrive() {
-      if (!isDriveConnected) {showToast("Please connect Google Drive first!"); return;}
       const title = entryData.postTitle.trim() || 'Untitled_Entry';
       const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
       showToast("Saving to Google Drive...");
+
       await uploadJsonToDrive(fileName, JSON.stringify(entryData, null, 2));
-      libraryEntriesCache = []; // Reset cache so new entry appears next time library is opened
+
+      try {
+        let indexData = await readJsonFromDrive('_search_index.json') || {};
+        indexData[fileName] = {
+          title: entryData.postTitle || "Untitled",
+          searchStr: buildEntrySearchString(entryData)
+        };
+        await uploadJsonToDrive('_search_index.json', JSON.stringify(indexData, null, 2));
+      } catch (err) {
+        console.error("Failed to update index:", err);
+      }
+
+      libraryEntriesCache = [];
       showToast(`Saved to ${fileName}`);
       markClean();
     }
-    function removeDiacritics(str) {
-      if (!str) return "";
-      return str
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/đ/g, 'd')
-        .replace(/Đ/g, 'D');
+
+    async function deleteEntryFromDrive(fileId, name) {
+      if (confirm(`Delete ${name} from Google Drive?`)) {
+        try {
+          await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({action: 'delete', fileId: fileId, fileName: name})
+          });
+
+          try {
+            let indexData = await readJsonFromDrive('_search_index.json') || {};
+            if (indexData[name]) {
+              delete indexData[name];
+              await uploadJsonToDrive('_search_index.json', JSON.stringify(indexData, null, 2));
+            }
+          } catch (err) {
+            console.error("Failed to update index after deletion:", err);
+          }
+
+          await loadEntriesFromDrive();
+          showToast("Deleted!");
+        } catch (e) {
+          showToast("Delete failed");
+        }
+      }
     }
-    let libraryEntriesCache = [];
-    let isLibraryLoading = false;
+
     async function loadEntriesFromDrive() {
-      if (!isDriveConnected || !driveFolderId || isLibraryLoading) return;
+      if (isLibraryLoading) return;
       isLibraryLoading = true;
 
       const list = document.getElementById('library-entries-list');
-      list.innerHTML = `<p class="text-slate-400 text-xs">Loading files from Google Drive...</p>`;
+      list.innerHTML = `<p class="text-slate-400 text-xs">Loading entries...</p>`;
       libraryEntriesCache = [];
 
       try {
-        const q = encodeURIComponent(`'${driveFolderId}' in parents and mimeType='application/json' and trashed=false`);
-        const listRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
-        const data = await listRes.json();
+        const listRes = await fetch(`${SCRIPT_URL}?action=list`);
+        const files = await listRes.json();
 
-        if (!data.files || data.files.length === 0) {
+        if (!files || files.length === 0) {
           list.innerHTML = `<p class="text-slate-500 text-xs">No entries stored in Google Drive folder yet.</p>`;
           isLibraryLoading = false;
           return;
         }
 
-        const validFiles = data.files.filter(f => !f.name.startsWith('_'));
+        const validFiles = files.filter(f => !f.name.startsWith('_'));
+        const indexData = await readJsonFromDrive('_search_index.json') || {};
 
-        // Fetch all JSON contents in parallel using Promise.all
-        const loadedEntries = await Promise.all(
-          validFiles.map(async (file) => {
-            try {
-              const fileRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`);
-              const content = await fileRes.json();
+        libraryEntriesCache = validFiles.map(file => {
+          const cached = indexData[file.name];
+          const displayName = cached?.title || file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
+          const searchStr = cached?.searchStr || removeDiacritics(displayName.toLowerCase());
 
-              if (content) {
-                const enTitle = content.postTitle || "";
-                const altEn = content.altEnglishTerms || "";
-                const vnTerms = (content.terms || []).map(t => {
-                  const d = document.createElement('div'); d.innerHTML = t.headwordHTML || ""; return d.textContent;
-                }).join(' ');
-                const altVn = computeAutomaticAltSpellings(content);
-                const fullSearchText = `${enTitle} ${altEn} ${vnTerms} ${altVn}`.toLowerCase();
+          return {
+            name: file.name,
+            fileId: file.id,
+            displayName: displayName,
+            searchStr: searchStr
+          };
+        });
 
-                return {
-                  name: file.name,
-                  fileId: file.id,
-                  data: content,
-                  searchStr: removeDiacritics(fullSearchText)
-                };
-              }
-            } catch (err) {
-              console.error(`Failed to load file ${file.name}:`, err);
-            }
-            return null;
-          })
-        );
-
-        libraryEntriesCache = loadedEntries.filter(entry => entry !== null);
         filterLibraryEntries();
       } catch (e) {
         console.error(e);
         list.innerHTML = `<p class="text-rose-400 text-xs">Error reading Google Drive folder: ${e.message}</p>`;
       } finally {
         isLibraryLoading = false;
+      }
+    }
+
+    function filterLibraryEntries() {
+      const rawQuery = document.getElementById('library-search').value.toLowerCase();
+      const normalizedQuery = removeDiacritics(rawQuery);
+      const c = document.getElementById('library-entries-list');
+      c.innerHTML = '';
+
+      const f = libraryEntriesCache.filter(e => e.searchStr.includes(normalizedQuery));
+      if (f.length === 0) {
+        c.innerHTML = `<p class="text-slate-500 text-sm">No entries found.</p>`;
+        return;
+      }
+      f.forEach(e => {
+        const d = document.createElement('div');
+        d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+        d.innerHTML = `
+      <div><strong class="text-indigo-300">${escapeAttr(e.displayName)}</strong></div>
+      <div>
+        <button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2 hover:bg-indigo-600/50">Open</button>
+        <button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded hover:bg-rose-600/50">Delete</button>
+      </div>
+    `;
+        c.appendChild(d);
+      });
+    }
+
+    async function loadEntryFromLibrary(fileName) {
+      if (hasUnsavedChanges && !confirm("You have unsaved changes. Are you sure you want to load a different entry?")) return;
+      showToast("Loading entry...");
+      try {
+        const content = await readJsonFromDrive(fileName);
+        if (content) {
+          entryData = content;
+          renderFormUI();
+          closeEntriesLibrary();
+          markClean();
+          showToast("Loaded!");
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to load entry content.");
       }
     }
 
@@ -3101,42 +3004,8 @@ async function driveFetch(url, options = {}) {
       }
     }
     function closeEntriesLibrary() {document.getElementById('entries-library-modal').classList.add('hidden');}
-    function filterLibraryEntries() {
-      const rawQuery = document.getElementById('library-search').value.toLowerCase();
-      const normalizedQuery = removeDiacritics(rawQuery);
-      const c = document.getElementById('library-entries-list');
-      c.innerHTML = '';
 
-      const f = libraryEntriesCache.filter(e => e.searchStr.includes(normalizedQuery));
-      if (f.length === 0) {
-        c.innerHTML = `<p class="text-slate-500 text-sm">No entries found.</p>`;
-        return;
-      }
-      f.forEach(e => {
-        const d = document.createElement('div');
-        d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-        d.innerHTML = `<div><strong class="text-indigo-300">${escapeAttr(e.data.postTitle || "Untitled")}</strong></div><div><button onclick="loadEntryFromLibrary('${e.name}')" class="bg-indigo-600/30 text-indigo-300 px-3 py-1 text-xs rounded mr-2">Open</button><button onclick="deleteEntryFromDrive('${e.fileId}', '${e.name}')" class="bg-rose-600/30 text-rose-300 px-3 py-1 text-xs rounded">Delete</button></div>`;
-        c.appendChild(d);
-      });
-    }
-    async function loadEntryFromLibrary(name) {
-      const item = libraryEntriesCache.find(e => e.name === name);
-      if (item) {
-        if (hasUnsavedChanges && !confirm("You have unsaved changes. Are you sure you want to load a different entry?")) return;
-        entryData = item.data; renderFormUI(); closeEntriesLibrary(); markClean(); showToast("Loaded!");
-      }
-    }
-    async function deleteEntryFromDrive(fileId, name) {
-      if (confirm(`Delete ${name} from Google Drive?`)) {
-        try {
-          await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {method: 'DELETE'});
-          await loadEntriesFromDrive();
-          showToast("Deleted!");
-        } catch (e) {
-          showToast("Delete failed");
-        }
-      }
-    }
+
 
     /* HTML Import Engine (Requirement 6) */
     function parseHTMLToEntryData(rawHtml) {
