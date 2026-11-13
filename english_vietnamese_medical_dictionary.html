@@ -381,13 +381,13 @@
       border-color: #6366f1;
     }
   </style>
-  
+
 </head>
 
 <body
   class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white">
 
-  
+
 
   <!-- Floating Toolbars -->
   <div id="selection-toolbar"
@@ -740,7 +740,7 @@
     </div>
   </div>
 
-  
+
 
   <!-- Header Navigation -->
   <header
@@ -768,7 +768,7 @@
         class="text-xs bg-slate-700/60 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-500/30">Rules
         library</button>
 
-      
+
 
       <div class="w-px h-6 bg-slate-700 mx-1"></div>
 
@@ -958,14 +958,14 @@
    ========================================================================== */
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8UyVCEbiRmqwSknBjB8MySKAtjIj4Jr886QMMG6OaK5W7WtATG5llpRf3GRKipz7H/exec'; // <-- PASTE YOUR DEPLOYED WEB APP URL HERE
 
-    
+
     let hasUnsavedChanges = false;
     let draggedTermIndex = null;
 
     function markDirty() {hasUnsavedChanges = true;}
     function markClean() {hasUnsavedChanges = false;}
 
-    
+
     window.onload = async function () {
       initIPAPalette();
       await initDB();
@@ -974,9 +974,9 @@
       loadEntriesFromDrive();
     };
 
-    
 
-    
+
+
     async function refreshEntriesLibrary() {
       libraryEntriesCache = [];
       await loadEntriesFromDrive();
@@ -1797,6 +1797,11 @@
     function formatAltEnglishOutput(rawHTML) {
       if (!rawHTML) return "";
       const temp = document.createElement('div');
+
+      // Remove unwanted inline formatting
+      temp.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
+      temp.querySelectorAll('span').forEach(span => span.replaceWith(...span.childNodes));
+      
       temp.innerHTML = rawHTML.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '').replace(/<p[^>]*>/gi, '<br>').replace(/<\/p>/gi, '');
       const lines = temp.innerHTML.split(/<br\s*\/?>|\n/gi);
       return lines.map(l => l.trim()).filter(Boolean).join('; ');
