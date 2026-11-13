@@ -966,12 +966,18 @@
     function markClean() {hasUnsavedChanges = false;}
 
 
+    let pronRulesCache = [];
+    let varRulesCache = [];
+    let areRulesLoadedFromDrive = false;
+    let isRulesLoading = false;
+
     window.onload = async function () {
       initIPAPalette();
       await initDB();
       await loadDraft();
       renderFormUI();
       loadEntriesFromDrive();
+      loadRulesFromDrive();
     };
 
 
@@ -1009,32 +1015,28 @@
       }
     }
 
-    async function syncRulesToDrive() {
-      if (!db) return;
-      const getStoreData = (storeName) => new Promise((resolve) => {
-        const tx = db.transaction(storeName, 'readonly');
-        tx.objectStore(storeName).getAll().onsuccess = (e) => resolve(e.target.result);
-      });
-      const pRules = await getStoreData('pronunciation_rules');
-      await uploadJsonToDrive('_pronunciation_rules.json', JSON.stringify(pRules, null, 2));
-      const vRules = await getStoreData('variant_rules');
-      await uploadJsonToDrive('_variant_rules.json', JSON.stringify(vRules, null, 2));
-    }
-
-    async function loadRulesFromDrive() {
+    async function loadRulesFromDrive(forceRefresh = false) {
+      if (isRulesLoading) return;
+      if (areRulesLoadedFromDrive && !forceRefresh) return;
+      isRulesLoading = true;
       try {
-        const pRules = await readJsonFromDrive('_pronunciation_rules.json');
-        if (pRules && Array.isArray(pRules)) {
-          const tx = db.transaction('pronunciation_rules', 'readwrite');
-          pRules.forEach(r => tx.objectStore('pronunciation_rules').put(r));
-        }
-        const vRules = await readJsonFromDrive('_variant_rules.json');
-        if (vRules && Array.isArray(vRules)) {
-          const tx = db.transaction('variant_rules', 'readwrite');
-          vRules.forEach(r => tx.objectStore('variant_rules').put(r));
+        const [pRules, vRules] = await Promise.all([
+          readJsonFromDrive('_pronunciation_rules.json'),
+          readJsonFromDrive('_variant_rules.json')
+        ]);
+        const pValid = Array.isArray(pRules) || pRules === null || (pRules && /not found/i.test(pRules.error || ''));
+        const vValid = Array.isArray(vRules) || vRules === null || (vRules && /not found/i.test(vRules.error || ''));
+
+        if (Array.isArray(pRules)) pronRulesCache = pRules;
+        if (Array.isArray(vRules)) varRulesCache = vRules;
+
+        if (pValid && vValid) {
+          areRulesLoadedFromDrive = true;
         }
       } catch (e) {
-        console.error("Failed to sync rules from drive", e);
+        console.error("Failed to load rules from Google Drive:", e);
+      } finally {
+        isRulesLoading = false;
       }
     }
 
@@ -1109,6 +1111,9 @@
       // 2. Mark clean and notify user instantly (0ms wait)
       markClean();
       showToast("Saved!", 2000);
+
+      // 2.5 Save any new pronunciation/variant rules from this entry to Google Drive
+      saveEntryRulesToDrive(entryData);
 
       // 3. Send write operation to Google Drive in the background
       fetch(SCRIPT_URL, {
@@ -1338,53 +1343,144 @@
       });
     }
 
-    function savePronRuleToDB(target, ipa) {
-      if (!db || !target.trim() || !ipa.trim()) return;
-      const t = target.trim();
-      const cleanIpa = ipa.trim();
+    async function saveEntryRulesToDrive(data) {
+      if (!data) return;
 
-      const tx = db.transaction('pronunciation_rules', 'readwrite');
-      const store = tx.objectStore('pronunciation_rules');
+      // Always ensure Drive master rules are loaded first so we never overwrite Drive
+      if (!areRulesLoadedFromDrive) {
+        await loadRulesFromDrive(true);
+      }
+      if (!areRulesLoadedFromDrive) {
+        showToast("Could not sync rules with Google Drive. Check connection.", 4000);
+        return;
+      }
 
-      store.getAll().onsuccess = (e) => {
-        const existingRules = e.target.result || [];
-        // Check if an exact duplicate (same target AND same IPA) already exists
-        const isExactDuplicate = existingRules.some(
-          r => (r.target || "").toLowerCase() === t.toLowerCase() && (r.ipa || "").trim() === cleanIpa
-        );
+      const pronCandidates = [];
+      const varCandidates = [];
 
-        if (isExactDuplicate) return; // Do not insert duplicate
+      // 1. Collect from Global Rules in the entry
+      (data.globalPronunciationRules || []).forEach(r => {
+        if (r.target?.trim() && r.ipa?.trim()) {
+          pronCandidates.push({target: r.target.trim(), ipa: r.ipa.trim()});
+        }
+      });
 
-        const id = 'pron_' + t.toLowerCase() + '_' + Date.now();
-        store.put({id, target: t, ipa: cleanIpa, quốcNgữ: convertQuasiIPA(cleanIpa), createdAt: Date.now()});
-      };
+      (data.globalVariantRules || []).forEach(r => {
+        if (r.find?.trim() && r.variantsStr?.trim()) {
+          varCandidates.push({find: r.find.trim(), variantsStr: r.variantsStr.trim()});
+        }
+      });
 
-      tx.oncomplete = () => syncRulesToDrive();
-    }
+      // 2. Collect from inline highlights in Vietnamese headwords
+      (data.terms || []).forEach(term => {
+        if (!term.headwordHTML) return;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = term.headwordHTML;
 
-    function saveVarRuleToDB(find, variantsStr) {
-      if (!db || !find.trim() || !variantsStr.trim()) return;
-      const f = find.trim();
-      const cleanVars = parseVariantsString(variantsStr).join(', ');
-
-      const tx = db.transaction('variant_rules', 'readwrite');
-      const store = tx.objectStore('variant_rules');
-
-      store.getAll().onsuccess = (e) => {
-        const existingRules = e.target.result || [];
-        // Check if an exact duplicate (same main word AND same variant values) already exists
-        const isExactDuplicate = existingRules.some(r => {
-          const rVars = parseVariantsString(r.variantsStr).join(', ');
-          return (r.find || "").toLowerCase() === f.toLowerCase() && rVars === cleanVars;
+        tempDiv.querySelectorAll('.pronunciation').forEach(span => {
+          const t = span.textContent.trim();
+          const quocNgu = span.getAttribute('data-pronunciation') || '';
+          const ipa = reverseQuocNguToQuasiIPA(quocNgu).trim();
+          if (t && ipa) pronCandidates.push({target: t, ipa});
         });
 
-        if (isExactDuplicate) return; // Do not insert duplicate
+        tempDiv.querySelectorAll('.lexical-variant').forEach(span => {
+          const f = span.textContent.trim();
+          const v = (span.getAttribute('data-variant') || '').trim();
+          if (f && v) varCandidates.push({find: f, variantsStr: v});
+        });
+      });
 
-        const id = 'var_' + f.toLowerCase() + '_' + Date.now();
-        store.put({id, find: f, variantsStr: variantsStr.trim(), createdAt: Date.now()});
-      };
+      let pronChanged = false;
+      let varChanged = false;
 
-      tx.oncomplete = () => syncRulesToDrive();
+      pronCandidates.forEach((cand, idx) => {
+        const isDuplicate = pronRulesCache.some(
+          r => (r.target || "").toLowerCase() === cand.target.toLowerCase() && (r.ipa || "").trim() === cand.ipa
+        );
+        if (!isDuplicate) {
+          pronRulesCache.push({
+            id: `pron_${cand.target.toLowerCase()}_${Date.now()}_${idx}`,
+            target: cand.target,
+            ipa: cand.ipa,
+            quốcNgữ: convertQuasiIPA(cand.ipa),
+            createdAt: Date.now()
+          });
+          pronChanged = true;
+        }
+      });
+
+      varCandidates.forEach((cand, idx) => {
+        const cleanVars = parseVariantsString(cand.variantsStr).join(', ');
+        const isDuplicate = varRulesCache.some(r => {
+          const rVars = parseVariantsString(r.variantsStr).join(', ');
+          return (r.find || "").toLowerCase() === cand.find.toLowerCase() && rVars === cleanVars;
+        });
+        if (!isDuplicate) {
+          varRulesCache.push({
+            id: `var_${cand.find.toLowerCase()}_${Date.now()}_${idx}`,
+            find: cand.find,
+            variantsStr: cand.variantsStr,
+            createdAt: Date.now()
+          });
+          varChanged = true;
+        }
+      });
+
+      if (pronChanged) {
+        await uploadJsonToDrive('_pronunciation_rules.json', JSON.stringify(pronRulesCache, null, 2));
+      }
+      if (varChanged) {
+        await uploadJsonToDrive('_variant_rules.json', JSON.stringify(varRulesCache, null, 2));
+      }
+    }
+
+    async function addSinglePronRuleToDrive(target, ipa) {
+      if (!target.trim() || !ipa.trim()) return;
+      if (!areRulesLoadedFromDrive) await loadRulesFromDrive(true);
+      if (!areRulesLoadedFromDrive) {
+        showToast("Cannot reach Google Drive. Rule not saved.", 4000);
+        return;
+      }
+      const t = target.trim();
+      const cleanIpa = ipa.trim();
+      const isDuplicate = pronRulesCache.some(
+        r => (r.target || "").toLowerCase() === t.toLowerCase() && (r.ipa || "").trim() === cleanIpa
+      );
+      if (isDuplicate) return;
+
+      pronRulesCache.push({
+        id: 'pron_' + t.toLowerCase() + '_' + Date.now(),
+        target: t,
+        ipa: cleanIpa,
+        quốcNgữ: convertQuasiIPA(cleanIpa),
+        createdAt: Date.now()
+      });
+      await uploadJsonToDrive('_pronunciation_rules.json', JSON.stringify(pronRulesCache, null, 2));
+    }
+
+    async function addSingleVarRuleToDrive(find, variantsStr) {
+      if (!find.trim() || !variantsStr.trim()) return;
+      if (!areRulesLoadedFromDrive) await loadRulesFromDrive(true);
+      if (!areRulesLoadedFromDrive) {
+        showToast("Cannot reach Google Drive. Rule not saved.", 4000);
+        return;
+      }
+      const f = find.trim();
+      const cleanVars = parseVariantsString(variantsStr).join(', ');
+      const isDuplicate = varRulesCache.some(r => {
+        const rVars = parseVariantsString(r.variantsStr).join(', ');
+        return (r.find || "").toLowerCase() === f.toLowerCase() && rVars === cleanVars;
+      });
+      if (isDuplicate) return;
+
+      varRulesCache.push({
+        id: 'var_' + f.toLowerCase() + '_' + Date.now(),
+        find: f,
+        variantsStr: variantsStr.trim(),
+        createdAt: Date.now()
+      });
+      await uploadJsonToDrive('_variant_rules.json', JSON.stringify(varRulesCache, null, 2));
     }
 
     /* ==========================================================================
@@ -1801,7 +1897,7 @@
       // Remove unwanted inline formatting
       temp.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
       temp.querySelectorAll('span').forEach(span => span.replaceWith(...span.childNodes));
-      
+
       temp.innerHTML = rawHTML.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '').replace(/<p[^>]*>/gi, '<br>').replace(/<\/p>/gi, '');
       const lines = temp.innerHTML.split(/<br\s*\/?>|\n/gi);
       return lines.map(l => l.trim()).filter(Boolean).join('; ');
@@ -1982,7 +2078,6 @@
 
     function updateGlobalPronRule(idx, field, val) {
       entryData.globalPronunciationRules[idx][field] = val;
-      savePronRuleToDB(entryData.globalPronunciationRules[idx].target, entryData.globalPronunciationRules[idx].ipa);
 
       // Targeted DOM update: strictly update the preview box for this row when IPA changes
       if (field === 'ipa') {
@@ -2014,7 +2109,7 @@
       });
     }
     function addGlobalVariantRule() {if (!entryData.globalVariantRules) entryData.globalVariantRules = []; entryData.globalVariantRules.push({find: "", variantsStr: ""}); renderGlobalRulesUI(); renderLivePreview();}
-    function updateGlobalRule(idx, field, val) {entryData.globalVariantRules[idx][field] = val; saveVarRuleToDB(entryData.globalVariantRules[idx].find, entryData.globalVariantRules[idx].variantsStr); renderLivePreview();}
+    function updateGlobalRule(idx, field, val) {entryData.globalVariantRules[idx][field] = val; renderLivePreview();}
     function removeGlobalRule(idx) {entryData.globalVariantRules.splice(idx, 1); renderGlobalRulesUI(); renderLivePreview();}
 
     /* Requirement 1: Drag/Reorder Terms & Requirement 5: Custom Labels */
@@ -2224,7 +2319,6 @@
     function confirmAddPronunciation() {
       const ipa = document.getElementById('add-pron-input').value.trim();
       if (!savedRange || !ipa) return closeAddPronModal();
-      savePronRuleToDB(savedRange.toString(), ipa);
       const span = document.createElement('span'); span.className = 'pronunciation'; span.setAttribute('data-pronunciation', convertQuasiIPA(ipa)); span.textContent = savedRange.toString().trim();
       savedRange.deleteContents(); savedRange.insertNode(span);
       onHeadwordInput(activeHeadwordEditorId); closeAddPronModal(); savedRange = null; showToast("Added pronunciation!");
@@ -2241,7 +2335,6 @@
     function confirmAddVariant() {
       const v = document.getElementById('add-var-input').value.trim();
       if (!savedRange || !v) return closeAddVarModal();
-      saveVarRuleToDB(savedRange.toString(), v);
       const span = document.createElement('span'); span.className = 'lexical-variant'; span.setAttribute('data-variant', parseVariantsString(v).join(', ')); span.textContent = savedRange.toString().trim();
       savedRange.deleteContents(); savedRange.insertNode(span);
       onHeadwordInput(activeHeadwordEditorId); closeAddVarModal(); savedRange = null; showToast("Added variant!");
@@ -2288,14 +2381,11 @@
     function saveAnnotationFromModal() {
       if (!activeAnnotationSpan) return;
       const val = document.getElementById('annotation-value-input').value.trim();
-      const targetText = activeAnnotationSpan.textContent.trim();
 
       if (activeAnnotationSpan.classList.contains('pronunciation')) {
-        savePronRuleToDB(targetText, val);
         const converted = convertQuasiIPA(val);
         activeAnnotationSpan.setAttribute('data-pronunciation', converted);
       } else {
-        saveVarRuleToDB(targetText, val);
         activeAnnotationSpan.setAttribute('data-variant', parseVariantsString(val).join(', '));
       }
 
@@ -2451,10 +2541,14 @@
       }
     }
 
-    /* Master Rule Database Managers (Requirement 3) */
-    function openRulesManager() {document.getElementById('rules-manager-modal').classList.remove('hidden'); switchRulesTab('pron');}
+    /* Master Rule Database Managers (Google Drive Master Copy) */
+    async function openRulesManager() {
+      document.getElementById('rules-manager-modal').classList.remove('hidden');
+      document.getElementById('rules-manager-list').innerHTML = `<p class="text-slate-400 text-xs">Loading rules from Google Drive...</p>`;
+      await loadRulesFromDrive(true);
+      switchRulesTab('pron');
+    }
     function closeRulesManager() {document.getElementById('rules-manager-modal').classList.add('hidden');}
-
 
     function switchRulesTab(t) {
       const isPron = t === 'pron';
@@ -2472,43 +2566,43 @@
       document.getElementById('add-rule-form-pron').classList.toggle('hidden', !isPron);
       document.getElementById('add-rule-form-var').classList.toggle('hidden', isPron);
 
-      // Reset search filter and reload DB list
+      // Reset search filter and reload list
       document.getElementById('rules-search').value = '';
       loadRulesForManager(t);
     }
 
-    function loadRulesForManager(type, q = '') {
-      if (!db) return;
-      const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
+    async function loadRulesForManager(type, q = '') {
+      const c = document.getElementById('rules-manager-list');
+      if (!areRulesLoadedFromDrive) {
+        c.innerHTML = `<p class="text-slate-400 text-xs">Loading rules from Google Drive...</p>`;
+        await loadRulesFromDrive();
+      }
 
-      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
-        let rs = e.target.result || [];
+      let rs = type === 'pron' ? [...pronRulesCache] : [...varRulesCache];
 
-        // Sort rules alphabetically A-Z by target (Pronunciation) or find phrase (Variant)
-        if (type === 'pron') {
-          rs.sort((a, b) => (a.target || '').localeCompare(b.target || '', 'vi', {sensitivity: 'base'}));
-        } else {
-          rs.sort((a, b) => (a.find || '').localeCompare(b.find || '', 'vi', {sensitivity: 'base'}));
-        }
-        if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
+      // Sort rules alphabetically A-Z by target (Pronunciation) or find phrase (Variant)
+      if (type === 'pron') {
+        rs.sort((a, b) => (a.target || '').localeCompare(b.target || '', 'vi', {sensitivity: 'base'}));
+      } else {
+        rs.sort((a, b) => (a.find || '').localeCompare(b.find || '', 'vi', {sensitivity: 'base'}));
+      }
+      if (q) rs = rs.filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
 
-        const c = document.getElementById('rules-manager-list');
-        c.innerHTML = '';
+      c.innerHTML = '';
 
-        if (rs.length === 0) {
-          c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored.</p>`;
-          return;
-        }
+      if (rs.length === 0) {
+        c.innerHTML = `<p class="text-slate-500 text-sm">No rules stored in Google Drive.</p>`;
+        return;
+      }
 
-        rs.forEach(r => {
-          const d = document.createElement('div');
-          d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
-          d.innerHTML = type === 'pron'
-            ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`
-            : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
-          c.appendChild(d);
-        });
-      };
+      rs.forEach(r => {
+        const d = document.createElement('div');
+        d.className = "flex justify-between items-center bg-slate-900 border border-slate-700 p-3 rounded-lg mb-2";
+        d.innerHTML = type === 'pron'
+          ? `<div><strong class="text-white">${escapeAttr(r.target)}</strong> &rarr; <span class="text-indigo-300 font-mono text-xs">${escapeAttr(r.ipa)}</span> <span class="text-slate-500 text-xs">(${escapeAttr(r.quốcNgữ)})</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`
+          : `<div><strong class="text-white">${escapeAttr(r.find)}</strong> &rarr; <span class="text-amber-300 font-mono text-xs">${escapeAttr(parseVariantsString(r.variantsStr).join(', '))}</span></div><button onclick="promptDeleteRule('${type}','${r.id}')" class="text-rose-400">&times; Delete</button>`;
+        c.appendChild(d);
+      });
     }
 
     function updateMgrPronPreview() {
@@ -2519,7 +2613,7 @@
       }
     }
 
-    function addMgrPronRule() {
+    async function addMgrPronRule() {
       const target = document.getElementById('mgr-new-pron-target')?.value.trim();
       const ipa = document.getElementById('mgr-new-pron-ipa')?.value.trim();
 
@@ -2528,15 +2622,15 @@
         return;
       }
 
-      savePronRuleToDB(target, ipa);
+      await addSinglePronRuleToDrive(target, ipa);
       document.getElementById('mgr-new-pron-target').value = '';
       document.getElementById('mgr-new-pron-ipa').value = '';
       updateMgrPronPreview();
-      showToast("Pronunciation rule saved!");
+      showToast("Pronunciation rule saved to Google Drive!");
       loadRulesForManager('pron');
     }
 
-    function addMgrVarRule() {
+    async function addMgrVarRule() {
       const find = document.getElementById('mgr-new-var-find')?.value.trim();
       const variants = document.getElementById('mgr-new-var-variants')?.value.trim();
 
@@ -2545,84 +2639,80 @@
         return;
       }
 
-      saveVarRuleToDB(find, variants);
+      await addSingleVarRuleToDrive(find, variants);
       document.getElementById('mgr-new-var-find').value = '';
       document.getElementById('mgr-new-var-variants').value = '';
-      showToast("Variant rule saved!");
+      showToast("Variant rule saved to Google Drive!");
       loadRulesForManager('var');
     }
 
-    function addRuleFromManager(type) {
-      if (type === 'pron') {
-        const target = document.getElementById('new-manager-target')?.value.trim();
-        const ipa = document.getElementById('new-manager-ipa')?.value.trim();
-        if (!target || !ipa) {
-          showToast("Please enter both target word and modified IPA.");
-          return;
-        }
-        savePronRuleToDB(target, ipa);
-        showToast("Pronunciation rule saved!");
-        loadRulesForManager('pron');
-      } else {
-        const find = document.getElementById('new-manager-find')?.value.trim();
-        const variants = document.getElementById('new-manager-variants')?.value.trim();
-        if (!find || !variants) {
-          showToast("Please enter both main word and variants.");
-          return;
-        }
-        saveVarRuleToDB(find, variants);
-        showToast("Variant rule saved!");
-        loadRulesForManager('var');
-      }
-    }
     function filterRulesManager() {loadRulesForManager(document.getElementById('tab-rule-pron').classList.contains('text-indigo-400') ? 'pron' : 'var', document.getElementById('rules-search').value);}
+
     function promptDeleteRule(type, id) {
       document.getElementById('confirm-delete-rule-modal').classList.remove('hidden');
-      document.getElementById('confirm-delete-rule-text').textContent = "Delete this rule permanently?";
-      document.getElementById('confirm-delete-rule-btn').onclick = () => {
-        const sN = type === 'pron' ? 'pronunciation_rules' : 'variant_rules';
-        const tx = db.transaction(sN, 'readwrite'); tx.objectStore(sN).delete(id);
-        tx.oncomplete = () => {syncRulesToDrive(); filterRulesManager(); closeConfirmDeleteRuleModal();};
+      document.getElementById('confirm-delete-rule-text').textContent = "Delete this rule permanently from Google Drive?";
+      document.getElementById('confirm-delete-rule-btn').onclick = async () => {
+        if (!areRulesLoadedFromDrive) await loadRulesFromDrive(true);
+        if (!areRulesLoadedFromDrive) {
+          showToast("Cannot reach Google Drive. Delete cancelled.", 4000);
+          closeConfirmDeleteRuleModal();
+          return;
+        }
+
+        if (type === 'pron') {
+          pronRulesCache = pronRulesCache.filter(r => r.id !== id);
+          await uploadJsonToDrive('_pronunciation_rules.json', JSON.stringify(pronRulesCache, null, 2));
+        } else {
+          varRulesCache = varRulesCache.filter(r => r.id !== id);
+          await uploadJsonToDrive('_variant_rules.json', JSON.stringify(varRulesCache, null, 2));
+        }
+        filterRulesManager();
+        closeConfirmDeleteRuleModal();
+        showToast("Rule deleted from Google Drive!");
       };
     }
     function closeConfirmDeleteRuleModal() {document.getElementById('confirm-delete-rule-modal').classList.add('hidden');}
 
-    /* Rule Suggestion with Reverse Matches (Requirement 4) */
-    function openRuleSuggest(t, tgt = null) {
+    /* Rule Suggestion with Reverse Matches */
+    async function openRuleSuggest(t, tgt = null) {
       activeRuleSelectorType = t;
       activeRuleSelectorTargetInput = tgt;
       document.getElementById('rule-selector-title').textContent = "Suggested Rules";
       document.getElementById('rule-selector-search-container').classList.add('hidden');
       document.getElementById('rule-selector-modal').classList.remove('hidden');
       const txt = tgt ? tgt.toLowerCase() : entryData.terms.map(x => x.headwordHTML || "").join(' ').toLowerCase();
-      if (!db) return;
-      const sN = t === 'pron' ? 'pronunciation_rules' : 'variant_rules';
-      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
-        renderRuleSelectorList(e.target.result, t, txt);
-      };
+
+      if (!areRulesLoadedFromDrive) {
+        document.getElementById('rule-selector-list').innerHTML = `<p class="text-slate-400 text-xs">Loading rules from Google Drive...</p>`;
+        await loadRulesFromDrive();
+      }
+      const rules = t === 'pron' ? [...pronRulesCache] : [...varRulesCache];
+      renderRuleSelectorList(rules, t, txt);
     }
 
-    function openRuleBrowse(t) {
+    async function openRuleBrowse(t) {
       activeRuleSelectorType = t;
       activeRuleSelectorTargetInput = null;
       document.getElementById('rule-selector-title').textContent = "Browse Rules";
       document.getElementById('rule-selector-search-container').classList.remove('hidden');
       document.getElementById('rule-selector-search').value = "";
       document.getElementById('rule-selector-modal').classList.remove('hidden');
-      if (!db) return;
-      const sN = t === 'pron' ? 'pronunciation_rules' : 'variant_rules';
-      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => renderRuleSelectorList(e.target.result, t, "");
+
+      if (!areRulesLoadedFromDrive) {
+        document.getElementById('rule-selector-list').innerHTML = `<p class="text-slate-400 text-xs">Loading rules from Google Drive...</p>`;
+        await loadRulesFromDrive();
+      }
+      const rules = t === 'pron' ? [...pronRulesCache] : [...varRulesCache];
+      renderRuleSelectorList(rules, t, "");
     }
 
     function filterRuleSelector() {
       const q = document.getElementById('rule-selector-search').value.toLowerCase();
-      const t = activeRuleSelectorType, sN = t === 'pron' ? 'pronunciation_rules' : 'variant_rules';
-      db.transaction(sN, 'readonly').objectStore(sN).getAll().onsuccess = (e) => {
-        const filtered = e.target.result.filter(r => JSON.stringify(r).toLowerCase().includes(q));
-        renderRuleSelectorList(filtered, t, "");
-      };
+      const t = activeRuleSelectorType;
+      const rules = t === 'pron' ? [...pronRulesCache] : [...varRulesCache];
+      const filtered = rules.filter(r => JSON.stringify(r).toLowerCase().includes(q));
+      renderRuleSelectorList(filtered, t, "");
     }
-
     function renderRuleSelectorList(rs, t, targetText = "") {
       const c = document.getElementById('rule-selector-list');
       c.innerHTML = '';
@@ -2916,27 +3006,14 @@
 
       const doc = new DOMParser().parseFromString(rawHTML, 'text/html');
 
-      // 1. Extract embedded Pronunciation & Variant rules
+      // 1. Format embedded Pronunciation & Variant spans (will save to Drive when "Save JSON" is clicked)
       const pronSpans = doc.querySelectorAll('.pronunciation');
       pronSpans.forEach(span => {
         const target = span.textContent.trim();
         const quocNguVal = span.getAttribute('data-pronunciation');
         if (target && quocNguVal) {
-          // Reverse-engineer quấc ngữ annotation into modified IPA
           const quasiIPA = reverseQuocNguToQuasiIPA(quocNguVal);
-          // Save rule to IndexedDB using modified IPA
-          savePronRuleToDB(target, quasiIPA);
-          // Update preview attribute to formatted quấc ngữ
           span.setAttribute('data-pronunciation', convertQuasiIPA(quasiIPA));
-        }
-      });
-
-      const varSpans = doc.querySelectorAll('.lexical-variant');
-      varSpans.forEach(span => {
-        const target = span.textContent.trim();
-        const varVal = span.getAttribute('data-variant');
-        if (target && varVal) {
-          saveVarRuleToDB(target, varVal);
         }
       });
 
