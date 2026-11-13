@@ -853,6 +853,7 @@
                   </div>
                 </div>
                 <div id="alt-english-terms" contenteditable="true" oninput="onAltEnglishTermsInput()"
+                  onpaste="handleAltEnglishPaste(event)"
                   class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 min-h-[44px] text-xs text-slate-200 outline-none focus:border-rose-500 whitespace-pre-wrap">
                 </div>
               </div>
@@ -1901,12 +1902,18 @@
     function formatAltEnglishOutput(rawHTML) {
       if (!rawHTML) return "";
       const temp = document.createElement('div');
-
-      // Remove unwanted inline formatting
-      temp.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
-      temp.querySelectorAll('span').forEach(span => span.replaceWith(...span.childNodes));
-
       temp.innerHTML = rawHTML.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '').replace(/<p[^>]*>/gi, '<br>').replace(/<\/p>/gi, '');
+
+      // Keep only the toolbar's formatting tags and strip all attributes (id, class, style, data-*, etc.)
+      const allowedTags = ['b', 'strong', 'i', 'em', 'u', 'sup', 'sub', 'br'];
+      Array.from(temp.querySelectorAll('*')).forEach(el => {
+        if (allowedTags.includes(el.tagName.toLowerCase())) {
+          Array.from(el.attributes).forEach(attr => el.removeAttribute(attr.name));
+        } else {
+          el.replaceWith(...el.childNodes);
+        }
+      });
+
       const lines = temp.innerHTML.split(/<br\s*\/?>|\n/gi);
       return lines.map(l => l.trim()).filter(Boolean).join('; ');
     }
@@ -2060,6 +2067,12 @@
       renderLivePreview();
     }
 
+    function handleAltEnglishPaste(e) {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
+      onAltEnglishTermsInput();
+    }
     function onAltEnglishTermsInput() {const e = document.getElementById('alt-english-terms'); if (e) {entryData.altEnglishTerms = e.innerHTML; renderLivePreview();} }
     function formatAltEnglishText(cmd) {const e = document.getElementById('alt-english-terms'); if (e) {e.focus(); document.execCommand(cmd, false, null); onAltEnglishTermsInput();} }
 
