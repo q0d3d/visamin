@@ -651,8 +651,14 @@
     <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <h3 class="text-base font-bold text-white">Manage rules library</h3>
-        <button onclick="closeRulesManager()"
-          class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
+        <div class="flex items-center gap-2">
+          <button onclick="refreshRulesLibrary()" type="button"
+            class="bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+            ↻ Refresh
+          </button>
+          <button onclick="closeRulesManager()"
+            class="text-slate-400 hover:text-white text-2xl font-bold leading-none">×</button>
+        </div>
       </div>
       <div class="flex border-b border-slate-700 bg-slate-900/50">
         <button id="tab-rule-pron" onclick="switchRulesTab('pron')"
@@ -969,7 +975,7 @@
     let pronRulesCache = [];
     let varRulesCache = [];
     let areRulesLoadedFromDrive = false;
-    let isRulesLoading = false;
+    let rulesLoadPromise = null;
 
     window.onload = async function () {
       initIPAPalette();
@@ -1016,28 +1022,30 @@
     }
 
     async function loadRulesFromDrive(forceRefresh = false) {
-      if (isRulesLoading) return;
       if (areRulesLoadedFromDrive && !forceRefresh) return;
-      isRulesLoading = true;
-      try {
-        const [pRules, vRules] = await Promise.all([
-          readJsonFromDrive('_pronunciation_rules.json'),
-          readJsonFromDrive('_variant_rules.json')
-        ]);
-        const pValid = Array.isArray(pRules) || pRules === null || (pRules && /not found/i.test(pRules.error || ''));
-        const vValid = Array.isArray(vRules) || vRules === null || (vRules && /not found/i.test(vRules.error || ''));
+      if (rulesLoadPromise) return rulesLoadPromise;
+      rulesLoadPromise = (async () => {
+        try {
+          const [pRules, vRules] = await Promise.all([
+            readJsonFromDrive('_pronunciation_rules.json'),
+            readJsonFromDrive('_variant_rules.json')
+          ]);
+          const pValid = Array.isArray(pRules) || pRules === null || (pRules && /not found/i.test(pRules.error || ''));
+          const vValid = Array.isArray(vRules) || vRules === null || (vRules && /not found/i.test(vRules.error || ''));
 
-        if (Array.isArray(pRules)) pronRulesCache = pRules;
-        if (Array.isArray(vRules)) varRulesCache = vRules;
+          if (Array.isArray(pRules)) pronRulesCache = pRules;
+          if (Array.isArray(vRules)) varRulesCache = vRules;
 
-        if (pValid && vValid) {
-          areRulesLoadedFromDrive = true;
+          if (pValid && vValid) {
+            areRulesLoadedFromDrive = true;
+          }
+        } catch (e) {
+          console.error("Failed to load rules from Google Drive:", e);
+        } finally {
+          rulesLoadPromise = null;
         }
-      } catch (e) {
-        console.error("Failed to load rules from Google Drive:", e);
-      } finally {
-        isRulesLoading = false;
-      }
+      })();
+      return rulesLoadPromise;
     }
 
     // Extracts clean terms separated by semicolons from HTML blocks and line breaks
@@ -2544,11 +2552,18 @@
     /* Master Rule Database Managers (Google Drive Master Copy) */
     async function openRulesManager() {
       document.getElementById('rules-manager-modal').classList.remove('hidden');
-      document.getElementById('rules-manager-list').innerHTML = `<p class="text-slate-400 text-xs">Loading rules from Google Drive...</p>`;
-      await loadRulesFromDrive(true);
+      if (!areRulesLoadedFromDrive) {
+        document.getElementById('rules-manager-list').innerHTML = `<p class="text-slate-400 text-xs">Loading rules from Google Drive...</p>`;
+        await loadRulesFromDrive();
+      }
       switchRulesTab('pron');
     }
     function closeRulesManager() {document.getElementById('rules-manager-modal').classList.add('hidden');}
+    async function refreshRulesLibrary() {
+      document.getElementById('rules-manager-list').innerHTML = `<p class="text-slate-400 text-xs">Refreshing rules from Google Drive...</p>`;
+      await loadRulesFromDrive(true);
+      filterRulesManager();
+    }
 
     function switchRulesTab(t) {
       const isPron = t === 'pron';
