@@ -2141,6 +2141,10 @@
         div.className = "term-card bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 space-y-3 transition";
         div.setAttribute('draggable', 'true');
         div.setAttribute('data-term-index', i);
+        div.onmousedown = (e) => {
+          const el = e.target.nodeType === 3 ? e.target.parentElement : e.target;
+          div.draggable = !el?.closest('input, textarea, [contenteditable="true"], button');
+        };
         div.ondragstart = (e) => handleTermDragStart(e, i);
         div.ondragover = (e) => handleTermDragOver(e, i);
         div.ondragleave = (e) => handleTermDragLeave(e, i);
@@ -2190,7 +2194,8 @@
     /* Drag & Drop Reordering Handlers */
     function handleTermDragStart(e, idx) {
       // Prevent card reordering when dragging inside text inputs or contenteditable fields
-      if (e.target.closest('input, textarea, [contenteditable="true"]')) {
+      const targetEl = e.target.nodeType === 3 ? e.target.parentElement : e.target;
+      if (targetEl?.closest('input, textarea, [contenteditable="true"], button')) {
         e.preventDefault();
         return;
       }
